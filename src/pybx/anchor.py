@@ -82,7 +82,7 @@ def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, **kwargs):
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     asp_ratios = [1 / 2., 1., 2.] if asp_ratios is None else asp_ratios
-    feature_szs = [(8, 8), (2, 2)] if feature_szs is None else asp_ratios
+    feature_szs = [(8, 8), (2, 2)] if feature_szs is None else feature_szs
     return np.vstack([bx(image_sz, f, ar, **kwargs) for f in feature_szs for ar in asp_ratios])
 
 
