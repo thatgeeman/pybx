@@ -14,7 +14,7 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     generate offsetted top (x_min, y_min) or bottom edges (x_max, y_max)
     coordinates of a given feature size based on op.
     if op is noop, gets the top edges.
-    if op is sub, gets the bottom edges.
+    if op is add, gets the bottom edges.
     :param op: operation for calculating edges, either 'add' 'subtract' 'noop'
     :param image_sz: tuple of (width, height, channels) of an image
     :param feature_sz: tuple of (width, height) of a channel
