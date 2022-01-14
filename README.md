@@ -1,5 +1,4 @@
 # PyBx 
-version
 
 A simple python module to generate anchor
 (aka default/prior) boxes for object detection
