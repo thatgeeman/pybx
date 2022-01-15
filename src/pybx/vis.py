@@ -19,7 +19,7 @@ def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
     if logits is not None:
         img_extent = get_extents(img.shape)
         plt.imshow(logits, alpha=alpha, extent=img_extent)
-    return plt.gca()
+    return ax
 
 
 def draw_outline(obj, linewidth: int):
