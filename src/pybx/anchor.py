@@ -37,7 +37,7 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
 
 
 def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
-       validate=True, clip_only=False, color: dict = None, anchor_label='unk', **kwargs):
+       validate=True, clip_only=False, color: dict = None, anchor_label='unk', ax=None, **kwargs):
     """
     calculate anchor box coords given an image size and feature size for a single aspect ratio
     :param image_sz: tuple of (width, height) of an image
@@ -48,6 +48,7 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
     :param show: whether to display the generated anchors
     :param anchor_label: default anchor label
     :param color: a dict of colors for the labelled boxes
+    :param ax: pass axis
     :return: anchor box coordinates in [pascal_voc] format
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
@@ -72,7 +73,7 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
     if show:
         im, ann, lgt, c = get_example(image_sz, feature_sz, **kwargs)
         c.update(color)
-        _ = draw(im, coords_asp.tolist() + ann, color=c, logits=lgt)
+        ax = draw(im, coords_asp.tolist() + ann, color=c, logits=lgt, ax=ax)
     return coords_asp
 
 
