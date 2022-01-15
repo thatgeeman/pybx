@@ -2,7 +2,7 @@
 
 *WIP*
 
-A simple python module to generate anchor
+A simple python package to generate anchor
 (aka default/prior) boxes for object detection
 tasks. Calculated anchor boxes are returned as ndarrays in `pascal_voc` format by default.
 
