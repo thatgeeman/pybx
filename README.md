@@ -1,6 +1,14 @@
 # PyBx 
+**patch-1**: working on the asymetric image sizes problem
+```python
+from pybx import anchor
 
-*WIP*
+image_sz = (150, 200, 3)
+feature_sz = (3, 3)
+asp_ratio = 1
+
+anchors = anchor.bx(image_sz, feature_sz, asp_ratio, show=True, validate=True)
+```
 
 A simple python module to generate anchor
 (aka default/prior) boxes for object detection
@@ -40,7 +48,7 @@ More on visualising the anchor boxes [here](data/README.md).
 - [ ] Unit tests
 - [ ] Specific tests
   - [x] `feature_sz` of different aspect ratios
-  - [ ] `image_sz` of different aspect ratios
+  - [x] `image_sz` of different aspect ratios
 - [ ] Move to setup.py
 
 
