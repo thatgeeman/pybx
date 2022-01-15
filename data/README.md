@@ -1,6 +1,39 @@
 ## Visualisation
-To display the anchor boxes overlayed on top of an image, pass additional args `show=True, pth=PATH, 
-img_fn=IMAGE, ann_fn=ANNS`. The parameter `img_fn` expects an image file name stored in disk at the provided `PATH`. 
+<a href="https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+
+To display the calculated boxes, simply pass `show=True` to `anchor.bx`:
+```python
+anchor.bx(image_sz, feature_sz, asp_ratio, show=True)
+```
+![](box-1.png)
+
+The boxes in white with label `unk` are the anchor boxes. 
+We can hightlight them with a different color if needed.
+```python
+anchor.bx(image_sz, feature_sz, asp_ratio, show=True, 
+          color={'unk':'red'})
+```
+![](box-2.png)
+
+We can also overlay the features/receptive fields on the original 
+image (only for reference and visualisation). 
+`logits=True` simply generates numbers of the same shape as feature 
+sizes for illustration purposes.
+
+```python
+anchors = anchor.bx(image_sz, feature_sz, asp_ratio, 
+                    show=True, color={'unk':'red'}, 
+                    logits=True)
+```
+![](box-3.png) 
+
+
+## Customizing visualisation behaviour
+
+To display the anchor boxes overlayed on top of a custom image, 
+pass additional args `show=True, pth=PATH, 
+img_fn=IMAGE, ann_fn=ANNS`. 
+The parameter `img_fn` expects an image file name stored in disk at the provided `PATH`. 
 Similarly, the parameter `ann_fn` expects the annotation file name in json format ([see example](annots.json)) at 
 `PATH`.
 This is what happens internally when `anchor.bx()` method gets `show=True` along with the image and annotation paths. 
