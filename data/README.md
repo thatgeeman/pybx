@@ -1,16 +1,16 @@
 ## Visualisation
 To display the anchor boxes overlayed on top of an image, pass additional args `show=True, pth=PATH, 
 img_fn=IMAGE, ann_fn=ANNS`. The parameter `img_fn` expects an image file name stored in disk at the provided `PATH`. 
-Similarly, the parameter `ann_fn` expects the annotation file name in json format ([see example](data/annots.json)) at 
+Similarly, the parameter `ann_fn` expects the annotation file name in json format ([see example](annots.json)) at 
 `PATH`.
-This is what happens interally when `anchor.bx()` method gets `show=True` along with the image and annotation paths. 
+This is what happens internally when `anchor.bx()` method gets `show=True` along with the image and annotation paths. 
 
 ### Get sample image
 Loading a sample image with randomly generated [logits](https://en.wikipedia.org/wiki/Logit) and generated anchors for the requested image and feature size.
 ```python3
 from pybx import vis
 
-im_array, annots, logits, color = vis._get_example(image_sz, feature_sz)  
+im_array, annots, logits, color = vis.get_example(image_sz, feature_sz)  
 # pth='.', img_fn='image.jpg', ann_fn='annots.json'
 ```
 ### Display image

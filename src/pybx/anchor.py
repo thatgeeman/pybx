@@ -1,12 +1,11 @@
 import math
 
 import numpy as np
-from operator import __mul__
 
 from fastcore.basics import store_attr
 
 from .vis import draw
-from .sample import _get_example
+from .sample import get_example
 from .ops import allowed_ops, get_op
 
 voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
@@ -38,7 +37,7 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
 
 
 def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
-       validate=True, clip_only=False, **kwargs):
+       validate=True, clip_only=False, color: dict = None, anchor_label='unk', **kwargs):
     """
     calculate anchor box coords given an image size and feature size for a single aspect ratio
     :param image_sz: tuple of (width, height) of an image
@@ -47,10 +46,14 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
     :param clip_only: whether to apply only np.clip with validate
     :param validate: fix the boxes that are bleeding out of the image
     :param show: whether to display the generated anchors
+    :param anchor_label: default anchor label
+    :param color: a dict of colors for the labelled boxes
     :return: anchor box coordinates in [pascal_voc] format
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
-    n_boxes = __mul__(*feature_sz)
+    if color is None:
+        color = {anchor_label: 'white'}
+    # n_boxes = __mul__(*feature_sz)
     top_edges = get_edges(image_sz, feature_sz, op='noop')
     bot_edge = get_edges(image_sz, feature_sz, op='add')
     coords = np.hstack([top_edges, bot_edge])  # raw coords
@@ -67,7 +70,8 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
         coords_iter = BxIter(coords_asp, x_max=image_sz[0], y_max=image_sz[1], clip_only=clip_only)
         coords_asp = coords_iter.to_array()
     if show:
-        im, ann, lgt, c = _get_example(image_sz, feature_sz, **kwargs)
+        im, ann, lgt, c = get_example(image_sz, feature_sz, **kwargs)
+        c.update(color)
         _ = draw(im, coords_asp.tolist() + ann, color=c, logits=lgt)
     return coords_asp
 
