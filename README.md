@@ -40,7 +40,7 @@ More on visualising the anchor boxes [here](data/README.md).
 - [ ] Unit tests
 - [ ] Specific tests
   - [x] `feature_sz` of different aspect ratios
-  - [x] `image_sz` of different aspect ratios
+  - [ ] `image_sz` of different aspect ratios
 - [ ] Move to setup.py
 
 
