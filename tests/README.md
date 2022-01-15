@@ -15,5 +15,5 @@ pipenv check
 ## Build
 
 ```shell
-python -m build sdist bdist_wheel
+python -m build
 ```
