@@ -8,7 +8,7 @@ tasks. Calculated anchor boxes are returned as ndarrays in `pascal_voc` format b
 
 ### Installation
 ```shell
-pip install pybx==0.1.1
+pip install pybx
 ```
 
 ### Usage
