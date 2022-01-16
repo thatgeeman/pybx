@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 from matplotlib import patches, patheffects
 import numpy as np
 
+from pybx.basics import MultiBx
+
 
 def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
     """
@@ -114,12 +116,12 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     if no_ticks:
         ax.axis('off')
     ax.imshow(img, cmap='Greys', **kwargs)
-    assert isinstance(bbox, (list, np.ndarray)), f'Expected annotations as arrays/list/records, got {type(bbox)}.'
+    assert isinstance(bbox, (list, MultiBx, np.ndarray)), f'Expected annotations as arrays/list/records/MultiBx, got {type(bbox)}. '
     for b in bbox:
         try:
             x1, y1, x2, y2, label = b.values()
         except ValueError:
-            # dict but no label
+            # dict/BaseBx but no label
             x1, y1, x2, y2 = b.values()
             label = 'unk'
         except AttributeError:
@@ -130,3 +132,4 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
         draw_rectangle(ax, coords=(x1, y1, x2, y2), color=c)
         draw_text(ax, xy=(x1, y1), label=label, color=c, xo=xo, yo=yo)
     return ax
+
