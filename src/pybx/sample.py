@@ -4,8 +4,10 @@ import os
 import numpy as np
 from PIL import Image
 
+__all__ = ['get_example']
 
-def get_example(image_sz: tuple, feature_sz: tuple, **kwargs):
+
+def get_example(image_sz: tuple, **kwargs):
     """
     get an example image from the pth given for some image size for a feature size
     :param image_sz: required image size (will resize the original image)
@@ -14,7 +16,7 @@ def get_example(image_sz: tuple, feature_sz: tuple, **kwargs):
     :param ann_im_sz: original image size
     :return:
     """
-    return _get_example(image_sz, feature_sz, **kwargs)
+    return _get_example(image_sz, **kwargs)
 
 
 def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
@@ -42,7 +44,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     return scaled
 
 
-def _get_example(image_sz: tuple, feature_sz: tuple, ann_im_sz=(300, 300, 3),
+def _get_example(image_sz: tuple, feature_sz: tuple = None, ann_im_sz=(300, 300, 3),
                  pth='.', img_fn='image.jpg', ann_fn='annots.json', logits=None):
     """
     get an example image from the pth given for some image size for a feature size
@@ -56,6 +58,7 @@ def _get_example(image_sz: tuple, feature_sz: tuple, ann_im_sz=(300, 300, 3),
     assert os.path.exists(os.path.join(pth, 'annots.json')), f'{pth} has no {ann_fn}'
     assert len(image_sz) == 3, f'expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
     if logits is not None:
+        assert feature_sz is not None, f'expected feature_sz with logits=True'
         logits = _get_feature(feature_sz)
     im = Image.open(os.path.join(pth, img_fn)).convert('RGB').resize(list(image_sz[:2]))
     im_array = np.asarray(im)
