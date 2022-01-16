@@ -36,7 +36,7 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     return edges
 
 
-def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
+def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, show=False,
        validate=True, clip_only=False, color: dict = None, anchor_label='unk', ax=None, **kwargs):
     """
     calculate anchor box coords given an image size and feature size for a single aspect ratio
@@ -52,8 +52,8 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
     :return: anchor box coordinates in [pascal_voc] format
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
-    if color is None:
-        color = {anchor_label: 'white'}
+    color = {anchor_label: 'white'} if color is None else color
+    asp_ratio = 1. if asp_ratio is None else asp_ratio
     # n_boxes = __mul__(*feature_sz)
     top_edges = get_edges(image_sz, feature_sz, op='noop')
     bot_edge = get_edges(image_sz, feature_sz, op='add')
@@ -71,7 +71,7 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float, show=False,
         coords_iter = BxIter(coords_asp, x_max=image_sz[0], y_max=image_sz[1], clip_only=clip_only)
         coords_asp = coords_iter.to_array()
     if show:
-        im, ann, lgt, c = get_example(image_sz, feature_sz, **kwargs)
+        im, ann, lgt, c = get_example(image_sz, feature_sz=feature_sz, **kwargs)
         c.update(color)
         ax = draw(im, coords_asp.tolist() + ann, color=c, logits=lgt, ax=ax)
     return coords_asp
