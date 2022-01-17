@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a7b2ee570d956678369025fb9d4baddf014420a4907ea49da1fa86a91283e778"
+            "sha256": "c101092adf3fd60eed1cecb28a11749972d93a2644128ec496180d009517c368"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -26,11 +26,11 @@
         },
         "fastcore": {
             "hashes": [
-                "sha256:4d24e4afc8069e1735d401c156cf30d0dabb367c33f4fe9851e8fe001439c4f5",
-                "sha256:c07bf0b5a78c4ae6680ae6899e43c2071c10bf4b4dfe468d92e564fd03834a31"
+                "sha256:0161f538d5b913932869a46bb90e98193eee79b8798b566272a394f7ef957243",
+                "sha256:03c6c93f2c769fdd611e32a7cc1433db5a82f67146d9e2f88e03107db203f6de"
             ],
             "index": "pypi",
-            "version": "==1.3"
+            "version": "==1.3.27"
         },
         "fonttools": {
             "hashes": [
@@ -245,11 +245,11 @@
         },
         "setuptools-scm": {
             "hashes": [
-                "sha256:4c64444b1d49c4063ae60bfe1680f611c8b13833d556fd1d6050c0023162a119",
-                "sha256:a49aa8081eeb3514eb9728fa5040f2eaa962d6c6f4ec9c32f6c1fba88f88a0f2"
+                "sha256:54f5b1dcccd28e7813236609e620671f23d548548d744270a07d8df6df623649",
+                "sha256:cd3906321824191cfd6972c1a8ad6f5171b49edc5996eba14bcbd33e98fb1ebe"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==6.3.2"
+            "version": "==6.4.0"
         },
         "six": {
             "hashes": [
@@ -326,11 +326,11 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:92a8b58ce734b2a4494878e0ecf7d79ccd7a128b5fc6014c401e0b61f006f0f6",
-                "sha256:b7cf7d3fef75f1e4c80a96ca660efbd51473d7e8f39b5ab9210febc7809012a4"
+                "sha256:899e2a40a8c4a1aec681feef45733de8a6c58f3f6a0dbed2eb6574b4387a77b6",
+                "sha256:951f0d8a5b7260e9db5e41d429285b5f451e928479f19d80818878527d36e95e"
             ],
             "markers": "python_version < '3.8'",
-            "version": "==4.10.0"
+            "version": "==4.10.1"
         },
         "keyring": {
             "hashes": [
