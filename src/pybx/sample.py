@@ -5,6 +5,8 @@ from PIL import Image
 
 __all__ = ['get_example']
 
+np.random.seed(1)
+
 
 def get_example(image_sz: tuple, **kwargs):
     """
@@ -51,14 +53,17 @@ def _get_example(image_sz: tuple, feature_sz: tuple = None, ann_im_sz=(300, 300,
     :param feature_sz: feature size of
     :param pth: path to find image
     :param ann_im_sz: original image size
+    :param logits: activations that should be overlayed from a neural network (no checks)
     :return:
     """
     assert os.path.exists(os.path.join(pth, img_fn)), f'{pth} has no {img_fn}'
     assert os.path.exists(os.path.join(pth, 'annots.json')), f'{pth} has no {ann_fn}'
     assert len(image_sz) == 3, f'expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
     if logits is not None:
-        assert feature_sz is not None, f'expected feature_sz with logits=True'
-        logits = _get_feature(feature_sz)
+        # if ndarray/detached-tensor, use logits values
+        if not hasattr(logits, 'shape'):
+            assert feature_sz is not None, f'expected feature_sz to generate fake-logits'
+            logits = _get_feature(feature_sz)
     im = Image.open(os.path.join(pth, img_fn)).convert('RGB').resize(list(image_sz[:2]))
     im_array = np.asarray(im)
     with open(os.path.join(pth, ann_fn)) as f:

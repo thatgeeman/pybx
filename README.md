@@ -1,5 +1,5 @@
 # PyBx
-[![PyPi version](https://badgen.net/pypi/v/pip/)](https://pypi.org/project/pybx)
+[![PyPI version](https://badge.fury.io/py/pybx.svg)](https://badge.fury.io/py/pybx)
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough_0.1.2.ipynb)
 
 *WIP*
