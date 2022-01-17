@@ -3,8 +3,19 @@ from fastcore.basics import concat, store_attr
 
 from .anchor import voc_keys
 from .ops import mul, sub
-from .sample import get_example
-from .vis import draw
+
+__all__ = ['mbx', 'MultiBx', 'BaseBx', 'JsonBx', 'ListBx']
+
+
+def mbx(coords=None, labels=None):
+    """
+    interface to the MultiBx class and all of its attributes
+    MultiBx wraps the coordinates and labels exposing many validation methods
+    :param coords: coordinates in list/array/json format
+    :param labels: labels in list format or keep intentionally None (also None for json)
+    :return: MultiBx object
+    """
+    return MultiBx.multibox(coords, labels)
 
 
 class BaseBx:
@@ -33,6 +44,11 @@ class BaseBx:
     def __len__(self):
         return self.coords.shape[0] + 1
 
+    def make_2d(self):
+        coords = np.atleast_2d(self.coords)
+        labels = [self.label]
+        return coords, labels
+
 
 class MultiBx:
     def __init__(self, coords, label: list = None):
@@ -59,7 +75,6 @@ class MultiBx:
     def __len__(self):
         return len(self.coords)
 
-    @property
     def shape(self):
         return self.coords.shape
 
@@ -81,7 +96,7 @@ class MultiBx:
 
     def __add__(self, other):
         if not isinstance(other, (MultiBx, JsonBx, ListBx)):
-            raise TypeError('expected type MultiBx or JsonBx')
+            raise TypeError('expected type MultiBx/JsonBx/ListBx')
         coords = np.vstack([self.coords, other.coords])
         label = self.label + other.label
         return MultiBx(coords, label)
@@ -96,10 +111,10 @@ class ListBx:
         l = []
         r = []
         for i, c in enumerate(coords):
-            assert isinstance(c, list), f'expected b of type list, got {type(c)}'
+            assert isinstance(c, (list, np.ndarray)), f'expected b of type list/ndarray, got {type(c)}'
             l_ = c[-1] if len(c) > 4 else '' if label is None else label[i]
             l.append(l_)
-            r.append(c[:-1])
+            r.append(c[:-1] if len(c) > 4 else c)
         coords = np.array(r)
         return cls(coords, label=l)
 
@@ -117,25 +132,12 @@ class JsonBx:
             c_ = list(c.values())
             l_ = c_[-1] if len(c_) > 4 else '' if label is None else label[i]
             l.append(l_)
-            r.append(c_[:-1])
+            r.append(c_[:-1] if len(c_) > 4 else c_)
         coords = np.array(r)
         return cls(coords, label=l)
 
 
-class VisBx:
-    def __init__(self, image_sz, **kwargs):
-        im, ann, lgt, clr = get_example(image_sz, **kwargs)
-        ann = MultiBx.multibox(ann)
-        store_attr('im, ann, lgt, clr')
-
-    def show(self, coords: MultiBx, labels=None, color=None, ax=None):
-        if color is not None:
-            self.clr.update(color)
-        if not isinstance(coords, MultiBx):
-            coords = MultiBx.multibox(coords, labels)
-        return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax)
-
-
+# deprecated
 class BxIter:
     def __init__(self, coords: np.ndarray, x_max=-1.0, y_max=-1.0, clip_only=False):
         """
