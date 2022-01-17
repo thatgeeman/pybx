@@ -1,10 +1,35 @@
 from collections import defaultdict
 
+from fastcore.basics import store_attr
 from matplotlib import pyplot as plt
 from matplotlib import patches, patheffects
 import numpy as np
 
-from .basics import MultiBx, BaseBx
+from .basics import *
+from .sample import get_example
+
+
+class VisBx:
+    def __init__(self, image_sz, **kwargs):
+        im, ann, lgt, clr = get_example(image_sz, **kwargs)
+        ann = mbx(ann)
+        store_attr('im, ann, lgt, clr')
+
+    def show(self, coords, labels=None, color=None, ax=None):
+        """
+        coords can be a numpy array with labels=(None,labels)
+        or a MultiBx, JsonBx, ListBx, BaseBx with labels=None
+        """
+        if color is not None:
+            self.clr.update(color)
+        if isinstance(coords, BaseBx):
+            coords, labels = coords.make_2d()
+        if isinstance(coords, (JsonBx, ListBx)):
+            coords, labels = coords.coords, coords.label if coords.label is not None else None
+        if isinstance(coords, (list, np.ndarray)):
+            # if not multibx, make one so that __add__ below works
+            coords = mbx(coords, labels)
+        return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax)
 
 
 def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
