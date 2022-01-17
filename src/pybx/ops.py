@@ -1,3 +1,6 @@
+import numpy as np
+from fastcore.foundation import L
+
 allowed_ops = 'add', 'sub', 'noop'
 
 
@@ -25,3 +28,15 @@ def noop(x, _):
 
 def get_op(op: str):
     return eval(op, globals())
+
+
+def named_idx(x: np.ndarray, sfx: str):
+    """
+    return a list of string indices matching the array
+    suffixed with sfx
+    :param x: ndarray
+    :param sfx: suffix
+    :return:
+    """
+    idx = np.arange(0, x.shape[0]).tolist()
+    return L([sfx + i.__str__() for i in idx])
