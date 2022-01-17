@@ -1,6 +1,6 @@
 # PyBx
 [![PyPI version](https://badge.fury.io/py/pybx.svg)](https://badge.fury.io/py/pybx)
-[![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough_0.1.2.ipynb)
+[![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough.ipynb)
 
 *WIP*
 
@@ -65,7 +65,7 @@ to [Visualising anchor boxes](data/README.md).
 ## Todo
 - [x] Wrapper class for boxes with `VisBx.show()` method
 - [x] Companion notebook
-  - [ ] Update with new Class methods
+  - [x] Update with new Class methods
 - [x] Integrate MultiBx into anchor.bx()
 - [ ] IOU check (return best overlap boxes)
 - [ ] Return masks 

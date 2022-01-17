@@ -1,5 +1,5 @@
 ## Visualisation
-[![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough_0.1.2.ipynb)
+[![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough.ipynb)
 
 To display the calculated anchor boxes use `vis.VisBx`.
 `vis.VisBx()` initializes all the params for plot and loads the 
