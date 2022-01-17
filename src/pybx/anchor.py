@@ -2,13 +2,23 @@ import math
 
 import numpy as np
 
-from fastcore.basics import store_attr
+from fastcore.foundation import L
 
-from .vis import draw
-from .sample import get_example
-from .ops import allowed_ops, get_op
+from .basics import MultiBx
+from .ops import allowed_ops, get_op, named_idx
 
 voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
+
+
+def multibx(coords=None, labels=None):
+    """
+    interface to the MultiBx class and its attributes
+    MultiBx wraps the coordinates and labels exposing many validation methods
+    :param coords: coordinates in list/array/json format
+    :param labels: labels in list format or keep intentionally None (also None for json)
+    :return: MultiBx object
+    """
+    return MultiBx.multibox(coords, labels)
 
 
 def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
@@ -36,23 +46,19 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     return edges
 
 
-def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, show=False,
-       validate=True, clip_only=False, color: dict = None, anchor_label='unk', ax=None, **kwargs):
+def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, named=True, anchor_sfx: str = 'a'):
     """
     calculate anchor box coords given an image size and feature size for a single aspect ratio
     :param image_sz: tuple of (width, height) of an image
     :param feature_sz: tuple of (width, height) of a channel
     :param asp_ratio: aspect ratio (width:height)
-    :param clip_only: whether to apply only np.clip with validate
-    :param validate: fix the boxes that are bleeding out of the image
-    :param show: whether to display the generated anchors
-    :param anchor_label: default anchor label
-    :param color: a dict of colors for the labelled boxes
-    :param ax: pass axis
+    :param clip: whether to apply np.clip
+    :param named: whether to return (coords, labels)
+    :param anchor_sfx: suffix for anchor label: anchor_sfx_asp_ratio_feature_sz
     :return: anchor box coordinates in [pascal_voc] format
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
-    color = {anchor_label: 'white'} if color is None else color
+    _max = max(image_sz[0], image_sz[1])
     asp_ratio = 1. if asp_ratio is None else asp_ratio
     # n_boxes = __mul__(*feature_sz)
     top_edges = get_edges(image_sz, feature_sz, op='noop')
@@ -65,89 +71,31 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, show=False,
     _h = coords_wh[:, 1] / math.sqrt(asp_ratio)
     coords_asp_wh = np.stack([_w, _h], -1)
     # TODO: given the center, any format for the anchors can be obtained
-    coords_asp = np.hstack([coords_center - coords_asp_wh / 2, coords_center + coords_asp_wh / 2])
-    if validate:
-        # TODO: validate with box iou of coords and given bounding box
-        coords_iter = BxIter(coords_asp, x_max=image_sz[0], y_max=image_sz[1], clip_only=clip_only)
-        coords_asp = coords_iter.to_array()
-    if show:
-        im, ann, lgt, c = get_example(image_sz, feature_sz=feature_sz, **kwargs)
-        c.update(color)
-        ax = draw(im, coords_asp.tolist() + ann, color=c, logits=lgt, ax=ax)
-    return coords_asp
+    # TODO: validate with box iou of coords and given bounding box
+    coords = np.hstack([coords_center - coords_asp_wh / 2, coords_center + coords_asp_wh / 2])
+    if named:
+        anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
+        labels = named_idx(coords, anchor_sfx)
+        return coords.clip(0, _max) if clip else coords, labels
+    return coords.clip(0, _max) if clip else coords
 
 
-def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, **kwargs):
+def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, named: bool = True, **kwargs):
     """
     calculate anchor box coords given an image size and multiple feature sizes for mutiple aspect ratios
     :param image_sz: tuple of (width, height) of an image
     :param feature_szs: list of feature sizes for anchor boxes, each feature size being a tuple of (width, height) of a channel
     :param asp_ratios: list of aspect rations for anchor boxes, each aspect ratio being a float calculated by (width:height)
+    :param named: whether to return (coords, labels)
     :return: anchor box coordinates in [pascal_voc] format
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     asp_ratios = [1 / 2., 1., 2.] if asp_ratios is None else asp_ratios
     feature_szs = [(8, 8), (2, 2)] if feature_szs is None else feature_szs
-    return np.vstack([bx(image_sz, f, ar, **kwargs) for f in feature_szs for ar in asp_ratios])
-
-
-class BxIter:
-    def __init__(self, coords: np.ndarray, x_max=-1.0, y_max=-1.0, clip_only=False):
-        """
-        returns an iterator that validates the coordinates calculated.
-        :param coords: ndarray of box coordinates
-        :param x_max: max dimension along x
-        :param y_max: max dimension along y
-        :param clip_only: whether to apply only np.clip with validate
-        clip_only cuts boxes that bleed outside limits
-        and forgo other validation ops
-        """
-        if not isinstance(coords, np.ndarray):
-            coords = np.array(coords)
-        self.coords = coords.clip(0, max(x_max, y_max))
-        # clip_only cuts boxes that bleed outside limits
-        store_attr('x_max, y_max, clip_only')
-
-    def __iter__(self):
-        self.index = 0
-        return self
-
-    def __next__(self):
-        try:
-            c = self.coords[self.index]
-            if not self.clip_only:
-                self.validate_edge(c)
-        except IndexError:
-            raise StopIteration
-        self.index += 1
-        return c
-
-    def validate_edge(self, c):
-        """
-        return next only if the x_min and y_min
-        # TODO: more tests, check if asp ratio changed as an indicator
-        does not flow outside the image, but:
-        - while might keep point (1,1,1,1) or line (0,0,1,0) | (0,0,0,1) boxes!
-        either maybe undesirable.
-        :param c: pass a box
-        :return: call for next iterator if conditions not met
-        """
-        x1, y1 = c[:2]
-        if (x1 >= self.x_max) or (y1 >= self.y_max):
-            self.index += 1
-            return self.__next__()
-
-    def to_array(self, cast_fn=np.asarray):
-        """
-        return all validated coords as np.ndarray
-        :return: array of coordinates, specify get_as torch.tensor for Tensor
-        """
-        # TODO: fix UserWarning directly casting a numpy to tensor is too slow (torch>10)
-        return cast_fn([c for c in self.coords])
-
-    def to_records(self, cast_fn=list):
-        """
-        return all validated coords as records (list of dicts)
-        :return: array of coordinates, specify get_as dict for json
-        """
-        return cast_fn(dict(zip(voc_keys, [*c, f'a{i}'])) for i, c in enumerate(self.coords))
+    # always named=True for bx() call. named=True in fn signature of bxs() is in its scope.
+    coords_ = [bx(image_sz, f, ar, named=True, **kwargs) for f in feature_szs for ar in asp_ratios]
+    coords_, labels_ = L(zip(*coords_))
+    if named:
+        labels = L([l_ for lab_ in labels_ for l_ in lab_])
+        return np.vstack(coords_), labels
+    return np.vstack(coords_)
