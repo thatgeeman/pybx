@@ -63,13 +63,13 @@ model logits. Please rerer
 to [Visualising anchor boxes](data/README.md).
 
 ## Todo
-- [x] Wrapper class for boxes with `vis.show()` method
+- [x] Wrapper class for boxes with `VisBx.show()` method
 - [x] Companion notebook
   - [ ] Update with new Class methods
 - [x] Integrate MultiBx into anchor.bx()
 - [ ] IOU check (return best overlap boxes)
 - [ ] Return masks 
-- [ ] Unit tests
+- [x] Unit tests
 - [x] Specific tests
   - [x] `feature_sz` of different aspect ratios
   - [x] `image_sz` of different aspect ratios
