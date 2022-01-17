@@ -12,9 +12,6 @@ def get_example(image_sz: tuple, **kwargs):
     """
     get an example image from the pth given for some image size for a feature size
     :param image_sz: required image size (will resize the original image)
-    :param feature_sz: feature size of
-    :param pth: path to find image
-    :param ann_im_sz: original image size
     :return:
     """
     return _get_example(image_sz, **kwargs)
