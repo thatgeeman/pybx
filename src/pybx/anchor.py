@@ -10,17 +10,6 @@ from .ops import allowed_ops, get_op, named_idx
 voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
 
 
-def mbx(coords=None, labels=None):
-    """
-    interface to the MultiBx class and all of its attributes
-    MultiBx wraps the coordinates and labels exposing many validation methods
-    :param coords: coordinates in list/array/json format
-    :param labels: labels in list format or keep intentionally None (also None for json)
-    :return: MultiBx object
-    """
-    return MultiBx.multibox(coords, labels)
-
-
 def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     """
     generate offsetted top (x_min, y_min) or bottom edges (x_max, y_max)
