@@ -24,10 +24,9 @@ asp_ratio = 1/2.
 
 anchor.bx(image_sz, feature_sz, asp_ratio)
 ```
-In addition we pass `show=True` to display the calculated boxes. 
-More on visualising the anchor boxes using `pybx` [here](data/README.md).
+More on visualising the anchor boxes with `pybx` [here](data/README.md).
 ```python
-anchor.bx(image_sz, feature_sz, asp_ratio, show=True)
+anchor.bx(image_sz, feature_sz, asp_ratio)
 ```
 ![](data/box-1.png)
 
@@ -41,14 +40,17 @@ anchor.bxs(image_sz, feature_szs, asp_ratios)
 ```
 
 ### Todo
-- [ ] Wrapper class for boxes with `vis.draw()` method
+- [x] Wrapper class for boxes with `vis.show()` method
 - [x] Companion notebook
+  - [ ] Update with new Class methods
+- [x] Integrate MultiBx into anchor.bx()
 - [ ] IOU check (return best overlap boxes)
 - [ ] Return masks 
 - [ ] Unit tests
-- [ ] Specific tests
+- [x] Specific tests
   - [x] `feature_sz` of different aspect ratios
-  - [ ] `image_sz` of different aspect ratios
+  - [x] `image_sz` of different aspect ratios
 - [ ] Move to setup.py
+- [ ] Generate docs
 
 
