@@ -17,3 +17,8 @@ pipenv check
 ```shell
 python -m build
 ```
+
+## Editable install
+```bash
+pipenv run pip install -e . 
+```
