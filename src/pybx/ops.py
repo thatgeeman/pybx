@@ -1,7 +1,7 @@
 import numpy as np
 from fastcore.foundation import L
 
-allowed_ops = 'add', 'sub', 'noop'
+__ops__ = ['add', 'sub', 'noop']
 
 
 def add(x, y):

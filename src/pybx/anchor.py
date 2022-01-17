@@ -1,11 +1,8 @@
 import math
-
 import numpy as np
-
 from fastcore.foundation import L
 
-from .basics import MultiBx
-from .ops import allowed_ops, get_op, named_idx
+from .ops import __ops__, get_op, named_idx
 
 voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
 
@@ -23,7 +20,7 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     """
     assert image_sz[-1] < image_sz[0], f'expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     assert len(image_sz) == 3, f'expected image_sz of len 3, got {len(image_sz)}'
-    assert op in allowed_ops, f'operator not in allowed operations: {allowed_ops}'
+    assert op in __ops__, f'operator not in allowed operations: {__ops__}'
     w, h, _ = image_sz
     nx, ny = feature_sz
     diag_edge_ofs = w / nx, h / ny
