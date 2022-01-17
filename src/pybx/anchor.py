@@ -58,7 +58,9 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
     coords_asp_wh = np.stack([_w, _h], -1)
     # TODO: given the center, any format for the anchors can be obtained
     # TODO: validate with box iou of coords and given bounding box
-    coords = np.hstack([coords_center - coords_asp_wh / 2, coords_center + coords_asp_wh / 2])
+    xy_min = coords_center - coords_asp_wh / 2
+    xy_max = coords_center + coords_asp_wh / 2
+    coords = np.hstack([xy_min, xy_max])
     if named:
         anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
         labels = named_idx(coords, anchor_sfx)

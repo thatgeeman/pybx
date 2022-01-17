@@ -30,7 +30,7 @@ class BaseBx:
 
     def valid(self):
         # TODO: more validations here
-        v_area = bool(self.area())  # area validation
+        v_area = bool(self.area())  # False if 0
         # TODO: v_ratio
         v_all = [v_area]
         return False if False in v_all else True
@@ -88,7 +88,7 @@ class MultiBx:
             if not b.valid():
                 # 0 area boxes are not valid
                 self.index += 1
-                self.__next__()
+                return self.__next__()
         except IndexError:
             raise StopIteration
         self.index += 1
