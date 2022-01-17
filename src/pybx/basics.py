@@ -19,8 +19,10 @@ class BaseBx:
 
     def valid(self):
         # TODO: more validations here
-        val_area = bool(self.area())
-        return False if False in [val_area] else True
+        v_area = bool(self.area())  # area validation
+        # TODO: v_ratio
+        v_all = [v_area]
+        return False if False in v_all else True
 
     def values(self):
         return [*self.coords, self.label]
@@ -44,9 +46,10 @@ class MultiBx:
     def multibox(cls, coords, label: list = None):
         if isinstance(coords, list):
             try:
-                b = JsonBx.jsonbx(coords)
-            except:
-                b = ListBx.listbx(coords)
+                b = JsonBx.jsonbx(coords, label)
+            except AssertionError:
+                # if dict assertion fails
+                b = ListBx.listbx(coords, label)
             return cls(b.coords, b.label)
         return cls(coords, label)
 
@@ -85,34 +88,34 @@ class MultiBx:
 
 
 class ListBx:
-    def __init__(self, coords, label: list = [None]):
+    def __init__(self, coords, label: list = None):
         store_attr('coords, label')
 
     @classmethod
-    def listbx(cls, coords):
+    def listbx(cls, coords, label=None):
         l = []
         r = []
-        for c in coords:
+        for i, c in enumerate(coords):
             assert isinstance(c, list), f'expected b of type list, got {type(c)}'
-            l_ = c[-1] if len(c) > 4 else ''
+            l_ = c[-1] if len(c) > 4 else '' if label is None else label[i]
             l.append(l_)
-            r.append(c)
+            r.append(c[:-1])
         coords = np.array(r)
         return cls(coords, label=l)
 
 
 class JsonBx:
-    def __init__(self, coords, label: list = [None]):
+    def __init__(self, coords, label: list = None):
         store_attr('coords, label')
 
     @classmethod
-    def jsonbx(cls, coords):
+    def jsonbx(cls, coords, label=None):
         l = []
         r = []
-        for c in coords:
+        for i, c in enumerate(coords):
             assert isinstance(c, dict), f'expected b of type dict, got {type(c)}'
             c_ = list(c.values())
-            l_ = c_[-1] if len(c_) > 4 else ''
+            l_ = c_[-1] if len(c_) > 4 else '' if label is None else label[i]
             l.append(l_)
             r.append(c_[:-1])
         coords = np.array(r)

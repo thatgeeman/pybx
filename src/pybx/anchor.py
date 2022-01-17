@@ -10,9 +10,9 @@ from .ops import allowed_ops, get_op, named_idx
 voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
 
 
-def multibx(coords=None, labels=None):
+def mbx(coords=None, labels=None):
     """
-    interface to the MultiBx class and its attributes
+    interface to the MultiBx class and all of its attributes
     MultiBx wraps the coordinates and labels exposing many validation methods
     :param coords: coordinates in list/array/json format
     :param labels: labels in list format or keep intentionally None (also None for json)
