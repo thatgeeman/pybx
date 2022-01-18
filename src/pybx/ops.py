@@ -37,7 +37,7 @@ def make_array(x):
             x = [x[k] for k in voc_keys]
         except TypeError:
             x = [x[k] for k in voc_keys[:-1]]
-    # now dict is a list too
+    # now dict made into a list too
     if isinstance(x, list):
         if len(x) > 4:
             return np.asarray(x[:4]), x[-1]
