@@ -1,6 +1,5 @@
 import unittest
 import numpy as np
-from pybx.basics import mbx, bbx, MultiBx
 from pybx.sample import get_example
 
 np.random.seed(1)
@@ -24,7 +23,7 @@ class SampleTestCase(unittest.TestCase):
         self.assertEqual(im.shape, params["image_sz"])
         r = ann[0]['x_max'], ann[1]['y_min']
         self.assertEqual(r, results["scaled_ans"])
-        self.assertEqual(lgts.shape, params["feature_szs"])
+        self.assertEqual(lgts.shape, params["feature_sz"])
 
 
 if __name__ == '__main__':
