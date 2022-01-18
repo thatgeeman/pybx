@@ -25,14 +25,14 @@ results = {
 }
 
 
-class BxTestCases(unittest.TestCase):
-    def test_anchor_bx(self):
+class AnchorTestCase(unittest.TestCase):
+    def test_bx(self):
         b, l_ = anchor.bx(params["image_sz"], params["feature_sz"], params["asp_ratio"])
         self.assertIn(results["bx_l"], l_, 'label not matching')
         self.assertEqual(len(b), len(l_))
         self.assertEqual(b.sum(), results["bx_b"], 'sum not matching')  # add assertion here
 
-    def test_anchor_bxs(self):
+    def test_bxs(self):
         b, l_ = anchor.bxs(params["image_sz"], params["feature_szs"], params["asp_ratios"])
         self.assertIn(results["bxs_l"], l_, 'label not matching')
         self.assertEqual(len(b), len(l_))

@@ -19,12 +19,12 @@ results = {
     "mbx_list": (50.0, 'rand1'),
     "mbx_arr": -0.08959797456887511,
     "iou": 0.0425531914893617,
-    "xywh": [50.0, 70.0, 70.0, 30.0],
+    "xywh": np.array([50.0, 70.0, 70.0, 30.0]),
 }
 
 
-class BasicBxTestCases(unittest.TestCase):
-    def test_basics_mbx_json(self):
+class BasicsTestCase(unittest.TestCase):
+    def test_mbx_json(self):
         with open(params["annots_rand_file"]) as f:
             annots = json.load(f)
         b = mbx(annots)
@@ -32,21 +32,21 @@ class BasicBxTestCases(unittest.TestCase):
         self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
         self.assertEqual(r, results["mbx_json"])
 
-    def test_basics_mbx_list(self):
+    def test_mbx_list(self):
         annots = params["annots_l"]
         b = mbx(annots)
         r = b.coords[0][2], b.label[1]
         self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
         self.assertEqual(r, results["mbx_json"])
 
-    def test_basics_mbx_array(self):
+    def test_mbx_array(self):
         annots = params["annots_a"]
         b = mbx(annots)
         r = b.coords.mean()
         self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
         self.assertEqual(r, results["mbx_arr"])
 
-    def test_basics_iou(self):
+    def test_iou(self):
         with open(params["annots_iou_file"]) as f:
             annots = json.load(f)
         b0 = bbx(annots[0])
@@ -57,11 +57,11 @@ class BasicBxTestCases(unittest.TestCase):
         self.assertEqual(iou, iou_)
         self.assertEqual(iou, results["iou"])
 
-    def test_basics_xywh(self):
+    def test_xywh(self):
         with open(params["annots_rand_file"]) as f:
             annots = json.load(f)
         b = bbx(annots[0])
-        self.assertEqual((b.xywh() == results["xywh"]).all(), True)
+        self.assertTrue((b.xywh() == results["xywh"]).all(), True)
         self.assertGreaterEqual(b.xywh()[-1], 0)
         self.assertGreaterEqual(b.xywh()[-2], 0)
 

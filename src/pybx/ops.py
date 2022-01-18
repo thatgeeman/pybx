@@ -1,7 +1,7 @@
 import numpy as np
 from fastcore.foundation import L
 
-__ops__ = ['add', 'sub', 'noop']
+__ops__ = ['add', 'sub', 'mul', 'noop']
 voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
 
 

@@ -17,7 +17,7 @@ results = {
 
 
 class SampleTestCase(unittest.TestCase):
-    def test_sample_ex(self):
+    def test_example(self):
         im, ann, lgts, _ = get_example(params["image_sz"], feature_sz=params["feature_sz"], logits=True,
                                        pth=params["data_dir"])
         self.assertEqual(im.shape, params["image_sz"])
