@@ -1,10 +1,20 @@
 import numpy as np
 from fastcore.basics import concat, store_attr
 
-from .anchor import voc_keys
-from .ops import mul, sub
+from .ops import mul, sub, intersection_box, make_array, NoIntersection, voc_keys
 
-__all__ = ['mbx', 'MultiBx', 'BaseBx', 'JsonBx', 'ListBx']
+__all__ = ['bbx', 'mbx', 'MultiBx', 'BaseBx', 'JsonBx', 'ListBx']
+
+
+def bbx(coords=None, labels=None):
+    """
+    interface to the BaseBx class and all of its attributes
+    MultiBx wraps the coordinates and labels exposing many validation methods
+    :param coords: coordinates in list/array/json format
+    :param labels: labels in list format or keep intentionally None (also None for json)
+    :return: BaseBx object
+    """
+    return BaseBx.basebx(coords, labels)
 
 
 def mbx(coords=None, labels=None):
@@ -21,19 +31,29 @@ def mbx(coords=None, labels=None):
 class BaseBx:
     def __init__(self, coords, label=''):
         store_attr('coords, label')
-        coords_ = coords[::-1]  # reverse
-        self.w = sub(*coords_[::2])
-        self.h = sub(*coords_[1::2])
+        self.w = sub(*coords[::2][::-1])
+        self.h = sub(*coords[1::2][::-1])
 
     def area(self):
         return abs(mul(self.w, self.h))
 
+    def iou(self, other):
+        if not isinstance(other, BaseBx):
+            other = BaseBx.basebx(other)
+        if self.valid():
+            try:
+                int_box = BaseBx.basebx(intersection_box(self.coords, other.coords))
+            except NoIntersection:
+                return 0.0
+            int_area = int_box.area()
+            union_area = other.area() + self.area() - int_area
+            return int_area / union_area
+        return 0.0
+
     def valid(self):
-        # TODO: more validations here
         v_area = bool(self.area())  # False if 0
-        # TODO: v_ratio
-        v_all = [v_area]
-        return False if False in v_all else True
+        v_all = np.array([v_area])
+        return True if v_all.all() else False
 
     def values(self):
         return [*self.coords, self.label]
@@ -48,6 +68,15 @@ class BaseBx:
         coords = np.atleast_2d(self.coords)
         labels = [self.label]
         return coords, labels
+
+    @classmethod
+    def basebx(cls, coords, label: list = None):
+        if not isinstance(coords, np.ndarray):
+            try:
+                coords, label = make_array(coords)
+            except ValueError:
+                coords = make_array(coords)
+        return cls(coords, label)
 
 
 class MultiBx:
@@ -129,72 +158,9 @@ class JsonBx:
         r = []
         for i, c in enumerate(coords):
             assert isinstance(c, dict), f'expected b of type dict, got {type(c)}'
-            c_ = list(c.values())
+            c_ = [c[k] for k in voc_keys]  # read in order
             l_ = c_[-1] if len(c_) > 4 else '' if label is None else label[i]
             l.append(l_)
             r.append(c_[:-1] if len(c_) > 4 else c_)
         coords = np.array(r)
         return cls(coords, label=l)
-
-
-# deprecated
-class BxIter:
-    def __init__(self, coords: np.ndarray, x_max=-1.0, y_max=-1.0, clip_only=False):
-        """
-        returns an iterator that validates the coordinates calculated.
-        :param coords: ndarray of box coordinates
-        :param x_max: max dimension along x
-        :param y_max: max dimension along y
-        :param clip_only: whether to apply only np.clip with validate
-        clip_only cuts boxes that bleed outside limits
-        and forgo other validation ops
-        """
-        if not isinstance(coords, np.ndarray):
-            coords = np.array(coords)
-        self.coords = coords.clip(0, max(x_max, y_max))
-        # clip_only cuts boxes that bleed outside limits
-        store_attr('x_max, y_max, clip_only')
-
-    def __iter__(self):
-        self.index = 0
-        return self
-
-    def __next__(self):
-        try:
-            c = self.coords[self.index]
-            if not self.clip_only:
-                self.validate_edge(c)
-        except IndexError:
-            raise StopIteration
-        self.index += 1
-        return c
-
-    def validate_edge(self, c):
-        """
-        return next only if the x_min and y_min
-        # TODO: more tests, check if asp ratio changed as an indicator
-        does not flow outside the image, but:
-        - while might keep point (1,1,1,1) or line (0,0,1,0) | (0,0,0,1) boxes!
-        either maybe undesirable.
-        :param c: pass a box
-        :return: call for next iterator if conditions not met
-        """
-        x1, y1 = c[:2]
-        if (x1 >= self.x_max) or (y1 >= self.y_max):
-            self.index += 1
-            return self.__next__()
-
-    def to_array(self, cast_fn=np.asarray):
-        """
-        return all validated coords as np.ndarray
-        :return: array of coordinates, specify get_as torch.tensor for Tensor
-        """
-        # TODO: fix UserWarning directly casting a numpy to tensor is too slow (torch>10)
-        return cast_fn([c for c in self.coords])
-
-    def to_records(self, cast_fn=list):
-        """
-        return all validated coords as records (list of dicts)
-        :return: array of coordinates, specify get_as dict for json
-        """
-        return cast_fn(dict(zip(voc_keys, [*c, f'a{i}'])) for i, c in enumerate(self.coords))
