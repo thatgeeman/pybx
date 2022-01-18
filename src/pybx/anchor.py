@@ -4,8 +4,6 @@ from fastcore.foundation import L
 
 from .ops import __ops__, get_op, named_idx
 
-voc_keys = ['x_min', 'y_min', 'x_max', 'y_max', 'label']
-
 
 def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     """
