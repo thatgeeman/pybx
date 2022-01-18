@@ -2,8 +2,6 @@
 [![PyPI version](https://badge.fury.io/py/pybx.svg)](https://badge.fury.io/py/pybx)
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough.ipynb)
 
-*WIP*
-
 A simple python package to generate anchor
 (aka default/prior) boxes for object detection
 tasks. Calculated anchor boxes are in `pascal_voc` format by default.
@@ -67,13 +65,12 @@ to [Visualising anchor boxes](data/README.md).
 - [x] Companion notebook
   - [x] Update with new Class methods
 - [x] Integrate MultiBx into anchor.bx()
-- [ ] IOU check (return best overlap boxes)
-- [ ] Return masks 
+- [x] IOU calcultaion
 - [x] Unit tests
 - [x] Specific tests
   - [x] `feature_sz` of different aspect ratios
   - [x] `image_sz` of different aspect ratios
-- [ ] Move to setup.py
-- [ ] Generate docs
+- [ ] Generate docs `sphinx`
+- [ ] clean docstrings
 
 
