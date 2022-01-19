@@ -1,5 +1,6 @@
 import numpy as np
 from fastcore.basics import concat, store_attr
+from fastcore.xtras import is_listy
 
 from .ops import mul, sub, intersection_box, make_array, NoIntersection, voc_keys
 
@@ -29,7 +30,8 @@ def mbx(coords=None, labels=None):
 
 
 class BaseBx:
-    def __init__(self, coords, label=''):
+    def __init__(self, coords, label:list = None):
+        label = [label] if not is_listy(label) else label
         store_attr('coords, label')
         self.w = sub(*coords[::2][::-1])
         self.h = sub(*coords[1::2][::-1])
@@ -56,7 +58,7 @@ class BaseBx:
         return True if v_all.all() else False
 
     def values(self):
-        return [*self.coords, self.label]
+        return [*self.coords, *self.label]
 
     def xywh(self):
         return np.asarray(concat([self.coords[:2], self.w, self.h]))
@@ -64,10 +66,16 @@ class BaseBx:
     def __len__(self):
         return self.coords.shape[0] + 1
 
-    def make_2d(self):
-        coords = np.atleast_2d(self.coords)
-        labels = [self.label]
-        return coords, labels
+    # Fake iterator fix for Issue #2
+    def __iter__(self):
+        self.index = 0
+        return self
+
+    def __next__(self):
+        if self.index == 0:
+            self.index += 1
+            return self
+        raise StopIteration
 
     @classmethod
     def basebx(cls, coords, label: list = None):
@@ -124,7 +132,7 @@ class MultiBx:
         return b
 
     def __add__(self, other):
-        if not isinstance(other, (MultiBx, JsonBx, ListBx)):
+        if not isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
             raise TypeError('expected type MultiBx/JsonBx/ListBx')
         coords = np.vstack([self.coords, other.coords])
         label = self.label + other.label
@@ -158,6 +166,7 @@ class JsonBx:
         r = []
         for i, c in enumerate(coords):
             assert isinstance(c, dict), f'expected b of type dict, got {type(c)}'
+            # TODO option to insist on a different key for name (class_id) for instance
             c_ = [c[k] for k in voc_keys]  # read in order
             l_ = c_[-1] if len(c_) > 4 else '' if label is None else label[i]
             l.append(l_)
