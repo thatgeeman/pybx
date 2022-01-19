@@ -34,7 +34,12 @@ class OpsTestCase(unittest.TestCase):
             annots = json.load(f)
         array, label = ops.make_array(annots[0])
         self.assertIsInstance(array, np.ndarray)
-        self.assertIsInstance(label, str)
+        self.assertIsInstance(label, list)
+
+    def test_make_array_nested(self):
+        with open(params["annots_iou_file"]) as f:
+            annots = json.load(f)
+        self.assertRaises(NotImplementedError, ops.make_array, x=annots)
 
     def test_named_idx(self):
         with open(params["annots_iou_file"]) as f:
