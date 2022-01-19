@@ -1,5 +1,4 @@
 import numpy as np
-from fastcore.dispatch import explode_types
 from fastcore.foundation import L
 
 __ops__ = ['add', 'sub', 'mul', 'noop']
@@ -32,10 +31,7 @@ def get_op(op: str):
     return eval(op, globals())
 
 
-def make_array(x):
-    if isinstance(explode_types(x), dict):
-        raise NotImplementedError(f'cannot handle nested types {explode_types(x)}, expected {dict}')
-
+def dict_array(x):
     if isinstance(x, dict):
         try:
             x = [x[k] for k in voc_keys]
@@ -43,12 +39,13 @@ def make_array(x):
             x = [x[k] for k in voc_keys[:-1]]
 
     # now dict is a list too
-    if isinstance(x, list):
+    if isinstance(x, (list, np.ndarray)) and len(x) >= 4:
         if len(x) > 4:
             return np.asarray(x[:4]), [x[-1]]
         else:
             return np.asarray(x)
-    return x
+    else:
+        raise NotImplementedError(f'expected {dict} got {type(x)}')
 
 
 def named_idx(x: np.ndarray, sfx: str):

@@ -2,7 +2,7 @@ import numpy as np
 from fastcore.basics import concat, store_attr
 from fastcore.xtras import is_listy
 
-from .ops import mul, sub, intersection_box, make_array, NoIntersection, voc_keys
+from .ops import mul, sub, intersection_box, dict_array, NoIntersection, voc_keys
 
 __all__ = ['bbx', 'mbx', 'MultiBx', 'BaseBx', 'JsonBx', 'ListBx']
 
@@ -30,7 +30,7 @@ def mbx(coords=None, labels=None):
 
 
 class BaseBx:
-    def __init__(self, coords, label:list = None):
+    def __init__(self, coords, label: list = None):
         label = [label] if not is_listy(label) else label
         store_attr('coords, label')
         self.w = sub(*coords[::2][::-1])
@@ -41,10 +41,10 @@ class BaseBx:
 
     def iou(self, other):
         if not isinstance(other, BaseBx):
-            other = BaseBx.basebx(other)
+            other = bbx(other)
         if self.valid():
             try:
-                int_box = BaseBx.basebx(intersection_box(self.coords, other.coords))
+                int_box = bbx(intersection_box(self.coords, other.coords))
             except NoIntersection:
                 return 0.0
             int_area = int_box.area()
@@ -81,9 +81,9 @@ class BaseBx:
     def basebx(cls, coords, label: list = None):
         if not isinstance(coords, np.ndarray):
             try:
-                coords, label = make_array(coords)
+                coords, label = dict_array(coords)
             except ValueError:
-                coords = make_array(coords)
+                coords = dict_array(coords)
         return cls(coords, label)
 
 
@@ -166,7 +166,7 @@ class JsonBx:
         r = []
         for i, c in enumerate(coords):
             assert isinstance(c, dict), f'expected b of type dict, got {type(c)}'
-            # TODO option to insist on a different key for name (class_id) for instance
+            # TODO option to insist on a different key for label (class_id) for instance
             c_ = [c[k] for k in voc_keys]  # read in order
             l_ = c_[-1] if len(c_) > 4 else '' if label is None else label[i]
             l.append(l_)

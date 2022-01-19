@@ -1,5 +1,6 @@
 import json
 import os
+
 import numpy as np
 from PIL import Image
 
@@ -20,6 +21,11 @@ def get_example(image_sz: tuple, **kwargs):
 
 
 def get_given_array(image_arr, **kwargs):
+    """
+    get the image_array setup for visualisation
+    :param image_arr: image nparray
+    :return:
+    """
     return _get_given_array(image_arr, **kwargs)
 
 

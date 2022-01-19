@@ -24,15 +24,16 @@ class VisBx:
         """
         coords can be a numpy array or a MultiBx, JsonBx, ListBx, BaseBx
         """
+        len_ = 0
         if color is not None:
             self.clr.update(color)
         if isinstance(coords, (list, np.ndarray)):
-            if len(coords.shape) > 1:
-                # if not multibx, make one
-                coords = mbx(coords, labels)
-            else:
-                # single coordinate and label
-                coords = bbx(coords, labels)
+            try:
+                len_ = len(coords.shape)
+            except AttributeError:
+                len_ = len(coords)
+            finally:
+                coords = mbx(coords, labels) if len_ > 1 else bbx(coords, labels)
         return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax)
 
 
@@ -105,7 +106,6 @@ def get_color(color, label=None, default_color='white'):
     """
     if isinstance(color, str):
         return color
-    assert label is not None, f'got label={label} to use with color dict {type(color)}'
     colors_d = defaultdict(lambda: default_color)
     colors_d.update(color)
     return colors_d[label]
@@ -145,23 +145,19 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     if no_ticks:
         ax.axis('off')
     ax.imshow(img, cmap='Greys', **kwargs)
-    assert isinstance(bbox, (list, BaseBx, MultiBx,
-                             np.ndarray)), f'Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
+    assert isinstance(bbox, (list, BaseBx, MultiBx, np.ndarray)), \
+        f'Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
 
     for b in bbox:
         try:
             x1, y1, x2, y2, label = [b[k] for k in voc_keys]
+        except TypeError:
+            x1, y1, x2, y2, label = b.values()
         except ValueError:
-            # dict/BaseBx but no label
-            # TODO use make_array
             if isinstance(b, dict):
                 x1, y1, x2, y2 = [b[k] for k in voc_keys[:-1]]
-            else:
-                x1, y1, x2, y2 = b.values()
-            label = ''
-        except AttributeError:
-            # list without label
-            x1, y1, x2, y2 = b
+            if isinstance(b, (list, np.ndarray)):
+                x1, y1, x2, y2 = b
             label = ''
         c = get_color(color, label=label)
         draw_rectangle(ax, coords=(x1, y1, x2, y2), color=c)
