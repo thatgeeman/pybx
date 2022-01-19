@@ -3,7 +3,9 @@ import os
 import numpy as np
 from PIL import Image
 
-__all__ = ['get_example']
+__all__ = ['get_example', 'get_given_array']
+
+from pybx.ops import voc_keys
 
 np.random.seed(1)
 
@@ -15,6 +17,10 @@ def get_example(image_sz: tuple, **kwargs):
     :return:
     """
     return _get_example(image_sz, **kwargs)
+
+
+def get_given_array(image_arr, **kwargs):
+    return _get_given_array(image_arr, **kwargs)
 
 
 def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
@@ -68,6 +74,27 @@ def _get_example(image_sz: tuple, feature_sz: tuple = None, ann_im_sz=(300, 300,
     annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
     color = {'frame': 'blue', 'clock': 'green'}
     return im_array, annots, logits, color
+
+
+def _get_given_array(image_arr: np.ndarray = None, annots: list = None, color: dict = {}, logits=None,
+                     feature_sz: tuple = None, image_sz=None):
+    """
+    get an example image from the pth given for some image size for a feature size
+    :param image_sz: required image size (will resize the original image)
+    :param feature_sz: feature size of
+    :param logits: activations that should be overlayed from a neural network (no checks)
+    :return:
+    """
+    image_sz = (100, 100, 3) if image_sz is None else image_sz
+    image_arr = np.random.randint(size=image_sz, low=0, high=255) if image_arr is None else image_arr
+    if logits is not None:
+        # if ndarray/detached-tensor, use logits values
+        if not hasattr(logits, 'shape'):
+            assert feature_sz is not None, f'expected feature_sz to generate fake-logits'
+            logits = _get_feature(feature_sz)
+    if annots is None:
+        annots = [{k: 0 if k != 'label' else '' for k in voc_keys}]
+    return image_arr, annots, logits, color
 
 
 def _get_feature(feature_sz: tuple):
