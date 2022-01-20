@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 
 from pybx import ops
-from pybx.ops import NoIntersection
+from pybx.excepts import NoIntersection
 
 np.random.seed(1)
 

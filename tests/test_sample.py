@@ -18,8 +18,8 @@ results = {
 
 class SampleTestCase(unittest.TestCase):
     def test_example(self):
-        im, ann, lgts, _ = get_example(params["image_sz"], feature_sz=params["feature_sz"], logits=True,
-                                       pth=params["data_dir"])
+        im, ann, lgts, _ = get_example(image_sz=params["image_sz"], feature_sz=params["feature_sz"], logits=True,
+                                       pth=params["data_dir"], load_ann=True)
         self.assertEqual(im.shape, params["image_sz"])
         r = ann[0]['x_max'], ann[1]['y_min']
         self.assertEqual(r, results["scaled_ans"])

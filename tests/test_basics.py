@@ -3,13 +3,15 @@ import unittest
 
 import numpy as np
 
-from pybx.basics import mbx, bbx, MultiBx
+from pybx.basics import mbx, bbx, MultiBx, jbx
+from pybx.excepts import BxViolation
 
 np.random.seed(1)
 
 params = {
     "annots_rand_file": '../data/annots_rand.json',
     "annots_iou_file": '../data/annots_iou.json',
+    "annots_key_file": '../data/annots_key.json',
     "annots_l": [[50., 70., 120., 100., 'rand1'], [150., 200., 250., 240., 'rand2']],
     "annots_a": np.random.randn(10, 4)
 }
@@ -20,6 +22,7 @@ results = {
     "mbx_arr": -0.08959797456887511,
     "iou": 0.0425531914893617,
     "xywh": np.array([50.0, 70.0, 70.0, 30.0]),
+    "jbx_label": ['person', 4],
 }
 
 
@@ -45,6 +48,41 @@ class BasicsTestCase(unittest.TestCase):
         r = b.coords.mean()
         self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
         self.assertEqual(r, results["mbx_arr"])
+
+    def test_label_key_jbx(self):
+        with open(params["annots_key_file"]) as f:
+            annots = json.load(f)
+        b_m = jbx(annots)
+        self.assertEqual(b_m.label, results["jbx_label"])
+
+    def test_add_bbx(self):
+        with open(params["annots_iou_file"]) as f:
+            annots = json.load(f)
+        b0 = bbx(annots[0])
+        b1 = bbx(annots[1])
+        b_r = b0 + b1
+        b_m = mbx([annots[0], annots[1]])
+        self.assertTrue((b_r.coords == b_m.coords).all())
+
+    def test_add_mbx_bbx(self):
+        with open(params["annots_iou_file"]) as f:
+            annots = json.load(f)
+        b_m = mbx([annots[0], annots[1]])
+        b1 = bbx(annots[2])
+        b_r = b_m + b1
+        self.assertTrue((b1.coords == b_r.coords).any(), )
+
+    def test_bbx_warning(self):
+        with open(params["annots_iou_file"]) as f:
+            annots = json.load(f)
+        self.assertRaises(AssertionError, bbx, coords=[annots])
+
+    def test_add_warning(self):
+        with open(params["annots_iou_file"]) as f:
+            annots = json.load(f)
+        b0 = bbx(annots[0])
+        b1 = bbx(annots[1])
+        self.assertWarns(BxViolation, b0.__add__, other=b1)
 
     def test_iou(self):
         with open(params["annots_iou_file"]) as f:
