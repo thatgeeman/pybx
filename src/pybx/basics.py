@@ -8,6 +8,7 @@ from .ops import mul, sub, intersection_box, dict_array, voc_keys, update_keys
 from .excepts import *
 
 __all__ = ['bbx', 'mbx', 'jbx', 'lbx', 'get_bx',
+           'stack_bxs', 'add_bxs',
            'BaseBx', 'MultiBx', 'JsonBx', 'ListBx']
 
 
@@ -98,14 +99,14 @@ class BaseBx:
         holds more than 1 coordinate/label for the box.
         From `v1.0.0`, a `UserWarning` is issued if called.
         Recommended use is either: `BaseBx` + `BaseBx` = `MultiBx` or
-        `ops.add_bxs()`.
+        `basics.stack_bxs()`.
         """
         if not isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
             raise TypeError(f'{__name__}: Expected type MultiBx/JsonBx/ListBx')
         if isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
             warnings.warn(BxViolation(f'Change of object type imminent if trying to add '
                                       f'{type(self)}+{type(other)}. Use {type(other)}+{type(self)} '
-                                      f'instead or ops.add_bxs().'))
+                                      f'instead or basics.stack_bxs().'))
         coords = np.vstack([self.coords, other.coords])
         label = self.label + other.label
         return mbx(coords, label)
@@ -186,7 +187,7 @@ class MultiBx:
     def __add__(self, other):
         """Pseudo-add method that stacks the provided boxes and labels. Stacking two
         boxes imply that the resulting box is a `MultiBx`: `MultiBx` + `MultiBx`
-        = `MultiBx`. Same as `ops.add_bxs()`.
+        = `MultiBx`. Same as `basics.stack_bxs()`.
         """
         if not isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
             raise TypeError(f'{__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, '
@@ -298,6 +299,29 @@ def get_bx(coords, label=None):
         raise NotImplementedError(f'{__name__}: Got coords={coords} of type {type(coords)}.')
 
 
+def stack_bxs(b1, b2):
+    """Method to stack two BxTypes together. Similar to `__add__` of BxTypes
+    but avoids UserWarning.
+    :param b1: Bx of class BaseBx, MultiBx, JsonBx, ListBx
+    :param b2: Bx of class BaseBx, MultiBx, JsonBx, ListBx
+    :return: MultiBx
+    """
+    if not isinstance(b1, (BaseBx, MultiBx, JsonBx, ListBx)):
+        raise TypeError(f'{__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, got b1={type(b1)}')
+    if not isinstance(b2, (BaseBx, MultiBx, JsonBx, ListBx)):
+        raise TypeError(f'{__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, got b2={type(b2)}')
+    if isinstance(b1, BaseBx):
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
+            return b1 + b2
+    return b1 + b2
+
+
+def add_bxs(b1, b2):
+    """Alias of stack_bxs()."""
+    return stack_bxs(b1, b2)
+
+
 def jbx(coords=None, labels=None):
     """Abstraction of the JsonBx class to process `json` records into
     `MultiBx` or `BaseBx` objects exposing many validation methods
@@ -313,12 +337,10 @@ def lbx(coords=None, labels=None):
 
 
 def bbx(coords=None, labels=None):
-    """Abstraction of the `BaseBx` class.
-    """
+    """Abstraction of the `BaseBx` class."""
     return BaseBx.basebx(coords, labels)
 
 
 def mbx(coords=None, labels=None):
-    """Abstraction of the `MultiBx` class.
-    """
+    """Abstraction of the `MultiBx` class."""
     return MultiBx.multibox(coords, labels)

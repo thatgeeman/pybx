@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from pybx.basics import mbx, bbx, MultiBx, jbx
+from pybx.basics import mbx, bbx, MultiBx, jbx, stack_bxs
 from pybx.excepts import BxViolation
 
 np.random.seed(1)
@@ -83,6 +83,15 @@ class BasicsTestCase(unittest.TestCase):
         b0 = bbx(annots[0])
         b1 = bbx(annots[1])
         self.assertWarns(BxViolation, b0.__add__, other=b1)
+
+    def test_stack_bxs(self):
+        with open(params["annots_iou_file"]) as f:
+            annots = json.load(f)
+        b0 = bbx(annots[0])
+        b1 = bbx(annots[1])
+        bm = mbx(annots[:2])
+        bs = stack_bxs(b0, b1)
+        self.assertTrue((bs.coords == bm.coords).all())
 
     def test_iou(self):
         with open(params["annots_iou_file"]) as f:

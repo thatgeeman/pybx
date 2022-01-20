@@ -38,7 +38,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     scaled = []
     for annot in annots:
         d = {}
-        assert isinstance(annot, dict), f'{__name__}: Expected annots of type dict, got {type(annots)}'
+        assert isinstance(annot, dict), f'{__name__}: Expected annots of type dict, got {type(annot)}'
         for k, v in annot.items():
             if k.startswith('x'):
                 v_ = new_sz[0] * v / ann_im_sz[0]
@@ -53,14 +53,14 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
 
 
 def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_fn='image.jpg',
-                 load_ann=False, ann_fn='annots.json', logits=None, color: dict = {}):
+                 load_ann=True, ann_fn='annots.json', logits=None, color: dict = {}):
     """Get an example image from the pth given for some image size for a feature size.
     :param image_sz: size to resize the loaded image a different size (annotations scaled automatically)
     :param feature_sz: Feature size to generate random logits if `logits` is not None.
     :param pth: path to find `ann_fn` and `img_fn`, default `.`
     :param img_fn: image file name, default `annots.json`
     :param load_ann: whether to load ann_fn or just the img_fn.
-            If False, an empty annotations dict is returned: `dict(zip(voc_keys, [0, 0, 1, 1, '']))`
+            If False, an empty annotations dict is returned: `[dict(zip(voc_keys, [0, 0, 1, 1, '']))]`
     :param ann_fn: annotations file name, default `image.jpg`
     :param logits: activations that should be overlayed from a neural network (no checks)
     :param color: A dict of `color` can be passed to assign specific color to a
@@ -75,7 +75,7 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
     if image_sz is not None:
         # reshaped image size
         image_arr = np.asarray(PIL.Image.fromarray(image_arr).resize(list(image_sz[:2])))
-    annots = dict(zip(voc_keys, [0, 0, 1, 1, '']))  # default values
+    annots = [dict(zip(voc_keys, [0, 0, 1, 1, '']))]  # default values
     if load_ann:
         assert ann_fn is not None, f'{__name__}: got ann_fn={ann_fn} with show_ann={load_ann}'
         assert os.path.exists(os.path.join(pth, ann_fn)), f'{pth} has no {ann_fn}'
@@ -83,6 +83,8 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
             annots = json.load(f)  # annots for 300x300 image
     if not np.all(ann_im_sz == image_sz):
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
+    assert isinstance(annots, list), f'{__name__}: Expected annots should be list of list/dict, ' \
+                                     f'got {annots} of type {type(annots)}'
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, 'shape'):
@@ -109,7 +111,7 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
             specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
     :returns: image_arr, annots, logits, color
     """
-    image_sz = (100, 100, 1) if image_sz is None else image_sz
+    image_sz = (100, 100, 3) if image_sz is None else image_sz
     image_arr = np.random.randint(size=image_sz, low=0, high=255) if image_arr is None else image_arr
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
