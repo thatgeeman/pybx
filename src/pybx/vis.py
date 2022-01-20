@@ -52,7 +52,7 @@ class VisBx:
         ann = get_bx(ann)
         store_attr('im, ann, lgt, clr')
 
-    def show(self, coords, labels=None, color=None, ax=None):
+    def show(self, coords, labels=None, color=None, ax=None, **kwargs):
         """Calling the `show()` method of the `VisBx()` instance accepts
         bounding box coordinates and labels that are to be shown.
         The boxes can be provided as any of the internal objects (`MultiBx`, `BaseBx`, ...)
@@ -61,7 +61,7 @@ class VisBx:
         if color is not None:
             self.clr.update(color)
         coords = get_bx(coords, labels)
-        return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax)
+        return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs)
 
 
 def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
@@ -141,7 +141,7 @@ def get_extents(shape):
     return extent
 
 
-def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(10, 8),
+def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
                squeeze=False, color='yellow', no_ticks=False, xo=0, yo=0, **kwargs):
     """Method to draw bounding boxes in an image, can handle multiple bboxes.
     :param figsize: sige of figure
