@@ -1,39 +1,71 @@
 from collections import defaultdict
-from fastcore.basics import store_attr
-from matplotlib import pyplot as plt
-from matplotlib import patches, patheffects
+
 import numpy as np
+from fastcore.basics import store_attr
+from matplotlib import patches, patheffects
+from matplotlib import pyplot as plt
 
 from .basics import *
-from .sample import get_example
+from .ops import voc_keys
+from .sample import get_example, get_given_array
 
 
 class VisBx:
-    def __init__(self, image_sz, **kwargs):
-        im, ann, lgt, clr = get_example(image_sz, **kwargs)
-        ann = mbx(ann)
+    """VisBx is used to visualize the bounding boxes.
+    The image on of which the bounding boxes are to be drawn can be instantiated with
+    `VisBx()` if needed. Calling the `show()` method of the `VisBx()` instance accepts
+    bounding box coordinates and labels that are to be shown.
+    The boxes can be provided as any of the internal objects (`MultiBx`, `BaseBx`, ...)
+    or as any other raw format accepted by the internal objects.
+
+    Displaying image array and annotations object:
+        This is the default approach used by VisBx(). If no arguments are passed, a random
+        noise of `image_sz=(100, 100, 1)` is used. Some of the arguments:
+        :param image_arr: image array of shape `(H, W, C)`. If None, it is set to a
+            random noise image of `image_sz=(100,100,3)` by default.
+        :param annots: annotations is any accepted format (see above).
+
+    Displaying from image and annotations file:
+        To load and display the image, set `sample=True`. Some of the argmuments:
+        :param ann_fn: annotations file name, default `image.jpg`
+        :param img_fn: image file name, default `annots.json`
+        :param load_ann: whether to load ann_fn or just the img_fn.
+            If False, an empty annotations dict is returned: `dict(zip(voc_keys, [0, 0, 1, 1, '']))`
+        :param pth: path to find `ann_fn` and `img_fn`, default `.`
+        :param image_sz: size to resize the loaded image a different size (annotations scaled automatically)
+
+    Common parameters:
+        :param color: A dict of `color` can be passed to assign specific color to a
+            specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
+        :param logits: Logits as `ndarray` that should be overlayed on top of the image
+            or `bool` to generate random logits.
+        :param feature_sz: Feature size to generate random logits if `logits` is not None.
+    """
+
+    def __init__(self, image_arr=None, image_sz=None, sample=False, **kwargs):
+        if sample:
+            assert image_sz is not None, f'{__name__}: Expected image_sz with sample={sample}'
+            im, ann, lgt, clr = get_example(image_sz=image_sz, **kwargs)
+        else:
+            im, ann, lgt, clr = get_given_array(image_arr=image_arr, image_sz=image_sz, **kwargs)
+
+        ann = get_bx(ann)
         store_attr('im, ann, lgt, clr')
 
     def show(self, coords, labels=None, color=None, ax=None):
-        """
-        coords can be a numpy array with labels=(None,labels)
-        or a MultiBx, JsonBx, ListBx, BaseBx with labels=None
+        """Calling the `show()` method of the `VisBx()` instance accepts
+        bounding box coordinates and labels that are to be shown.
+        The boxes can be provided as any of the internal objects (`MultiBx`, `BaseBx`, ...)
+        or as any other raw format accepted by the internal objects.
         """
         if color is not None:
             self.clr.update(color)
-        if isinstance(coords, BaseBx):
-            coords, labels = coords.make_2d()
-        if isinstance(coords, (JsonBx, ListBx)):
-            coords, labels = coords.coords, coords.label if coords.label is not None else None
-        if isinstance(coords, (list, np.ndarray)):
-            # if not multibx, make one so that __add__ below works
-            coords = mbx(coords, labels)
+        coords = get_bx(coords, labels)
         return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax)
 
 
 def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
-    """
-    method to draw an image, box and logits overlayed if passed
+    """Method to draw an image, box and logits overlayed if passed.
     :param img: the image array, expects a numpy array
     :param bbox: list of bounding boxes in json format
     :param logits: activations that should be overlayed from a neural network (no checks)
@@ -49,8 +81,7 @@ def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
 
 
 def draw_outline(obj, linewidth: int):
-    """
-    make outlines around to object edges for visibility in light backgrounds
+    """Make outlines around to object edges for visibility in light backgrounds
     :param obj: plt objects like text or rectangle
     :param linewidth: width of the stroke
     :return: plt object
@@ -60,8 +91,7 @@ def draw_outline(obj, linewidth: int):
 
 
 def draw_text(ax, xy: tuple, label: str, size=12, color='white', xo=0, yo=0):
-    """
-    write text around boxes
+    """Write text around boxes.
     :param ax: axis object
     :param xy: relative ax coordinates x, y to draw the text
     :param label: label for box
@@ -77,8 +107,7 @@ def draw_text(ax, xy: tuple, label: str, size=12, color='white', xo=0, yo=0):
 
 
 def draw_rectangle(ax, coords, color='white'):
-    """
-    draw a rectangle using matplotlib patch
+    """Draw a rectangle using matplotlib patch.
     :param ax: axis
     :param coords: coordinates in coco format
     :param color: text color
@@ -91,8 +120,7 @@ def draw_rectangle(ax, coords, color='white'):
 
 
 def get_color(color, label=None, default_color='white'):
-    """
-    if not a string expecting something like a dict
+    """Get colors from color dict for a given label. If label=None, return `default_color`.
     :param color: dict of key, value pairs where key is label, value is color
     :param label: the label for which color is needed
     :param default_color:
@@ -100,23 +128,22 @@ def get_color(color, label=None, default_color='white'):
     """
     if isinstance(color, str):
         return color
-    assert label is not None, f'got label={label} to use with color dict {type(color)}'
     colors_d = defaultdict(lambda: default_color)
     colors_d.update(color)
     return colors_d[label]
 
 
 def get_extents(shape):
-    assert len(shape) == 3, f'expected w, h, c = shape, got {shape} with len {len(shape)}'
+    """Get extent parameter of the image."""
+    assert len(shape) == 3, f'{__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}'
     w, h, _ = shape
     extent = 0, w, h, 0
     return extent
 
 
-def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
+def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(10, 8),
                squeeze=False, color='yellow', no_ticks=False, xo=0, yo=0, **kwargs):
-    """
-    method to draw bounding boxes in an image, can handle multiple bboxes
+    """Method to draw bounding boxes in an image, can handle multiple bboxes.
     :param figsize: sige of figure
     :param img: the image array, expects a numpy array
     :param bbox: list of bounding boxes in json format
@@ -129,7 +156,7 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     :param no_ticks: whether to set axis ticks off
     :return: ax with image
     """
-    assert isinstance(img, np.ndarray), f'Expected img as np.ndarray, got {type(img)}.'
+    assert isinstance(img, np.ndarray), f'{__name__}: Expected img as np.ndarray, got {type(img)}.'
     if squeeze:
         img = img.squeeze(0)
     if ax is None:
@@ -140,18 +167,19 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     if no_ticks:
         ax.axis('off')
     ax.imshow(img, cmap='Greys', **kwargs)
-    assert isinstance(bbox, (list, BaseBx, MultiBx,
-                             np.ndarray)), f'Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
+    assert isinstance(bbox, (list, BaseBx, MultiBx, np.ndarray)), \
+        f'{__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
+
     for b in bbox:
         try:
+            x1, y1, x2, y2, label = [b[k] for k in voc_keys]
+        except TypeError:
             x1, y1, x2, y2, label = b.values()
         except ValueError:
-            # dict/BaseBx but no label
-            x1, y1, x2, y2 = b.values()
-            label = ''
-        except AttributeError:
-            # list without label
-            x1, y1, x2, y2 = b
+            if isinstance(b, dict):
+                x1, y1, x2, y2 = [b[k] for k in voc_keys[:-1]]
+            if isinstance(b, (list, np.ndarray)):
+                x1, y1, x2, y2 = b
             label = ''
         c = get_color(color, label=label)
         draw_rectangle(ax, coords=(x1, y1, x2, y2), color=c)
