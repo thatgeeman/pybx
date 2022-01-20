@@ -111,7 +111,7 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
             specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
     :returns: image_arr, annots, logits, color
     """
-    image_sz = (100, 100, 1) if image_sz is None else image_sz
+    image_sz = (100, 100, 3) if image_sz is None else image_sz
     image_arr = np.random.randint(size=image_sz, low=0, high=255) if image_arr is None else image_arr
     if logits is not None:
         # if ndarray/detached-tensor, use logits values

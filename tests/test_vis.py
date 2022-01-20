@@ -19,8 +19,8 @@ params = {
     "annots_nd": np.random.randint(low=1, high=10, size=(2, 4)),
     "annots_json": [{'label': '', 'x_max': 0, 'x_min': 0, 'y_max': 0, 'y_min': 0}],
     "feature_sz": (2, 2),
-    "image_sz": (10, 10, 1),
-    "image_arr": np.random.randint(size=(10, 10, 1), low=0, high=255)
+    "image_sz": (10, 10, 3),
+    "image_arr": np.random.randint(size=(10, 10, 3), low=0, high=255)
 }
 
 
