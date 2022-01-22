@@ -2,9 +2,8 @@
 [![PyPI version](https://badge.fury.io/py/pybx.svg)](https://badge.fury.io/py/pybx)
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough.ipynb)
 
-A simple python package to generate anchor
-(aka default/prior) boxes for object detection
-tasks. Calculated anchor boxes are in `pascal_voc` format by default.
+A simple python package to generate anchor boxes for multi-box 
+object detection models. Calculated anchor boxes are in `pascal_voc` format by default.
 
 ### Installation
 ```shell
@@ -24,53 +23,48 @@ asp_ratio = 1/2.
 
 coords, labels = anchor.bx(image_sz, feature_sz, asp_ratio)
 ```
-![](data/box-1.png)
 
-### Introducing `MultiBx`
-To calculate anchor boxes for multiple feature sizes and 
-aspect ratios: 
-
+To calculate anchor boxes for **multiple** feature sizes and 
+aspect ratios:
 ```python
 feature_szs = [(10, 10), (8, 8)]
 asp_ratios = [1., 1/2., 2.]
 
 coords, labels = anchor.bxs(image_sz, feature_szs, asp_ratios)
 ```
-All anchor boxes are returned as ndarrays of shape `(N,4)` where N
-is the number of boxes along with [default labels](data/README.md). These and other types (`list, json`) of box annotations
-can be instantialized as a `MultiBx`, exposing many useful methods and attributes
-of each anchor box. For example to calculate the area of each box
-iteratively:
+All anchor boxes are returned as `ndarrays` of shape `(N,4)` where N
+is the number of boxes; along with a list of 
+[default labels](data/README.md) for each box. 
+
+### Using `MultiBx` methods
+Box annotations in any format (`ndarray`, `list`, `json`, `dict`) 
+can be instantialized as a `MultiBx`, exposing many useful 
+methods and attributes `MultiBx`. 
+For example to calculate the area of each box iteratively:
 ```python
 from pybx.basics import * 
-boxes = mbx(coords, labels) 
+# passing anchor boxes and labels from anchor.bxs()
+boxes = mbx(coords, labels)  
 areas = [b.area() for b in boxes]
 ```
-Objects of the type `MultiBx` can also be "added" which stacks 
-them into a new `MultiBx`:
+Each annotation in the `MultiBx` object `boxes` is a 
+`BaseBx` with its own set of methods and properties. 
+
+`MultiBx` objects can also be "added" which stacks 
+them vertically to create a new `MultiBx` object:
 ```python
 boxes_true = mbx(coords_json)    # annotation as json records
 boxes_anchor = mbx(coords_numpy) # annotation as ndarray
-boxes = boxes_true+boxes_anchor
+boxes = boxes_true + boxes_anchor
 ```
 
 The `vis` module of `pybx` can be used to visualize these "stacks"
-of `MultiBx`, raw `ndarray`/`list`/`json` records, 
-target annotations and 
-model logits. Please rerer 
-to [Visualising anchor boxes](data/README.md).
+of `MultiBx` objects, raw `ndarray`/`list`/`json` records, 
+target annotations and model logits.
 
-## Todo
-- [x] Wrapper class for boxes with `VisBx.show()` method
-- [x] Companion notebook
-  - [x] Update with new Class methods
-- [x] Integrate MultiBx into anchor.bx()
-- [x] IOU calcultaion
-- [x] Unit tests
-- [x] Specific tests
-  - [x] `feature_sz` of different aspect ratios
-  - [x] `image_sz` of different aspect ratios
-- [ ] Generate docs `sphinx`
-- [ ] clean docstrings
+![](data/box-1.png)
 
-
+Please refer 
+to [Visualising anchor boxes](data/README.md) or try out the 
+[walkthrough notebook](nbs/pybx_walkthrough.ipynb) for more 
+details!
