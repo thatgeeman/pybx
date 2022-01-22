@@ -39,7 +39,10 @@ class BaseBx:
             f'got {type(coords[0])} with {coords[0]}'
         w = sub(*coords[::2][::-1])
         h = sub(*coords[1::2][::-1])
-        store_attr('coords, label, w, h')
+        x_min, y_min, x_max, y_max = coords
+        cx = x_min + w / 2
+        cy = y_min + h / 2
+        store_attr('coords, label, x_min, y_min, x_max, y_max, w, h, cx, cy')
 
     def values(self):
         """Returns the coordinates and label as a single list."""
@@ -76,7 +79,19 @@ class BaseBx:
 
     def xywh(self):
         """Converts the `pascal_voc` bounding box to `coco` format."""
-        return np.asarray(concat([self.coords[:2], self.w, self.h]))
+        return np.asarray(concat([self.x_min, self.y_min, self.w, self.h]))
+
+    def yolo(self, normalize=False, w=None, h=None):
+        """Converts the `pascal_voc` bounding box to `yolo` centroids format.
+        :param normalize: Whether to normalize the bounding box with image width and height.
+        :param w: Width of image. Not to be confused with `BaseBx` attribute `w`.
+        :param h: Height of image. Not to be confused with `BaseBx` attribute `h`.
+        """
+        if normalize:
+            assert w is not None, f'{__name__}: Expected width and height of image with normalize={normalize}.'
+            assert h is not None, f'{__name__}: Expected width and height of image with normalize={normalize}.'
+            return np.asarray(concat([self.cx / w, self.cy / h, self.w / w, self.h / h]))
+        return np.asarray(concat([self.cx, self.cy, self.w, self.h]))
 
     def __len__(self):
         return self.coords.shape[0] + 1
@@ -97,7 +112,7 @@ class BaseBx:
         boxes imply that the resulting box is a `MultiBx`: `BaseBx` + `BaseBx`
         = `MultiBx`. This violates the idea of `BaseBx` since the result
         holds more than 1 coordinate/label for the box.
-        From `v1.0.0`, a `UserWarning` is issued if called.
+        From `v.2.0`, a `UserWarning` is issued if called.
         Recommended use is either: `BaseBx` + `BaseBx` = `MultiBx` or
         `basics.stack_bxs()`.
         """
@@ -293,6 +308,8 @@ def get_bx(coords, label=None):
             return bbx(coords, label)
         elif isinstance(coords[0], (np.ndarray, list, dict)):
             return mbx(coords, label)
+    if isinstance(coords, dict):
+        return bbx([coords], label)
     if isinstance(coords, (MultiBx, ListBx, BaseBx, JsonBx)):
         return coords
     else:

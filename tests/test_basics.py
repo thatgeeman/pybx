@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from pybx.basics import mbx, bbx, MultiBx, jbx, stack_bxs
+from pybx.basics import mbx, bbx, MultiBx, jbx, stack_bxs, get_bx, BaseBx
 from pybx.excepts import BxViolation
 
 np.random.seed(1)
@@ -13,6 +13,8 @@ params = {
     "annots_iou_file": '../data/annots_iou.json',
     "annots_key_file": '../data/annots_key.json',
     "annots_l": [[50., 70., 120., 100., 'rand1'], [150., 200., 250., 240., 'rand2']],
+    "annots_l_single": [98, 345, 420, 462],
+    "annots_l_single_imsz": (640, 480),
     "annots_a": np.random.randn(10, 4)
 }
 
@@ -23,6 +25,7 @@ results = {
     "iou": 0.0425531914893617,
     "xywh": np.array([50.0, 70.0, 70.0, 30.0]),
     "jbx_label": ['person', 4],
+    "yolo": [0.4046875, 0.840625, 0.503125, 0.24375]
 }
 
 
@@ -111,6 +114,25 @@ class BasicsTestCase(unittest.TestCase):
         self.assertTrue((b.xywh() == results["xywh"]).all(), True)
         self.assertGreaterEqual(b.xywh()[-1], 0)
         self.assertGreaterEqual(b.xywh()[-2], 0)
+
+    def test_yolo(self):
+        annots = params["annots_l_single"]
+        b = bbx(annots)
+        w, h = params["annots_l_single_imsz"]
+        b_yolo = b.yolo(normalize=True, w=w, h=h)
+        self.assertTrue((b_yolo == results["yolo"]).all())
+
+    def test_get_bx(self):
+        with open(params["annots_rand_file"]) as f:
+            annots_json = json.load(f)
+        annots_l_single = params["annots_l_single"]
+        annots_l_multi = params["annots_l"]
+        self.assertIsInstance(get_bx(annots_l_single), BaseBx)  # list
+        self.assertIsInstance(get_bx(annots_l_multi), MultiBx)  # nested list
+        self.assertIsInstance(get_bx(annots_json), MultiBx)  # json
+        self.assertIsInstance(get_bx(annots_json[0]), BaseBx)  # dict
+        self.assertIsInstance(get_bx(get_bx(annots_json)), MultiBx)  # MultiBx
+        self.assertIsInstance(get_bx(get_bx(annots_json[0])), BaseBx)  # BaseBx
 
 
 if __name__ == '__main__':
