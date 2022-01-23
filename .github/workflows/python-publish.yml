@@ -30,7 +30,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade build
-    - name: Get version
+    - name: Install linters 
+      run: |
+        pip install black
+    - name: Lint with black
+      run: |
+        black . 
+    - name: Get package version
       run: |
         export PYBX_VERSION=$(cat settings.ini| grep "version =" | cut -d' ' -f3)
         echo "setting PYBX_VERSION = $PYBX_VERSION"
