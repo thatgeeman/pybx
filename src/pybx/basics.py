@@ -4,7 +4,7 @@ import numpy as np
 from fastcore.basics import concat, store_attr
 from fastcore.xtras import is_listy
 
-from .ops import mul, sub, intersection_box, dict_array, voc_keys, update_keys
+from .ops import mul, sub, intersection_box, make_array, voc_keys, update_keys
 from .excepts import *
 
 __all__ = ['bbx', 'mbx', 'jbx', 'lbx', 'get_bx',
@@ -34,7 +34,7 @@ class BaseBx:
         label = [label] if not is_listy(label) else label
         assert isinstance(coords, (list, np.ndarray)), \
             f'{__name__}: Expected type {list}/{np.ndarray} for coords, got {type(coords)}'
-        assert isinstance(coords[0], (np.int64, np.float64, float, int, np.ndarray, list)), \
+        assert isinstance(coords[0], (np.floating, np.int_, np.ndarray, list)), \
             f'{__name__}: Expected {float, int} or single-nested {list, np.ndarray} at coords[0], ' \
             f'got {type(coords[0])} with {coords[0]}'
         w = sub(*coords[::2][::-1])
@@ -132,9 +132,9 @@ class BaseBx:
         if not isinstance(coords, np.ndarray):
             """Process list/dict assuming a single coordinate is present"""
             try:
-                coords, label = dict_array(coords)
+                coords, label = make_array(coords)
             except ValueError:
-                coords = dict_array(coords)
+                coords = make_array(coords)
             except NotImplementedError:
                 """Attempt to Process `list` of `list`s/`dict`s with len=1"""
                 if len(coords) > 1:
@@ -252,10 +252,10 @@ class ListBx:
         l = []
         r = []
         for i, c in enumerate(coords):
-            assert isinstance(c, (list, np.ndarray)), f'{__name__}: Expected b of type list/ndarray, got {type(c)}'
+            assert isinstance(c, (list, tuple, np.ndarray)), f'{__name__}: Expected b of type list/tuple/ndarray, got {type(c)}'
             l_ = c[-1] if len(c) > 4 else '' if label is None else label[i]
             l.append(l_)
-            r.append(c[:-1] if len(c) > 4 else c)
+            r.append(list(c[:-1]) if len(c) > 4 else c)
         coords = np.array(r)
         return cls(coords, label=l)
 
@@ -304,12 +304,16 @@ def get_bx(coords, label=None):
         coords = np.atleast_2d(coords)
         return mbx(coords, label)
     if isinstance(coords, list):
-        if isinstance(coords[0], (np.int64, np.float64, float, int)):
+        if isinstance(coords[0], (np.floating, np.int_, float, int)):
             return bbx(coords, label)
         elif isinstance(coords[0], (np.ndarray, list, dict)):
             return mbx(coords, label)
+        elif isinstance(coords[0], tuple):
+            return mbx([list(c) for c in coords], label)
     if isinstance(coords, dict):
         return bbx([coords], label)
+    if isinstance(coords, tuple):
+        return bbx(list(coords), label)
     if isinstance(coords, (MultiBx, ListBx, BaseBx, JsonBx)):
         return coords
     else:
