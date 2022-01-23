@@ -15,7 +15,14 @@ params = {
     "annots_l": [[50., 70., 120., 100., 'rand1'], [150., 200., 250., 240., 'rand2']],
     "annots_l_single": [98, 345, 420, 462],
     "annots_l_single_imsz": (640, 480),
-    "annots_a": np.random.randn(10, 4)
+    "annots_a": np.random.randn(10, 4),
+    "annots_i8": np.random.randint(1, 100, 4, dtype=np.int8),
+    "annots_i16": np.random.randint(1, 100, 4, dtype=np.int16),
+    "annots_i32": np.random.randint(1, 100, 4, dtype=np.int32),
+    "annots_i64": np.random.randint(1, 100, 4, dtype=np.int64),
+    "annots_f16": np.random.randn(4).astype(np.float16),
+    "annots_f32": np.random.randn(4).astype(np.float32),
+    "annots_f64": np.random.randn(4).astype(np.float64),
 }
 
 results = {
@@ -133,6 +140,24 @@ class BasicsTestCase(unittest.TestCase):
         self.assertIsInstance(get_bx(annots_json[0]), BaseBx)  # dict
         self.assertIsInstance(get_bx(get_bx(annots_json)), MultiBx)  # MultiBx
         self.assertIsInstance(get_bx(get_bx(annots_json[0])), BaseBx)  # BaseBx
+
+    def test_type_mbx(self):
+        b = get_bx(params["annots_i8"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_i16"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_i32"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_i64"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_f16"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_f32"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_f64"])
+        self.assertIsInstance(b, MultiBx)
+        b = get_bx(params["annots_l_single"])
+        self.assertIsInstance(b, BaseBx)
 
 
 if __name__ == '__main__':

@@ -37,7 +37,7 @@ def get_op(op: str):
     return eval(op, globals())
 
 
-def dict_array(x):
+def make_array(x):
     """Method to convert a single dict or a list to an array.
     :param x: dict with keys {"x_min": 0, "y_min": 0, "x_max": 1, "y_max": 1, "label": 'none'}
     :return: `coords` as `ndarray`, `label` as `list`
@@ -48,6 +48,9 @@ def dict_array(x):
             x = [x[k] for k in voc_keys]
         except TypeError:
             x = [x[k] for k in voc_keys[:-1]]
+
+    if isinstance(x, tuple):
+        x = list(x)
 
     if isinstance(x, (list, np.ndarray)) and len(x) >= 4:
         # lists of a single list would fail this check
