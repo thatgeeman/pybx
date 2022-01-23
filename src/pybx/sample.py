@@ -1,7 +1,6 @@
 import json
 import os
 
-import PIL.Image
 import numpy as np
 from PIL import Image
 
@@ -32,7 +31,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     """Scales the bounding boxes with change in the image size.
     :param annots: bounding boxes in records format
     :param new_sz: new size of image (after linear transforms like resize)
-    :param ann_im_sz: original size of image to which the bounding boxes were given.
+    :param ann_im_sz: original size of image for which the bounding boxes were given.
     :return:
     """
     scaled = []
@@ -74,7 +73,7 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
     ann_im_sz = image_arr.shape  # original size
     if image_sz is not None:
         # reshaped image size
-        image_arr = np.asarray(PIL.Image.fromarray(image_arr).resize(list(image_sz[:2])))
+        image_arr = _get_resized(image_arr, image_sz)
     annots = [dict(zip(voc_keys, [0, 0, 1, 1, '']))]  # default values
     if load_ann:
         assert ann_fn is not None, f'{__name__}: got ann_fn={ann_fn} with show_ann={load_ann}'
@@ -94,6 +93,17 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
     return image_arr, annots, logits, color
 
 
+def _get_resized(image_arr, image_sz):
+    """Resize `image_arr` to `image_sz` using PIL."""
+    im = Image.fromarray(image_arr).convert('RGB').resize(size=list(image_sz[:2]))
+    return np.asarray(im)
+
+
+def _get_random_im(image_sz):
+    """Returns a randomly generated 8-bit image."""
+    return np.random.randint(size=image_sz, low=0, high=255)
+
+
 def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz=None, logits=None,
                      feature_sz: tuple = None, color: dict = {}):
     """To display image array and annotations object. This is the default approach used by vis.VisBx
@@ -103,7 +113,8 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
         objects (`MultiBx`, `BaseBx`, ...) or as any other raw format accepted by the internal objects.
     :param image_sz: Size of the random image to be generated if `image_arr` is None.
         `v = vis.VisBx()` has all params set to None. If None, a random noise of `image_sz=(100, 100, 1)` is used.
-        This random noise is the default image.
+        This random noise is the default image. If passed along with `image_arr`, then `image_arr` is reshaped to
+        `image_sz` and annotations are scaled.
     :param logits: Logits as `ndarray` that should be overlayed on top of the image
             or `bool` to generate random logits.
     :param feature_sz: Feature size to generate random logits if `logits` is not None.
@@ -111,8 +122,11 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
             specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
     :returns: image_arr, annots, logits, color
     """
-    image_sz = (100, 100, 3) if image_sz is None else image_sz
-    image_arr = np.random.randint(size=image_sz, low=0, high=255) if image_arr is None else image_arr
+    image_arr = _get_random_im((100, 100, 3)) if image_arr is None else image_arr
+    ann_im_sz = image_arr.shape
+    if image_sz is not None:
+        image_arr = _get_resized(image_arr, image_sz)
+        annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, 'shape'):

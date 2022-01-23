@@ -32,23 +32,23 @@ class OpsTestCase(unittest.TestCase):
     def test_make_array(self):
         with open(params["annots_iou_file"]) as f:
             annots = json.load(f)
-        array, label = ops.dict_array(annots[0])
+        array, label = ops.make_array(annots[0])
         self.assertIsInstance(array, np.ndarray)
         self.assertIsInstance(label, list)
 
     def test_named_idx(self):
         with open(params["annots_iou_file"]) as f:
             annots = json.load(f)
-        array, label = ops.dict_array(annots[1])
+        array, label = ops.make_array(annots[1])
         namedidx = ops.named_idx(array, 'a')
         self.assertEqual(namedidx[-1], results["namedidx"])
 
     def test_intersection_box(self):
         with open(params["annots_iou_file"]) as f:
             annots = json.load(f)
-        a0, _ = ops.dict_array(annots[0])
-        a1, _ = ops.dict_array(annots[1])
-        a2, _ = ops.dict_array(annots[2])
+        a0, _ = ops.make_array(annots[0])
+        a1, _ = ops.make_array(annots[1])
+        a2, _ = ops.make_array(annots[2])
         int_box_array = ops.intersection_box(a1, a2)
         self.assertTrue((a2 == int_box_array).sum())
 
@@ -57,8 +57,8 @@ class OpsTestCase(unittest.TestCase):
             annots0 = json.load(f)
         with open(params["annots_rand_file"]) as f:
             annots1 = json.load(f)
-        a1, _ = ops.dict_array(annots0[0])
-        a2, _ = ops.dict_array(annots1[1])
+        a1, _ = ops.make_array(annots0[0])
+        a2, _ = ops.make_array(annots1[1])
         self.assertRaises(NoIntersection, ops.intersection_box, b1=a1, b2=a2)
 
 

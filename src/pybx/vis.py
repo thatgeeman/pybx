@@ -157,6 +157,7 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     :return: ax with image
     """
     assert isinstance(img, np.ndarray), f'{__name__}: Expected img as np.ndarray, got {type(img)}.'
+    assert len(img.shape) == 3, f'{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}'
     if squeeze:
         img = img.squeeze(0)
     if ax is None:
