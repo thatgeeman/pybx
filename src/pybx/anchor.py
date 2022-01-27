@@ -1,3 +1,5 @@
+import inspect
+
 import math
 import numpy as np
 from fastcore.foundation import L
@@ -15,9 +17,9 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     :param feature_sz: tuple of `(W, H)` of a channel
     :return: offsetted edges of each feature
     """
-    assert image_sz[-1] < image_sz[0], f'{__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
-    assert len(image_sz) == 3, f'{__name__}: Expected image_sz of len 3, got {len(image_sz)}'
-    assert op in __ops__, f'{__name__}: Operator not in allowed operations: {__ops__}'
+    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
+    assert len(image_sz) == 3, f'{inspect.stack()[0][3]} of {__name__}: Expected image_sz of len 3, got {len(image_sz)}'
+    assert op in __ops__, f'{inspect.stack()[0][3]} of {__name__}: Operator not in allowed operations: {__ops__}'
     w, h, _ = image_sz
     nx, ny = feature_sz
     diag_edge_ofs = w / nx, h / ny
@@ -39,7 +41,7 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
     :param anchor_sfx: suffix for anchor label: anchor_sfx_asp_ratio_feature_sz
     :return: anchor box coordinates in [pascal_voc] format
     """
-    assert image_sz[-1] < image_sz[0], f'{__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
+    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     _max = max(image_sz[0], image_sz[1])
     asp_ratio = 1. if asp_ratio is None else asp_ratio
     # n_boxes = __mul__(*feature_sz)
@@ -59,6 +61,7 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
         anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
         labels = named_idx(coords, anchor_sfx)
         return coords.clip(0, _max) if clip else coords, labels
+    # TODO :param valid_only: return only valid anchor boxes
     return coords.clip(0, _max) if clip else coords
 
 
@@ -70,7 +73,7 @@ def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, named: bool
     :param named: whether to return (coords, labels)
     :return: anchor box coordinates in [pascal_voc] format
     """
-    assert image_sz[-1] < image_sz[0], f'{__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
+    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     asp_ratios = [1 / 2., 1., 2.] if asp_ratios is None else asp_ratios
     feature_szs = [(8, 8), (2, 2)] if feature_szs is None else feature_szs
     # always named=True for bx() call. named=True in fn signature of bxs() is in its scope.

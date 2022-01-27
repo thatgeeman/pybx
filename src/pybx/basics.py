@@ -1,4 +1,5 @@
 import warnings
+import inspect
 
 import numpy as np
 from fastcore.basics import concat, store_attr
@@ -33,9 +34,9 @@ class BaseBx:
     def __init__(self, coords, label: list = None):
         label = [label] if not is_listy(label) else label
         assert isinstance(coords, (list, np.ndarray)), \
-            f'{__name__}: Expected type {list}/{np.ndarray} for coords, got {type(coords)}'
+            f'{inspect.stack()[0][3]} of {__name__}: Expected type {list}/{np.ndarray} for coords, got {type(coords)}'
         assert isinstance(coords[0], (np.floating, np.int_, np.ndarray, list)), \
-            f'{__name__}: Expected {float, int} or single-nested {list, np.ndarray} at coords[0], ' \
+            f'{inspect.stack()[0][3]} of {__name__}: Expected {float, int} or single-nested {list, np.ndarray} at coords[0], ' \
             f'got {type(coords[0])} with {coords[0]}'
         w = sub(*coords[::2][::-1])
         h = sub(*coords[1::2][::-1])
@@ -88,8 +89,8 @@ class BaseBx:
         :param h: Height of image. Not to be confused with `BaseBx` attribute `h`.
         """
         if normalize:
-            assert w is not None, f'{__name__}: Expected width and height of image with normalize={normalize}.'
-            assert h is not None, f'{__name__}: Expected width and height of image with normalize={normalize}.'
+            assert w is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}.'
+            assert h is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}.'
             return np.asarray(concat([self.cx / w, self.cy / h, self.w / w, self.h / h]))
         return np.asarray(concat([self.cx, self.cy, self.w, self.h]))
 
@@ -117,7 +118,7 @@ class BaseBx:
         `basics.stack_bxs()`.
         """
         if not isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
-            raise TypeError(f'{__name__}: Expected type MultiBx/JsonBx/ListBx')
+            raise TypeError(f'{inspect.stack()[0][3]} of {__name__}: Expected type MultiBx/JsonBx/ListBx')
         if isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
             warnings.warn(BxViolation(f'Change of object type imminent if trying to add '
                                       f'{type(self)}+{type(other)}. Use {type(other)}+{type(self)} '
@@ -138,7 +139,7 @@ class BaseBx:
             except NotImplementedError:
                 """Attempt to Process `list` of `list`s/`dict`s with len=1"""
                 if len(coords) > 1:
-                    raise BxViolation(f'{__name__}: Expected single element in coords, got {coords}')
+                    raise BxViolation(f'{inspect.stack()[0][3]} of {__name__}: Expected single element in coords, got {coords}')
                 try:
                     b = jbx(coords, label)
                 except AssertionError:
@@ -205,12 +206,13 @@ class MultiBx:
         = `MultiBx`. Same as `basics.stack_bxs()`.
         """
         if not isinstance(other, (BaseBx, MultiBx, JsonBx, ListBx)):
-            raise TypeError(f'{__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, '
+            raise TypeError(f'{inspect.stack()[0][3]} of {__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, '
                             f'got self={type(self)}, other={type(other)}')
         coords = np.vstack([self.coords, other.coords])
         label = self.label + other.label
         return mbx(coords, label)
 
+    @property
     def shape(self):
         """Returns shape of the coordinates"""
         return self.coords.shape
@@ -252,7 +254,7 @@ class ListBx:
         l = []
         r = []
         for i, c in enumerate(coords):
-            assert isinstance(c, (list, tuple, np.ndarray)), f'{__name__}: Expected b of type list/tuple/ndarray, got {type(c)}'
+            assert isinstance(c, (list, tuple, np.ndarray)), f'{inspect.stack()[0][3]} of {__name__}: Expected b of type list/tuple/ndarray, got {type(c)}'
             l_ = c[-1] if len(c) > 4 else '' if label is None else label[i]
             l.append(l_)
             r.append(list(c[:-1]) if len(c) > 4 else c)
@@ -281,7 +283,7 @@ class JsonBx:
         l = []
         r = []
         for i, c in enumerate(coords):
-            assert isinstance(c, dict), f'{__name__}: Expected b of type dict, got {type(c)}'
+            assert isinstance(c, dict), f'{inspect.stack()[0][3]} of {__name__}: Expected b of type dict, got {type(c)}'
             if keys is None:
                 # Fixes issue #3.
                 keys = update_keys(c, default_keys=voc_keys)
@@ -317,7 +319,7 @@ def get_bx(coords, label=None):
     if isinstance(coords, (MultiBx, ListBx, BaseBx, JsonBx)):
         return coords
     else:
-        raise NotImplementedError(f'{__name__}: Got coords={coords} of type {type(coords)}.')
+        raise NotImplementedError(f'{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}.')
 
 
 def stack_bxs(b1, b2):
@@ -328,9 +330,9 @@ def stack_bxs(b1, b2):
     :return: MultiBx
     """
     if not isinstance(b1, (BaseBx, MultiBx, JsonBx, ListBx)):
-        raise TypeError(f'{__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, got b1={type(b1)}')
+        raise TypeError(f'{inspect.stack()[0][3]} of {__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, got b1={type(b1)}')
     if not isinstance(b2, (BaseBx, MultiBx, JsonBx, ListBx)):
-        raise TypeError(f'{__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, got b2={type(b2)}')
+        raise TypeError(f'{inspect.stack()[0][3]} of {__name__}: Expected type BaseBx/MultiBx/JsonBx/ListBx, got b2={type(b2)}')
     if isinstance(b1, BaseBx):
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore')

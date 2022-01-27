@@ -1,4 +1,5 @@
 from collections import defaultdict
+import inspect
 
 import numpy as np
 from fastcore.basics import store_attr
@@ -44,7 +45,7 @@ class VisBx:
 
     def __init__(self, image_arr=None, image_sz=None, sample=False, **kwargs):
         if sample:
-            assert image_sz is not None, f'{__name__}: Expected image_sz with sample={sample}'
+            assert image_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample={sample}'
             im, ann, lgt, clr = get_example(image_sz=image_sz, **kwargs)
         else:
             im, ann, lgt, clr = get_given_array(image_arr=image_arr, image_sz=image_sz, **kwargs)
@@ -135,31 +136,29 @@ def get_color(color, label=None, default_color='white'):
 
 def get_extents(shape):
     """Get extent parameter of the image."""
-    assert len(shape) == 3, f'{__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}'
+    assert len(shape) == 3, f'{inspect.stack()[0][3]} of {__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}'
     w, h, _ = shape
     extent = 0, w, h, 0
     return extent
 
 
 def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
-               squeeze=False, color='yellow', no_ticks=False, xo=0, yo=0, **kwargs):
+               color='yellow', no_ticks=False, xo=0, yo=0, **kwargs):
     """Method to draw bounding boxes in an image, can handle multiple bboxes.
     :param figsize: sige of figure
     :param img: the image array, expects a numpy array
     :param bbox: list of bounding boxes in json format
     :param title: image title
     :param ax: which axis if already present
-    :param squeeze: useful to remove extra axis (if grayscale image channels = 1)
     :param yo: y offset for placement of text
     :param xo: x offset for placement of text
     :param color: text color or dict of colors for each label as a dict
     :param no_ticks: whether to set axis ticks off
     :return: ax with image
     """
-    assert isinstance(img, np.ndarray), f'{__name__}: Expected img as np.ndarray, got {type(img)}.'
-    assert len(img.shape) == 3, f'{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}'
-    if squeeze:
-        img = img.squeeze(0)
+    assert isinstance(img, np.ndarray), f'{inspect.stack()[0][3]} of {__name__}: Expected img as np.ndarray, got {type(img)}.'
+    assert len(img.shape) == 3, \
+        f'{inspect.stack()[0][3]} of {__name__}: Expected img of shape (w, h, c), got {img.shape} with len {len(img.shape)}'
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
         fig.set_tight_layout(True)
@@ -169,7 +168,7 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
         ax.axis('off')
     ax.imshow(img, cmap='Greys', **kwargs)
     assert isinstance(bbox, (list, BaseBx, MultiBx, np.ndarray)), \
-        f'{__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
+        f'{inspect.stack()[0][3]} of {__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
 
     for b in bbox:
         try:

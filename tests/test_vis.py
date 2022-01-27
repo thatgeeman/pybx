@@ -20,7 +20,8 @@ params = {
     "annots_json": [{'label': '', 'x_max': 0, 'x_min': 0, 'y_max': 0, 'y_min': 0}],
     "feature_sz": (2, 2),
     "image_sz": (10, 10, 3),
-    "image_arr": np.random.randint(size=(10, 10, 3), low=0, high=255)
+    "image_arr": np.random.randint(size=(10, 10, 3), low=0, high=255),
+    "image_arr_float": np.random.randn(10, 10, 3),
 }
 
 
@@ -100,6 +101,12 @@ class VisTestCase(unittest.TestCase):
         self.assertIsInstance(b, BaseBx)
         for v in self.vs:
             self.assertTrue(v.show(b))
+
+    def test_float_array(self):
+        im = params["image_arr_float"]
+        ann = params["annots_json"]
+        sz = params["image_sz"]
+        self.assertRaises(TypeError, VisBx, image_arr=im, image_sz=sz, annots=ann)
 
 
 if __name__ == '__main__':
