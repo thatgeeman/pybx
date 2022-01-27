@@ -1,5 +1,6 @@
 import json
 import os
+import inspect
 
 import numpy as np
 from PIL import Image
@@ -37,7 +38,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     scaled = []
     for annot in annots:
         d = {}
-        assert isinstance(annot, dict), f'{__name__}: Expected annots of type dict, got {type(annot)}'
+        assert isinstance(annot, dict), f'{inspect.stack()[0][3]} of {__name__}: Expected annots of type dict, got {type(annot)}'
         for k, v in annot.items():
             if k.startswith('x'):
                 v_ = new_sz[0] * v / ann_im_sz[0]
@@ -67,7 +68,7 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
     :returns: image_arr, annots, logits, color
     """
     assert os.path.exists(os.path.join(pth, img_fn)), f'{pth} has no {img_fn}'
-    assert len(image_sz) == 3, f'{__name__}: Expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
+    assert len(image_sz) == 3, f'{inspect.stack()[0][3]} of {__name__}: Expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
     im = Image.open(os.path.join(pth, img_fn)).convert('RGB')
     image_arr = np.asarray(im)
     ann_im_sz = image_arr.shape  # original size
@@ -76,18 +77,18 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
         image_arr = _get_resized(image_arr, image_sz)
     annots = [dict(zip(voc_keys, [0, 0, 1, 1, '']))]  # default values
     if load_ann:
-        assert ann_fn is not None, f'{__name__}: got ann_fn={ann_fn} with show_ann={load_ann}'
+        assert ann_fn is not None, f'{inspect.stack()[0][3]} of {__name__}: got ann_fn={ann_fn} with show_ann={load_ann}'
         assert os.path.exists(os.path.join(pth, ann_fn)), f'{pth} has no {ann_fn}'
         with open(os.path.join(pth, ann_fn)) as f:
             annots = json.load(f)  # annots for 300x300 image
     if not np.all(ann_im_sz == image_sz):
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
-    assert isinstance(annots, list), f'{__name__}: Expected annots should be list of list/dict, ' \
+    assert isinstance(annots, list), f'{inspect.stack()[0][3]} of {__name__}: Expected annots should be list of list/dict, ' \
                                      f'got {annots} of type {type(annots)}'
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, 'shape'):
-            assert feature_sz is not None, f'{__name__}: Expected feature_sz to generate fake-logits'
+            assert feature_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected feature_sz to generate fake-logits'
             logits = _get_feature(feature_sz)
     color = {'frame': 'blue', 'clock': 'green'} if not color else color
     return image_arr, annots, logits, color
@@ -95,7 +96,9 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
 
 def _get_resized(image_arr, image_sz):
     """Resize `image_arr` to `image_sz` using PIL."""
-    im = Image.fromarray(image_arr).convert('RGB').resize(size=list(image_sz[:2]))
+    if isinstance(image_arr.flatten()[0], np.floating):
+        raise TypeError(f'{inspect.stack()[0][3]} of {__name__}: Expected image_arr {image_arr.shape} of dtype {np.int_}')
+    im = Image.fromarray(image_arr).resize(size=list(image_sz[:2]))
     return np.asarray(im)
 
 
@@ -125,12 +128,13 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
     image_arr = _get_random_im((100, 100, 3)) if image_arr is None else image_arr
     ann_im_sz = image_arr.shape
     if image_sz is not None:
+        # only works with int dtype
         image_arr = _get_resized(image_arr, image_sz)
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, 'shape'):
-            assert feature_sz is not None, f'{__name__}: Expected feature_sz to generate fake-logits'
+            assert feature_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected feature_sz to generate fake-logits'
             logits = _get_feature(feature_sz)
     if annots is None:
         annots = [{k: 0 if k != 'label' else '' for k in voc_keys}]
