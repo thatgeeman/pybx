@@ -53,7 +53,7 @@ class VisBx:
         ann = get_bx(ann)
         store_attr('im, ann, lgt, clr')
 
-    def show(self, coords, labels=None, color=None, ax=None, **kwargs):
+    def show(self, coords=None, labels=None, color=None, ax=None, **kwargs):
         """Calling the `show()` method of the `VisBx()` instance accepts
         bounding box coordinates and labels that are to be shown.
         The boxes can be provided as any of the internal objects (`MultiBx`, `BaseBx`, ...)
@@ -61,6 +61,8 @@ class VisBx:
         """
         if color is not None:
             self.clr.update(color)
+        if coords is None:
+            coords = [0, 0, 0, 0]
         coords = get_bx(coords, labels)
         return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs)
 
