@@ -1,9 +1,10 @@
+import inspect
 import json
 import os
-import inspect
 
 import numpy as np
 from PIL import Image
+from fastcore.test import nequals
 
 __all__ = ['get_example', 'get_given_array']
 
@@ -28,6 +29,37 @@ def get_given_array(image_arr, **kwargs):
     return _get_given_array(image_arr, **kwargs)
 
 
+def _scale_annots_dict(annot, new_sz, ann_im_sz):
+    """Scale annotations to the new_sz, provided the original ann_im_sz.
+    :param annot: bounding box in dict format
+    :param new_sz: new size of image (after linear transforms like resize)
+    :param ann_im_sz: original size of image for which the bounding boxes were given.
+    :return:
+    """
+    d = {}
+    for k, v in annot.items():
+        if k.startswith('x'):
+            v_ = new_sz[0] * v / ann_im_sz[0]
+        elif k.startswith('y'):
+            v_ = new_sz[1] * v / ann_im_sz[1]
+        else:
+            # don't destroy other keys
+            v_ = v
+        d.update({k: v_})
+    return d
+
+
+def _scale_annots_list(annot, new_sz, ann_im_sz):
+    """Convert annot to dict format before calling _scale_annots_dict().
+    :param annot: bounding box in list format
+    :param new_sz: new size of image (after linear transforms like resize)
+    :param ann_im_sz: original size of image for which the bounding boxes were given.
+    :return:
+    """
+    annot = dict(zip(voc_keys, annot)) if len(annot) == 5 else dict(zip(voc_keys[:-1], annot))
+    return _scale_annots_dict(annot, new_sz, ann_im_sz)
+
+
 def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     """Scales the bounding boxes with change in the image size.
     :param annots: bounding boxes in records format
@@ -37,17 +69,13 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     """
     scaled = []
     for annot in annots:
-        d = {}
-        assert isinstance(annot, dict), f'{inspect.stack()[0][3]} of {__name__}: Expected annots of type dict, got {type(annot)}'
-        for k, v in annot.items():
-            if k.startswith('x'):
-                v_ = new_sz[0] * v / ann_im_sz[0]
-            elif k.startswith('y'):
-                v_ = new_sz[1] * v / ann_im_sz[1]
-            else:
-                # dont destroy other keys
-                v_ = v
-            d.update({k: v_})
+        if isinstance(annot, dict):
+            d = _scale_annots_dict(annot, new_sz, ann_im_sz)
+        elif isinstance(annot, list):
+            d = _scale_annots_list(annot, new_sz, ann_im_sz)
+        else:
+            raise NotImplementedError(
+                f'{inspect.stack()[0][3]} of {__name__}: Expected annot of type dict, got {type(annot)}')
         scaled.append(d)
     return scaled
 
@@ -68,47 +96,57 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
     :returns: image_arr, annots, logits, color
     """
     assert os.path.exists(os.path.join(pth, img_fn)), f'{pth} has no {img_fn}'
-    assert len(image_sz) == 3, f'{inspect.stack()[0][3]} of {__name__}: Expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
+    assert len(image_sz) == 3, f'{inspect.stack()[0][3]} of {__name__}: \
+    Expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
+
     im = Image.open(os.path.join(pth, img_fn)).convert('RGB')
     image_arr = np.asarray(im)
+    image_sz = image_arr.shape if image_sz is None else image_sz  # size to reshape into
     ann_im_sz = image_arr.shape  # original size
-    if image_sz is not None:
-        # reshaped image size
-        image_arr = _get_resized(image_arr, image_sz)
+
     annots = [dict(zip(voc_keys, [0, 0, 1, 1, '']))]  # default values
     if load_ann:
-        assert ann_fn is not None, f'{inspect.stack()[0][3]} of {__name__}: got ann_fn={ann_fn} with show_ann={load_ann}'
+        assert ann_fn is not None, f'{inspect.stack()[0][3]} of {__name__}: \
+        got ann_fn={ann_fn} with show_ann={load_ann}'
+
         assert os.path.exists(os.path.join(pth, ann_fn)), f'{pth} has no {ann_fn}'
         with open(os.path.join(pth, ann_fn)) as f:
             annots = json.load(f)  # annots for 300x300 image
-    if not np.all(ann_im_sz == image_sz):
+
+    if nequals(ann_im_sz, image_sz): # if not equal, returns True
+        image_arr = _get_resized(im, image_sz)
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
-    assert isinstance(annots, list), f'{inspect.stack()[0][3]} of {__name__}: Expected annots should be list of list/dict, ' \
-                                     f'got {annots} of type {type(annots)}'
+
+    assert isinstance(annots, list), f'{inspect.stack()[0][3]} of {__name__}: \
+    Expected annots should be list of list/dict, got {annots} of type {type(annots)}'
+
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, 'shape'):
-            assert feature_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected feature_sz to generate fake-logits'
+            assert feature_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: \
+            Expected feature_sz to generate fake-logits'
+
             logits = _get_feature(feature_sz)
     color = {'frame': 'blue', 'clock': 'green'} if not color else color
     return image_arr, annots, logits, color
 
 
-def _get_resized(image_arr, image_sz):
-    """Resize `image_arr` to `image_sz` using PIL."""
-    if isinstance(image_arr.flatten()[0], np.floating):
-        raise TypeError(f'{inspect.stack()[0][3]} of {__name__}: Expected image_arr {image_arr.shape} of dtype {np.int_}')
-    im = Image.fromarray(image_arr).resize(size=list(image_sz[:2]))
+def _get_resized(im, image_sz):
+    """Resize `im` to `image_sz` using PIL."""
+    # print(f'image_arr @ {__name__} is {image_arr.shape}')
+    new_sz = list(image_sz[:2])
+    im = im.resize(size=new_sz)
+    # print(f'im @ {__name__} is {im}')
     return np.asarray(im)
 
 
 def _get_random_im(image_sz):
     """Returns a randomly generated 8-bit image."""
-    return np.random.randint(size=image_sz, low=0, high=255)
+    return np.random.randint(size=image_sz, low=0, high=255, dtype=np.uint8)
 
 
-def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz=None, logits=None,
-                     feature_sz: tuple = None, color: dict = {}):
+def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz=None, random_img_sz=None,
+                     logits=None, feature_sz: tuple = None, color: dict = {}):
     """To display image array and annotations object. This is the default approach used by vis.VisBx
     :param image_arr: image array of shape `(H, W, C)`. If None, it is set to a
             random noise image of `image_sz=(100,100,3)` by default.
@@ -118,6 +156,7 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
         `v = vis.VisBx()` has all params set to None. If None, a random noise of `image_sz=(100, 100, 1)` is used.
         This random noise is the default image. If passed along with `image_arr`, then `image_arr` is reshaped to
         `image_sz` and annotations are scaled.
+    :param random_img_sz: Size of the image for random noise generation, default (100, 100, 3)
     :param logits: Logits as `ndarray` that should be overlayed on top of the image
             or `bool` to generate random logits.
     :param feature_sz: Feature size to generate random logits if `logits` is not None.
@@ -125,16 +164,21 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
             specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
     :returns: image_arr, annots, logits, color
     """
-    image_arr = _get_random_im((100, 100, 3)) if image_arr is None else image_arr
-    ann_im_sz = image_arr.shape
-    if image_sz is not None:
-        # only works with int dtype
-        image_arr = _get_resized(image_arr, image_sz)
+    if image_arr is None:
+        assert random_img_sz is not None, f'With image_arr={image_arr}, expected random_img_sz param to generate random noise.'
+        image_arr = _get_random_im(random_img_sz)
+    ann_im_sz = image_arr.shape  # size for which annotations are given
+    image_sz = image_arr.shape if image_sz is None else image_sz  # if resize is needed
+    if nequals(ann_im_sz, image_sz):  # if not equal, returns True
+        # print(f'The input size is {image_sz}, anchors calculated for {ann_im_sz}')
+        im = Image.fromarray(image_arr.astype(np.uint8))
+        image_arr = _get_resized(im, image_sz)
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, 'shape'):
-            assert feature_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected feature_sz to generate fake-logits'
+            assert feature_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: \
+            Expected feature_sz to generate fake-logits'
             logits = _get_feature(feature_sz)
     if annots is None:
         annots = [{k: 0 if k != 'label' else '' for k in voc_keys}]

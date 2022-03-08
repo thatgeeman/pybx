@@ -12,6 +12,8 @@ matplotlib = "==3.5"
 [dev-packages]
 build = "==0.7"
 twine = "==3.7"
+ipykernel = "*"
+pybx = {editable = true, path = "."}
 
 [requires]
 python_version = "3.7"
