@@ -1,16 +1,1 @@
-[
-  {
-    "x_min": 150,
-    "y_min": 70,
-    "x_max": 270,
-    "y_max": 220,
-    "label": "clock"
-  },
-  {
-    "x_min": 10,
-    "y_min": 180,
-    "x_max": 115,
-    "y_max": 260,
-    "label": "frame"
-  }
-]
+[{"x_min": 150, "y_min": 70, "x_max": 270, "y_max": 220, "label": "clock"}, {"x_min": 10, "y_min": 180, "x_max": 115, "y_max": 260, "label": "frame"}]
