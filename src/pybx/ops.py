@@ -74,26 +74,6 @@ def named_idx(x: np.ndarray, sfx: str = ''):
     return L([sfx + i.__str__() for i in idx])
 
 
-def validate_boxes(coords, image_sz, feature_sz, labels=None, clip=True, min_vis=0.25):
-    """Validate calculated anchor box coords.
-    :param coords: anchor box coordinates
-    :param labels: anchor box labels
-    :param image_sz: tuple of (width, height) of an image
-    :param feature_sz: tuple of (width, height) of a channel
-    :param clip: whether to apply np.clip
-    :param min_vis: minimum visibility dictates the condition for a box to be considered valid. The value corresponds to the
-    ratio of expected area to the calculated area after clipping to image dimensions.
-    :return: anchor box coordinates in [pascal_voc] format
-    """
-    _max = max(image_sz[0], image_sz[1])
-    # clip the boxes to image dimensions
-    b = get_bx(coords.clip(0, _max), labels) if clip else get_bx(coords, labels)
-    # check if the area of the bounding box is fitting the minimum area criterion
-    min_area = (image_sz[0] / feature_sz[0]) * (image_sz[1] / feature_sz[1]) * min_vis
-    b = get_bx([b_.values() for b_ in b if b_.area() > min_area])
-    return b
-
-
 def intersection_box(b1: np.ndarray, b2: np.ndarray):
     """Return the box that intersects two boxes in `pascal_voc` format."""
     if not isinstance(b1, np.ndarray):
