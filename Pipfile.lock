@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b6da96fac2d8c1d7d2abf28cb890b84c0da83a1a3ac7f01441619bdc1f82fb44"
+            "sha256": "44ecabc27f3c6be52ac07164299509f1f3f721d2b556d471b79780c591fc4d83"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -223,10 +223,6 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==22.0.4"
-        },
-        "pybx": {
-            "editable": true,
-            "path": "."
         },
         "pyparsing": {
             "hashes": [
@@ -912,6 +908,13 @@
             ],
             "index": "pypi",
             "version": "==7.1.1"
+        },
+        "python-build": {
+            "hashes": [
+                "sha256:f22ed87d097adf9a9e498b11f354e4b4bc5d285fc254a5c2050fa26b4e415506"
+            ],
+            "index": "pypi",
+            "version": "==0.2.13"
         },
         "python-dateutil": {
             "hashes": [
