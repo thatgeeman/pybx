@@ -34,9 +34,9 @@ class BaseBx:
     def __init__(self, coords, label: list = None):
         label = [label] if not is_listy(label) else label
         assert isinstance(coords, (list, np.ndarray)), \
-            f'{inspect.stack()[0][3]} of {__name__}: Expected type {list}/{np.ndarray} for coords, got {type(coords)}'
+            f'{__name__}: Expected type {list}/{np.ndarray} for coords, got {type(coords)}'
         assert isinstance(coords[0], (np.floating, np.int_, np.ndarray, list)), \
-            f'{inspect.stack()[0][3]} of {__name__}: Expected {float, int} or single-nested {list, np.ndarray} at coords[0], ' \
+            f'{__name__}: Expected {float, int} or single-nested {list, np.ndarray} at coords[0], ' \
             f'got {type(coords[0])} with {coords[0]}'
         w = sub(*coords[::2][::-1])
         h = sub(*coords[1::2][::-1])
@@ -254,7 +254,7 @@ class ListBx:
         l = []
         r = []
         for i, c in enumerate(coords):
-            assert isinstance(c, (list, tuple, np.ndarray)), f'{inspect.stack()[0][3]} of {__name__}: Expected b of type list/tuple/ndarray, got {type(c)}'
+            assert isinstance(c, (list, tuple, np.ndarray)), f'{__name__}: Expected b of type list/tuple/ndarray, got {type(c)}'
             l_ = c[-1] if len(c) > 4 else '' if label is None else label[i]
             l.append(l_)
             r.append(list(c[:-1]) if len(c) > 4 else c)

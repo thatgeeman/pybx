@@ -160,10 +160,10 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     :param no_ticks: whether to set axis ticks off
     :return: ax with image
     """
-    assert isinstance(img,
-                      np.ndarray), f'{inspect.stack()[0][3]} of {__name__}: Expected img as np.ndarray, got {type(img)}.'
-    assert len(img.shape) == 3, \
-        f'{inspect.stack()[0][3]} of {__name__}: Expected img of shape (w, h, c), got {img.shape} with len {len(img.shape)}'
+    assert isinstance(img, np.ndarray), f'{__name__}: Expected img as np.ndarray, got {type(img)}.'
+    assert len(img.shape) == 3, f'{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}'
+    if squeeze:
+        img = img.squeeze(0)
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
         fig.set_tight_layout(True)
