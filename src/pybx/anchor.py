@@ -17,7 +17,8 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     :param feature_sz: tuple of `(W, H)` of a channel
     :return: offsetted edges of each feature
     """
-    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
+    assert image_sz[-1] < image_sz[
+        0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     assert len(image_sz) == 3, f'{inspect.stack()[0][3]} of {__name__}: Expected image_sz of len 3, got {len(image_sz)}'
     assert op in __ops__, f'{inspect.stack()[0][3]} of {__name__}: Operator not in allowed operations: {__ops__}'
     w, h, _ = image_sz
@@ -31,7 +32,7 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     return edges
 
 
-def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, named=True, anchor_sfx: str = 'a'):
+def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, named=True, anchor_sfx: str = 'a', min_vis=0.25):
     """Calculate anchor box coords given an image size and feature size for a single aspect ratio.
     :param image_sz: tuple of (width, height) of an image
     :param feature_sz: tuple of (width, height) of a channel
@@ -39,10 +40,13 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
     :param clip: whether to apply np.clip
     :param named: whether to return (coords, labels)
     :param anchor_sfx: suffix for anchor label: anchor_sfx_asp_ratio_feature_sz
+    :param min_vis: minimum visibility dictates the condition for a box to be considered valid. The value corresponds to the
+    ratio of expected area to the calculated area after clipping to image dimensions.
     :return: anchor box coordinates in [pascal_voc] format
     """
-    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
-    _max = max(image_sz[0], image_sz[1])
+    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: \
+    Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
+    labels = None
     asp_ratio = 1. if asp_ratio is None else asp_ratio
     # n_boxes = __mul__(*feature_sz)
     top_edges = get_edges(image_sz, feature_sz, op='noop')
@@ -60,9 +64,8 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
     if named:
         anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
         labels = named_idx(coords, anchor_sfx)
-        return coords.clip(0, _max) if clip else coords, labels
-    # TODO :param valid_only: return only valid anchor boxes
-    return coords.clip(0, _max) if clip else coords
+    b = validate_boxes(coords, image_sz, feature_sz, labels=labels, clip=clip, min_vis=min_vis)
+    return b.coords, b.label if named else b.coords
 
 
 def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, named: bool = True, **kwargs):
@@ -73,7 +76,8 @@ def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, named: bool
     :param named: whether to return (coords, labels)
     :return: anchor box coordinates in [pascal_voc] format
     """
-    assert image_sz[-1] < image_sz[0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
+    assert image_sz[-1] < image_sz[
+        0], f'{inspect.stack()[0][3]} of {__name__}: Expected {image_sz[-1]} < {image_sz[0]}={image_sz[1]}'
     asp_ratios = [1 / 2., 1., 2.] if asp_ratios is None else asp_ratios
     feature_szs = [(8, 8), (2, 2)] if feature_szs is None else feature_szs
     # always named=True for bx() call. named=True in fn signature of bxs() is in its scope.
