@@ -8,12 +8,14 @@ fastcore = ">=1.3.20"
 numpy = "==1.21"
 pillow = ">=7.1"
 matplotlib = "==3.5"
+pybx = {editable = true, path = "."}
 
 [dev-packages]
 build = "==0.7"
 twine = "==3.7"
 ipykernel = "*"
 pybx = {editable = true, path = "."}
+pytest = "*"
 
 [requires]
 python_version = "3.7"
