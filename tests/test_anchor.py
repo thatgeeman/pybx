@@ -12,12 +12,12 @@ params = {
     "feature_sz": (2, 2),
     "asp_ratio": 1 / 2.,
     "image_sz": (10, 10, 3),
-    "data_dir": '../data',
+    "data_dir": './data',
 }
 
 results = {
     "bx_b": 80.0,
-    "bx_l": 'a_2x2_0.5_4',
+    "bx_l": 'a_2x2_0.5_3',
     "bxs_b": 1740.0,
     "bxs_l": 'a_3x3_0.5_2',
     "scaled_ans": (9.0, 6.0),

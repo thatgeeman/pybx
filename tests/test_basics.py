@@ -9,9 +9,9 @@ from pybx.excepts import BxViolation
 np.random.seed(1)
 
 params = {
-    "annots_rand_file": '../data/annots_rand.json',
-    "annots_iou_file": '../data/annots_iou.json',
-    "annots_key_file": '../data/annots_key.json',
+    "annots_rand_file": './data/annots_rand.json',
+    "annots_iou_file": './data/annots_iou.json',
+    "annots_key_file": './data/annots_key.json',
     "annots_l": [[50., 70., 120., 100., 'rand1'], [150., 200., 250., 240., 'rand2']],
     "annots_l_single": [98, 345, 420, 462],
     "annots_l_single_imsz": (640, 480),

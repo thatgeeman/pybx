@@ -8,7 +8,7 @@ params = {
     "feature_sz": (2, 2),
     "asp_ratio": 1 / 2.,
     "image_sz": (10, 10, 3),
-    "data_dir": '../data',
+    "data_dir": './data',
 }
 
 results = {
