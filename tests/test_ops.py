@@ -40,7 +40,7 @@ class OpsTestCase(unittest.TestCase):
         with open(params["annots_iou_file"]) as f:
             annots = json.load(f)
         array, label = ops.make_array(annots[1])
-        namedidx = ops.named_idx(array, 'a')
+        namedidx = ops.named_idx(len(array), 'a')
         self.assertEqual(namedidx[-1], results["namedidx"])
 
     def test_intersection_box(self):

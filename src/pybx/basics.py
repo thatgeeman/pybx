@@ -75,7 +75,7 @@ class BaseBx:
         From `v0.1.3`, validity implies that the box has non-zero area.
         """
         v_area = bool(self.area())  # False if 0
-        v_all = np.array([v_area])  # TODO: other methods to validate
+        v_all = np.array([v_area])
         return True if v_all.all() else False
 
     def xywh(self):

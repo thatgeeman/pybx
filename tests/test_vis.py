@@ -46,7 +46,7 @@ class VisTestCase(unittest.TestCase):
         self.v5 = VisBx(image_arr=params["image_arr"], annots=params["annots_nd"], feature_sz=params["feature_sz"])
 
         # use random image array
-        self.v6 = VisBx(random_im_sz=params["random_im_sz"])
+        self.v6 = VisBx(random_img_sz=params["image_sz"])
 
         # use logits data with image array
         self.v7 = VisBx(image_arr=params["image_arr"], annots=params["annots_l"], feature_sz=params["feature_sz"],
