@@ -70,6 +70,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     scaled = []
     for annot in annots:
         if isinstance(annot, dict):
+            # print(new_sz)
             d = _scale_annots_dict(annot, new_sz, ann_im_sz)
         elif isinstance(annot, list):
             d = _scale_annots_list(annot, new_sz, ann_im_sz)
@@ -142,7 +143,7 @@ def _get_resized(image_arr, image_sz):
 
 def _get_random_im(image_sz):
     """Returns a randomly generated 8-bit image."""
-    return np.random.randint(size=image_sz, low=0, high=255)
+    return np.random.randint(size=image_sz, low=0, high=255).astype(np.uint8)
 
 
 def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz=None, logits=None,
@@ -164,9 +165,14 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
     :returns: image_arr, annots, logits, color
     """
     image_arr = _get_random_im((100, 100, 3)) if image_arr is None else image_arr
+    # print(image_arr)
     ann_im_sz = image_arr.shape
     if image_sz is not None:
         image_arr = _get_resized(image_arr, image_sz)
+    else:
+        image_sz = image_arr.shape
+    if annots is not None:
+        # print(annots)
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
