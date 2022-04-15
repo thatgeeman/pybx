@@ -131,8 +131,8 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
         with open(os.path.join(pth, ann_fn)) as f:
             annots = json.load(f)  # annots for 300x300 image
 
-    if nequals(ann_im_sz, image_sz): # if not equal, returns True
-        image_arr = _get_resized(im, image_sz)
+    if nequals(ann_im_sz, image_sz):  # if not equal, returns True
+        image_arr = _get_resized(image_arr, image_sz)
         annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
 
     assert isinstance(annots, list), f'{inspect.stack()[0][3]} of {__name__}: \
