@@ -3,7 +3,7 @@ import json
 import os
 
 import numpy as np
-from PIL import Image
+import cv2
 from fastcore.test import nequals
 
 __all__ = ['get_example', 'get_given_array']
@@ -68,21 +68,34 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
     :return:
     """
     scaled = []
+    # make list of list if not correctly passed
+    if not isinstance(annots[0], (list, dict, np.ndarray)):
+        annots = [annots]
+
     for annot in annots:
+        # print(annot, new_sz)
         if isinstance(annot, dict):
             # print(new_sz)
             d = _scale_annots_dict(annot, new_sz, ann_im_sz)
         elif isinstance(annot, list):
             d = _scale_annots_list(annot, new_sz, ann_im_sz)
+        elif isinstance(annot, np.ndarray):
+            d = _scale_annots_list(annot.tolist(), new_sz, ann_im_sz)
+            # usually when ndarray is passed, label is empty
+            # so add the label key
+            try:
+                _ = d['label']
+            except KeyError:
+                d.update({'label': None})
         else:
             raise NotImplementedError(
-                f'{inspect.stack()[0][3]} of {__name__}: Expected annot of type dict, got {type(annot)}')
+                f'{inspect.stack()[0][3]} of {__name__}: Expected annot of type dict/list/ndarray, got {type(annot)}')
         scaled.append(d)
     return scaled
 
 
 def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_fn='image.jpg',
-                 load_ann=True, ann_fn='annots.json', logits=None, color: dict = {}):
+                 load_ann=True, ann_fn='annots.json', logits=None, color=None):
     """Get an example image from the pth given for some image size for a feature size.
     :param image_sz: size to resize the loaded image a different size (annotations scaled automatically)
     :param feature_sz: Feature size to generate random logits if `logits` is not None.
@@ -96,12 +109,13 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
             specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
     :returns: image_arr, annots, logits, color
     """
+    if color is None:
+        color = {}
     assert os.path.exists(os.path.join(pth, img_fn)), f'{pth} has no {img_fn}'
     assert len(image_sz) == 3, f'{inspect.stack()[0][3]} of {__name__}: \
     Expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}'
 
-    im = Image.open(os.path.join(pth, img_fn)).convert('RGB')
-    image_arr = np.asarray(im)
+    image_arr = cv2.cvtColor(cv2.imread(os.path.join(pth, img_fn)), cv2.COLOR_BGR2RGB)
     image_sz = image_arr.shape if image_sz is None else image_sz  # size to reshape into
     ann_im_sz = image_arr.shape  # original size
 
@@ -136,9 +150,8 @@ def _get_example(image_sz: tuple = None, feature_sz: tuple = None, pth='.', img_
 
 
 def _get_resized(image_arr, image_sz):
-    """Resize `image_arr` to `image_sz` using PIL."""
-    im = Image.fromarray(image_arr).convert('RGB').resize(size=list(image_sz[:2]))
-    return np.asarray(im)
+    """Resize `image_arr` to `image_sz` using opencv."""
+    return cv2.resize(image_arr, dsize=tuple(image_sz[:2]), interpolation=cv2.INTER_NEAREST)
 
 
 def _get_random_im(image_sz):
@@ -147,7 +160,7 @@ def _get_random_im(image_sz):
 
 
 def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz=None, logits=None,
-                     feature_sz: tuple = None, color: dict = {}):
+                     feature_sz: tuple = None, color=None):
     """To display image array and annotations object. This is the default approach used by vis.VisBx
     :param image_arr: image array of shape `(H, W, C)`. If None, it is set to a
             random noise image of `image_sz=(100,100,3)` by default.
@@ -164,6 +177,8 @@ def _get_given_array(image_arr: np.ndarray = None, annots: list = None, image_sz
             specific `label` in the image: `color = {'frame': 'blue', 'clock': 'green'}`
     :returns: image_arr, annots, logits, color
     """
+    if color is None:
+        color = {}
     image_arr = _get_random_im((100, 100, 3)) if image_arr is None else image_arr
     # print(image_arr)
     ann_im_sz = image_arr.shape
