@@ -86,7 +86,6 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
         anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
         labels = named_idx(len(coords), anchor_sfx)
     b = validate_boxes(coords, image_sz, feature_sz, labels=labels, clip=clip, min_vis=min_vis)
-    print(b.coords, b.label)
     return (b.coords, b.label) if named else b.coords
 
 
