@@ -47,7 +47,7 @@ class VisBx:
 
     def __init__(self, image_arr=None, image_sz=None, sample=False, **kwargs):
         if ('ann_fn' in kwargs) or ('img_fn' in kwargs) or sample:
-            assert image_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample={sample}'
+            assert image_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample=True'
             im, ann, lgt, clr = get_example(image_sz=image_sz, **kwargs)
         else:
             im, ann, lgt, clr = get_given_array(image_arr=image_arr, image_sz=image_sz, **kwargs)
@@ -147,8 +147,8 @@ def get_extents(shape):
 
 
 def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
-               color='yellow', no_ticks=False, xo=0, yo=0, **kwargs):
-    """Method to draw bounding boxes in an image, can handle multiple bboxes.
+               color='yellow', no_ticks=False, xo=0, yo=0, squeeze=False, **kwargs):
+    """Method to draw bounding boxes in an image, can handle multiple bboxes
     :param figsize: sige of figure
     :param img: the image array, expects a numpy array
     :param bbox: list of bounding boxes in json format
@@ -158,6 +158,7 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     :param xo: x offset for placement of text
     :param color: text color or dict of colors for each label as a dict
     :param no_ticks: whether to set axis ticks off
+    :param squeeze: squeeze axis
     :return: ax with image
     """
     assert isinstance(img, np.ndarray), f'{__name__}: Expected img as np.ndarray, got {type(img)}.'
