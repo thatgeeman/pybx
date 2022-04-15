@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 fastcore = ">=1.3.20"
 numpy = "==1.21"
-pillow = "==9.0.1"
 matplotlib = "==3.5"
+opencv-python = ">=4.0"
 
 [dev-packages]
 build = "==0.7"

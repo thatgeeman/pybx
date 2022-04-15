@@ -9,9 +9,9 @@ from pybx.excepts import NoIntersection
 np.random.seed(1)
 
 params = {
-    "data_dir": '../data',
-    "annots_iou_file": '../data/annots_iou.json',
-    "annots_rand_file": '../data/annots_rand.json',
+    "data_dir": './data',
+    "annots_iou_file": './data/annots_iou.json',
+    "annots_rand_file": './data/annots_rand.json',
 }
 
 results = {

@@ -33,10 +33,9 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op='noop'):
     return edges
 
 
-def validate_boxes(coords, image_sz, feature_sz, labels=None, clip=True, min_vis=0.25):
+def validate_boxes(coords, image_sz, feature_sz, clip=True, min_vis=0.25):
     """Validate calculated anchor box coords.
     :param coords: anchor box coordinates
-    :param labels: anchor box labels
     :param image_sz: tuple of (width, height) of an image
     :param feature_sz: tuple of (width, height) of a channel
     :param clip: whether to apply np.clip
@@ -46,10 +45,10 @@ def validate_boxes(coords, image_sz, feature_sz, labels=None, clip=True, min_vis
     """
     _max = max(image_sz[0], image_sz[1])
     # clip the boxes to image dimensions
-    b = get_bx(coords.clip(0, _max), labels) if clip else get_bx(coords, labels)
+    b = get_bx(coords.clip(0, _max)) if clip else get_bx(coords)
     # check if the area of the bounding box is fitting the minimum area criterion
     min_area = (image_sz[0] / feature_sz[0]) * (image_sz[1] / feature_sz[1]) * min_vis
-    b = get_bx([b_.values() for b_ in b if b_.area() > min_area])
+    b = [b_.coords for b_ in b if b_.area() > min_area]
     return b
 
 
@@ -82,10 +81,13 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
     xy_min = coords_center - coords_asp_wh / 2
     xy_max = coords_center + coords_asp_wh / 2
     coords = np.hstack([xy_min, xy_max])
+    # check for valid boxes
+    b = validate_boxes(coords, image_sz, feature_sz, clip=clip, min_vis=min_vis)
     if named:
         anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
-        labels = named_idx(len(coords), anchor_sfx)
-    b = validate_boxes(coords, image_sz, feature_sz, labels=labels, clip=clip, min_vis=min_vis)
+        labels = named_idx(len(b), anchor_sfx)
+    # init multibx
+    b = get_bx(b, labels)
     return (b.coords, b.label) if named else b.coords
 
 
