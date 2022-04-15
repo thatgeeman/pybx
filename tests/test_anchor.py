@@ -31,6 +31,18 @@ class AnchorTestCase(unittest.TestCase):
         self.assertEqual(len(b), len(l_))
         self.assertEqual(b.sum(), results["bx_b"], 'sum not matching')  # add assertion here
 
+    def test_bx_dtype(self):
+        b = anchor.bx(params["image_sz"], params["feature_sz"], params["asp_ratio"], named=False)
+        self.assertIsInstance(b, np.ndarray, 'box type is not ndarray')
+        self.assertIsInstance(b[0], np.ndarray, 'box item type is not array')
+
+    def test_bx_dtype_named(self):
+        b, l_ = anchor.bx(params["image_sz"], params["feature_sz"], params["asp_ratio"], named=True)
+        self.assertIsInstance(b, np.ndarray, 'box type is not ndarray')
+        self.assertIsInstance(b[0], np.ndarray, 'box item type is not array')
+        self.assertIsInstance(l_, list, 'label type is not list')
+        self.assertIsInstance(l_[0], str, 'label item type is not str')
+
     def test_bxs(self):
         b, l_ = anchor.bxs(params["image_sz"], params["feature_szs"], params["asp_ratios"])
         self.assertIn(results["bxs_l"], l_, 'label not matching')

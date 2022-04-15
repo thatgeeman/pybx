@@ -84,9 +84,10 @@ def bx(image_sz: tuple, feature_sz: tuple, asp_ratio: float = None, clip=True, n
     coords = np.hstack([xy_min, xy_max])
     if named:
         anchor_sfx = f'{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_'
-        labels = named_idx(coords, anchor_sfx)
+        labels = named_idx(len(coords), anchor_sfx)
     b = validate_boxes(coords, image_sz, feature_sz, labels=labels, clip=clip, min_vis=min_vis)
-    return b.coords, b.label if named else b.coords
+    print(b.coords, b.label)
+    return (b.coords, b.label) if named else b.coords
 
 
 def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, named: bool = True, **kwargs):
@@ -104,7 +105,4 @@ def bxs(image_sz, feature_szs: list = None, asp_ratios: list = None, named: bool
     # always named=True for bx() call. named=True in fn signature of bxs() is in its scope.
     coords_ = [bx(image_sz, f, ar, named=True, **kwargs) for f in feature_szs for ar in asp_ratios]
     coords_, labels_ = L(zip(*coords_))
-    if named:
-        labels = L([l_ for lab_ in labels_ for l_ in lab_])
-        return np.vstack(coords_), labels
-    return np.vstack(coords_)
+    return (np.vstack(coords_), L([l_ for lab_ in labels_ for l_ in lab_])) if named else np.vstack(coords_)

@@ -64,13 +64,13 @@ def make_array(x):
         raise NotImplementedError(f'{inspect.stack()[0][3]} of {__name__}: Expected {dict} got {type(x)}.')
 
 
-def named_idx(x: np.ndarray, sfx: str = ''):
-    """Return a list of indices as `str` matching the array size, suffixed with `sfx`.
-    :param x: 1-dimensional array
+def named_idx(ncoords: int, sfx: str = ''):
+    """Return a list of indices as `str` matching the array size, suffixed with `sfx`
+    :param ncoords: number of coordinates
     :param sfx: suffix to be added to the index
     :return: list of strings
     """
-    idx = np.arange(0, x.shape[0]).tolist()
+    idx = np.arange(0, ncoords).tolist()
     return L([sfx + i.__str__() for i in idx])
 
 
