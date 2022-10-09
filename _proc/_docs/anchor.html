@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.184">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Methods to create">
+
+<title>pybx - anchor</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="pybx - anchor">
+<meta property="og:description" content="Methods to create">
+<meta property="og:site-name" content="pybx">
+<meta name="twitter:title" content="pybx - anchor">
+<meta name="twitter:description" content="Methods to create">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">pybx</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">anchor</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container">
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">PyBx</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./anchor.html" class="sidebar-item-text sidebar-link active">anchor</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./01_basics.html" class="sidebar-item-text sidebar-link">01_basics.html</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./excepts.html" class="sidebar-item-text sidebar-link">Exceptions</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./ops.html" class="sidebar-item-text sidebar-link">Operations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./sample.html" class="sidebar-item-text sidebar-link">Samples</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container">
+  <a href="./vis.html" class="sidebar-item-text sidebar-link">Visualizations</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+
+  <ul>
+  <li><a href="#bxs" id="toc-bxs" class="nav-link active" data-scroll-target="#bxs">bxs</a></li>
+  <li><a href="#bx" id="toc-bx" class="nav-link" data-scroll-target="#bx">bx</a></li>
+  <li><a href="#validate_boxes" id="toc-validate_boxes" class="nav-link" data-scroll-target="#validate_boxes">validate_boxes</a></li>
+  <li><a href="#get_edges" id="toc-get_edges" class="nav-link" data-scroll-target="#get_edges">get_edges</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/thatgeeman/pybx/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">anchor</h1>
+</div>
+
+<div>
+  <div class="description">
+    Methods to create
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+
+
+
+  </div>
+
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/anchor.py#L115" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="bxs" class="level3">
+<h3 class="anchored" data-anchor-id="bxs">bxs</h3>
+<blockquote class="blockquote">
+<pre><code> bxs (image_sz, feature_szs:list=None, asp_ratios:list=None,
+      named:bool=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calculate anchor box coords given an image size and multiple feature sizes for mutiple aspect ratios. :param image_sz: tuple of (width, height) of an image :param feature_szs: list of feature sizes for anchor boxes, each feature size being a tuple of (width, height) of a channel :param asp_ratios: list of aspect rations for anchor boxes, each aspect ratio being a float calculated by (width:height) :param named: whether to return (coords, labels) :return: anchor box coordinates in [pascal_voc] format</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/anchor.py#L66" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="bx" class="level3">
+<h3 class="anchored" data-anchor-id="bx">bx</h3>
+<blockquote class="blockquote">
+<pre><code> bx (image_sz:tuple, feature_sz:tuple, asp_ratio:float=None, clip=True,
+     named=True, anchor_sfx:str='a', min_vis=0.25)</code></pre>
+</blockquote>
+<p>Calculate anchor box coords given an image size and feature size for a single aspect ratio. :param image_sz: tuple of (width, height) of an image :param feature_sz: tuple of (width, height) of a channel :param asp_ratio: aspect ratio (width:height) :param clip: whether to apply np.clip :param named: whether to return (coords, labels) :param anchor_sfx: suffix for anchor label: anchor_sfx_asp_ratio_feature_sz :param min_vis: minimum visibility dictates the condition for a box to be considered valid. The value corresponds to the ratio of expected area to the calculated area after clipping to image dimensions. :return: anchor box coordinates in [pascal_voc] format</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/anchor.py#L47" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="validate_boxes" class="level3">
+<h3 class="anchored" data-anchor-id="validate_boxes">validate_boxes</h3>
+<blockquote class="blockquote">
+<pre><code> validate_boxes (coords, image_sz, feature_sz, clip=True, min_vis=0.25)</code></pre>
+</blockquote>
+<p>Validate calculated anchor box coords. :param coords: anchor box coordinates :param image_sz: tuple of (width, height) of an image :param feature_sz: tuple of (width, height) of a channel :param clip: whether to apply np.clip :param min_vis: minimum visibility dictates the condition for a box to be considered valid. The value corresponds to the ratio of expected area to the calculated area after clipping to image dimensions. :return: anchor box coordinates in [pascal_voc] format</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/anchor.py#L17" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_edges" class="level3">
+<h3 class="anchored" data-anchor-id="get_edges">get_edges</h3>
+<blockquote class="blockquote">
+<pre><code> get_edges (image_sz:tuple, feature_sz:tuple, op='noop')</code></pre>
+</blockquote>
+<p>Generate offsetted top <code>(x_min, y_min)</code> or bottom edges <code>(x_max, y_max)</code> coordinates of a given feature size based on op. if <code>op</code> is <a href="https://thatgeeman.github.io/pybx/ops.html#noop"><code>noop</code></a>, gets the top edges. if <code>op</code> is <a href="https://thatgeeman.github.io/pybx/ops.html#add"><code>add</code></a>, gets the bottom edges. :param op: operation for calculating edges, either ‘add’ ‘sub’ ‘noop’ :param image_sz: tuple of <code>(W, H, C)</code> of an image :param feature_sz: tuple of <code>(W, H)</code> of a channel :return: offsetted edges of each feature</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button,
+        { trigger: "manual",
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config);
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

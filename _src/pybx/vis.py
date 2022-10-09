@@ -46,13 +46,17 @@ class VisBx:
     """
 
     def __init__(self, image_arr=None, image_sz=None, sample=False, **kwargs):
-        if ('ann_fn' in kwargs) or ('img_fn' in kwargs) or sample:
-            assert image_sz is not None, f'{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample=True'
+        if ("ann_fn" in kwargs) or ("img_fn" in kwargs) or sample:
+            assert (
+                image_sz is not None
+            ), f"{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample=True"
             im, ann, lgt, clr = get_example(image_sz=image_sz, **kwargs)
         else:
-            im, ann, lgt, clr = get_given_array(image_arr=image_arr, image_sz=image_sz, **kwargs)
+            im, ann, lgt, clr = get_given_array(
+                image_arr=image_arr, image_sz=image_sz, **kwargs
+            )
         ann = get_bx(ann)
-        store_attr('im, ann, lgt, clr')
+        store_attr("im, ann, lgt, clr")
 
     def show(self, coords=None, labels=None, color=None, ax=None, **kwargs):
         """Calling the `show()` method of the `VisBx()` instance accepts
@@ -65,7 +69,9 @@ class VisBx:
         if coords is None:
             coords = [0, 0, 0, 0]
         coords = get_bx(coords, labels)
-        return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs)
+        return draw(
+            self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs
+        )
 
 
 def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
@@ -90,11 +96,15 @@ def draw_outline(obj, linewidth: int):
     :param linewidth: width of the stroke
     :return: plt object
     """
-    obj.set_path_effects([patheffects.Stroke(linewidth=linewidth, foreground='black'),
-                          patheffects.Normal()])
+    obj.set_path_effects(
+        [
+            patheffects.Stroke(linewidth=linewidth, foreground="black"),
+            patheffects.Normal(),
+        ]
+    )
 
 
-def draw_text(ax, xy: tuple, label: str, size=12, color='white', xo=0, yo=0):
+def draw_text(ax, xy: tuple, label: str, size=12, color="white", xo=0, yo=0):
     """Write text around boxes.
     :param ax: axis object
     :param xy: relative ax coordinates x, y to draw the text
@@ -106,11 +116,13 @@ def draw_text(ax, xy: tuple, label: str, size=12, color='white', xo=0, yo=0):
     :return: ax object
     """
     x, y = xy
-    text = ax.text(x + xo, y + yo, label, verticalalignment='top', color=color, fontsize=size)
+    text = ax.text(
+        x + xo, y + yo, label, verticalalignment="top", color=color, fontsize=size
+    )
     draw_outline(text, 1)
 
 
-def draw_rectangle(ax, coords, color='white'):
+def draw_rectangle(ax, coords, color="white"):
     """Draw a rectangle using matplotlib patch.
     :param ax: axis
     :param coords: coordinates in coco format
@@ -119,11 +131,13 @@ def draw_rectangle(ax, coords, color='white'):
     """
     x1, y1, x2, y2 = coords
     w, h = x2 - x1, y2 - y1
-    patch = ax.add_patch(patches.Rectangle((x1, y1), w, h, fill=False, edgecolor=color, linewidth=2))
+    patch = ax.add_patch(
+        patches.Rectangle((x1, y1), w, h, fill=False, edgecolor=color, linewidth=2)
+    )
     draw_outline(patch, 2)
 
 
-def get_color(color, label=None, default_color='white'):
+def get_color(color, label=None, default_color="white"):
     """Get colors from color dict for a given label. If label=None, return `default_color`.
     :param color: dict of key, value pairs where key is label, value is color
     :param label: the label for which color is needed
@@ -139,15 +153,27 @@ def get_color(color, label=None, default_color='white'):
 
 def get_extents(shape):
     """Get extent parameter of the image."""
-    assert len(
-        shape) == 3, f'{inspect.stack()[0][3]} of {__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}'
+    assert (
+        len(shape) == 3
+    ), f"{inspect.stack()[0][3]} of {__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}"
     w, h, _ = shape
     extent = 0, w, h, 0
     return extent
 
 
-def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
-               color='yellow', no_ticks=False, xo=0, yo=0, squeeze=False, **kwargs):
+def draw_boxes(
+    img: np.ndarray,
+    bbox: list,
+    title=None,
+    ax=None,
+    figsize=(5, 4),
+    color="yellow",
+    no_ticks=False,
+    xo=0,
+    yo=0,
+    squeeze=False,
+    **kwargs,
+):
     """Method to draw bounding boxes in an image, can handle multiple bboxes
     :param figsize: sige of figure
     :param img: the image array, expects a numpy array
@@ -161,8 +187,12 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     :param squeeze: squeeze axis
     :return: ax with image
     """
-    assert isinstance(img, np.ndarray), f'{__name__}: Expected img as np.ndarray, got {type(img)}.'
-    assert len(img.shape) == 3, f'{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}'
+    assert isinstance(
+        img, np.ndarray
+    ), f"{__name__}: Expected img as np.ndarray, got {type(img)}."
+    assert (
+        len(img.shape) == 3
+    ), f"{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}"
     if squeeze:
         img = img.squeeze(0)
     if ax is None:
@@ -171,10 +201,11 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
     if title is not None:
         ax.set_title(title)
     if no_ticks:
-        ax.axis('off')
-    ax.imshow(img, cmap='Greys', **kwargs)
-    assert isinstance(bbox, (list, BaseBx, MultiBx, np.ndarray)), \
-        f'{inspect.stack()[0][3]} of {__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}.'
+        ax.axis("off")
+    ax.imshow(img, cmap="Greys", **kwargs)
+    assert isinstance(
+        bbox, (list, BaseBx, MultiBx, np.ndarray)
+    ), f"{inspect.stack()[0][3]} of {__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}."
 
     for b in bbox:
         try:
@@ -186,7 +217,7 @@ def draw_boxes(img: np.ndarray, bbox: list, title=None, ax=None, figsize=(5, 4),
                 x1, y1, x2, y2 = [b[k] for k in voc_keys[:-1]]
             if isinstance(b, (list, np.ndarray)):
                 x1, y1, x2, y2 = b
-            label = ''
+            label = ""
         c = get_color(color, label=label)
         draw_rectangle(ax, coords=(x1, y1, x2, y2), color=c)
         draw_text(ax, xy=(x1, y1), label=label, color=c, xo=xo, yo=yo)

@@ -9,10 +9,13 @@ from pybx.excepts import BxViolation
 np.random.seed(1)
 
 params = {
-    "annots_rand_file": './data/annots_rand.json',
-    "annots_iou_file": './data/annots_iou.json',
-    "annots_key_file": './data/annots_key.json',
-    "annots_l": [[50., 70., 120., 100., 'rand1'], [150., 200., 250., 240., 'rand2']],
+    "annots_rand_file": "./data/annots_rand.json",
+    "annots_iou_file": "./data/annots_iou.json",
+    "annots_key_file": "./data/annots_key.json",
+    "annots_l": [
+        [50.0, 70.0, 120.0, 100.0, "rand1"],
+        [150.0, 200.0, 250.0, 240.0, "rand2"],
+    ],
     "annots_l_single": [98, 345, 420, 462],
     "annots_l_single_imsz": (640, 480),
     "annots_a": np.random.randn(10, 4),
@@ -26,13 +29,13 @@ params = {
 }
 
 results = {
-    "mbx_json": (120.0, 'rand2'),
-    "mbx_list": (50.0, 'rand1'),
+    "mbx_json": (120.0, "rand2"),
+    "mbx_list": (50.0, "rand1"),
     "mbx_arr": -0.08959797456887511,
     "iou": 0.0425531914893617,
     "xywh": np.array([50.0, 70.0, 70.0, 30.0]),
-    "jbx_label": ['person', 4],
-    "yolo": [0.4046875, 0.840625, 0.503125, 0.24375]
+    "jbx_label": ["person", 4],
+    "yolo": [0.4046875, 0.840625, 0.503125, 0.24375],
 }
 
 
@@ -42,21 +45,21 @@ class BasicsTestCase(unittest.TestCase):
             annots = json.load(f)
         b = mbx(annots)
         r = b.coords[0][2], b.label[1]
-        self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
+        self.assertIsInstance(b, MultiBx, "b is not MultiBx")
         self.assertEqual(r, results["mbx_json"])
 
     def test_mbx_list(self):
         annots = params["annots_l"]
         b = mbx(annots)
         r = b.coords[0][2], b.label[1]
-        self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
+        self.assertIsInstance(b, MultiBx, "b is not MultiBx")
         self.assertEqual(r, results["mbx_json"])
 
     def test_mbx_array(self):
         annots = params["annots_a"]
         b = mbx(annots)
         r = b.coords.mean()
-        self.assertIsInstance(b, MultiBx, 'b is not MultiBx')
+        self.assertIsInstance(b, MultiBx, "b is not MultiBx")
         self.assertEqual(r, results["mbx_arr"])
 
     def test_label_key_jbx(self):
@@ -80,7 +83,9 @@ class BasicsTestCase(unittest.TestCase):
         b_m = mbx([annots[0], annots[1]])
         b1 = bbx(annots[2])
         b_r = b_m + b1
-        self.assertTrue((b1.coords == b_r.coords).any(), )
+        self.assertTrue(
+            (b1.coords == b_r.coords).any(),
+        )
 
     def test_bbx_warning(self):
         with open(params["annots_iou_file"]) as f:
@@ -160,5 +165,5 @@ class BasicsTestCase(unittest.TestCase):
         self.assertIsInstance(b, BaseBx)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

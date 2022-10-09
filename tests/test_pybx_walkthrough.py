@@ -78,20 +78,19 @@ def test_all_nbs():
 
     # In[ ]:
 
-    asp_ratios = [1 / 2., 1., 2.]
+    asp_ratios = [1 / 2.0, 1.0, 2.0]
 
     # In[ ]:
 
-
     n_boxes = sum([__mul__(*f) for f in feature_szs])
-    print(f'minimum anchor boxes with 1 aspect ratio: {n_boxes}')
-    print(f'minimum anchor boxes with {len(asp_ratios)} aspect ratios: {n_boxes * len(asp_ratios)}')
+    print(f"minimum anchor boxes with 1 aspect ratio: {n_boxes}")
+    print(
+        f"minimum anchor boxes with {len(asp_ratios)} aspect ratios: {n_boxes * len(asp_ratios)}"
+    )
 
     # # Loading an image
 
     # In[ ]:
-
-
 
     # In[ ]:
 
@@ -112,15 +111,17 @@ def test_all_nbs():
 
     # In[ ]:
 
-    bbox = [dict(x_min=150, y_min=70, x_max=270, y_max=220, label='clock'),
-            dict(x_min=10, y_min=180, x_max=115, y_max=260, label='frame'), ]
+    bbox = [
+        dict(x_min=150, y_min=70, x_max=270, y_max=220, label="clock"),
+        dict(x_min=10, y_min=180, x_max=115, y_max=260, label="frame"),
+    ]
     bbox
 
     # Save annotations as a json file.
 
     # In[ ]:
 
-    with open(datadir / 'annots.json', 'w') as f:
+    with open(datadir / "annots.json", "w") as f:
         f.write(json.dumps(bbox))
 
     # In[ ]:
@@ -131,19 +132,15 @@ def test_all_nbs():
 
     # In[ ]:
 
-
-
     image_sz = (300, 300, 3)  # W, H, C
     feature_sz = (3, 3)  # number of features along W, H
-    asp_ratio = 1.  # aspect ratio of the anchor box
+    asp_ratio = 1.0  # aspect ratio of the anchor box
 
     anchors, labels = anchor.bx(image_sz, feature_sz, asp_ratio)
 
     # There are several ways to visualize the anchors. First we import the `vis` method.
 
     # In[ ]:
-
-
 
     # In[ ]:
 
@@ -169,9 +166,9 @@ def test_all_nbs():
 
     # In[ ]:
 
-    v = vis.VisBx(image_arr=image_arr,
-                  annots=bbox,
-                  color={'frame': 'red', 'clock': 'blue'})
+    v = vis.VisBx(
+        image_arr=image_arr, annots=bbox, color={"frame": "red", "clock": "blue"}
+    )
 
     # In[ ]:
 
@@ -192,10 +189,12 @@ def test_all_nbs():
 
     # In[ ]:
 
-    v = vis.VisBx(image_sz=(300, 300, 3),
-                  color={'frame': 'red', 'clock': 'blue'},
-                  img_fn=datadir / 'image.jpg',
-                  ann_fn=datadir / 'annots.json')
+    v = vis.VisBx(
+        image_sz=(300, 300, 3),
+        color={"frame": "red", "clock": "blue"},
+        img_fn=datadir / "image.jpg",
+        ann_fn=datadir / "annots.json",
+    )
 
     # In[ ]:
 
@@ -220,8 +219,6 @@ def test_all_nbs():
     # We see there are 9 labels and box coordinates reported by `anchor.bx()` for our `feature_sz=3x3` and single `asp_ratio`. Once instantiated as a `MultiBx`, we can use the `mbx()` method.
 
     # In[ ]:
-
-
 
     b = mbx(anchors, labels)  # instantiates MultiBx for us
 
@@ -310,7 +307,9 @@ def test_all_nbs():
     # In[ ]:
 
     # ask VisBx to use random logits with logits=True
-    vis.VisBx(image_sz=image_sz, logits=True, feature_sz=feature_sz).show(anchors, labels)
+    vis.VisBx(image_sz=image_sz, logits=True, feature_sz=feature_sz).show(
+        anchors, labels
+    )
 
     # In[ ]:
 
@@ -331,15 +330,17 @@ def test_all_nbs():
     # In[ ]:
 
     v = vis.VisBx(image_sz=image_sz)
-    v.show(anchors, labels, color={'a_3x3_1.0_4': 'red', 'clock': 'orange'})
+    v.show(anchors, labels, color={"a_3x3_1.0_4": "red", "clock": "orange"})
 
     # The box `a_3x3_1.0_4` is not fully highlighted due to overlapping edges of other anchor boxes. A quick and dirty fix to isolate the said box:
 
     # In[ ]:
 
-    v.show([a for i, a in enumerate(anchors) if labels[i] == 'a_3x3_1.0_4'],
-           [l for l in labels if l == 'a_3x3_1.0_4'],
-           color={'a_3x3_1.0_4': 'red', 'clock': 'orange'})
+    v.show(
+        [a for i, a in enumerate(anchors) if labels[i] == "a_3x3_1.0_4"],
+        [l for l in labels if l == "a_3x3_1.0_4"],
+        color={"a_3x3_1.0_4": "red", "clock": "orange"},
+    )
 
     # # Working with mulitple feature sizes and aspect ratios
     # Finally we calculate anchor boxes for multiple feature sizes and aspect ratios.
@@ -347,7 +348,7 @@ def test_all_nbs():
     # In[ ]:
 
     feature_szs = [(3, 3), (2, 2)]
-    asp_ratios = [1 / 2., 2.]
+    asp_ratios = [1 / 2.0, 2.0]
 
     anchors, labels = anchor.bxs(image_sz, feature_szs, asp_ratios)
 
@@ -364,7 +365,7 @@ def test_all_nbs():
     # In[ ]:
 
     v = vis.VisBx(image_sz=image_sz)
-    v.show(anchors, labels, color={'a_3x3_0.5_4': 'red', 'a_2x2_0.5_0': 'red'})
+    v.show(anchors, labels, color={"a_3x3_0.5_4": "red", "a_2x2_0.5_0": "red"})
 
     # As simple as that! Do leave a star or raise issues and suggestions on the project page if you found this useful!
     #
@@ -375,12 +376,5 @@ def test_all_nbs():
     # In[ ]:
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-
-
-
-
-
-
-
