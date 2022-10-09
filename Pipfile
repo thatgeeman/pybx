@@ -5,11 +5,12 @@ name = "pypi"
 
 [packages]
 fastcore = "==1.5.27"
-numpy = "==1.21"
+numpy = ">=1.21.6"
 matplotlib = "==3.5"
 opencv-python = ">=4.0"
+pybx = {editable = true, path = "."}
 
-[dev-packages]
+[dev-packages] 
 build = "==0.7"
 twine = "==3.7"
 ipykernel = "==6.12.0"
@@ -17,7 +18,7 @@ pytest = "==7.1.1"
 python-build = "==0.2.13"
 nbdev = "==2.3.7"
 black = "*"
-pybx = {editable = true, path = "."}
+pillow = ">=9.1.1" 
 pre-commit = "*"
 
 [requires]
