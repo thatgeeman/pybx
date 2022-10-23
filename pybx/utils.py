@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['get_edges', 'validate_boxes', 'as_tuple']
 
-# %% ../nbs/02_utils.ipynb 1
+# %% ../nbs/02_utils.ipynb 2
 import inspect
 
 import numpy as np
@@ -13,7 +13,7 @@ from .basics import get_bx
 
 from fastcore.foundation import L
 
-# %% ../nbs/02_utils.ipynb 2
+# %% ../nbs/02_utils.ipynb 3
 def get_edges(image_sz: tuple, feature_sz: tuple, op="noop"):
     """Generate offsetted top `(x_min, y_min)` or bottom edges `(x_max, y_max)`
     coordinates of a given feature size based on op.
@@ -56,7 +56,7 @@ def validate_boxes(coords, image_sz, feature_sz, clip=True, min_visibility=0.25)
     bxs = L(list(b._coords) for b in bxs if b.area > min_area)
     return bxs
 
-# %% ../nbs/02_utils.ipynb 6
+# %% ../nbs/02_utils.ipynb 7
 def as_tuple(x):
     """Get x as a tuple (x, x) if not already a tuple.
 
