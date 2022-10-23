@@ -2,30 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://thatgeeman.github.io/pybx/anchor.html</loc>
-    <lastmod>2022-10-09T17:40:06.917Z</lastmod>
+    <lastmod>2022-10-09T21:33:18.149Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/01_basics.html</loc>
-    <lastmod>2022-10-09T17:40:07.254Z</lastmod>
+    <lastmod>2022-10-09T21:35:49.568Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/excepts.html</loc>
-    <lastmod>2022-10-09T17:40:07.572Z</lastmod>
+    <lastmod>2022-10-09T21:35:04.389Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/ops.html</loc>
-    <lastmod>2022-10-09T17:40:07.901Z</lastmod>
+    <lastmod>2022-10-09T21:35:07.732Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/sample.html</loc>
-    <lastmod>2022-10-09T17:40:08.164Z</lastmod>
+    <lastmod>2022-10-09T20:47:33.647Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/vis.html</loc>
-    <lastmod>2022-10-09T17:40:08.492Z</lastmod>
+    <lastmod>2022-10-09T20:47:55.940Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/index.html</loc>
-    <lastmod>2022-10-09T17:40:09.093Z</lastmod>
+    <lastmod>2022-10-09T21:29:28.435Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/02_utils.html</loc>
+    <lastmod>2022-10-09T21:08:51.422Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/basics.html</loc>
+    <lastmod>2022-10-09T21:41:09.492Z</lastmod>
   </url>
 </urlset>

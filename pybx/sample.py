@@ -12,10 +12,12 @@ import numpy as np
 import cv2
 from fastcore.test import nequals
 
-__all__ = ["get_example", "get_given_array"]
-
 from .ops import voc_keys
 
+# %% ../nbs/04_sample.ipynb 3
+__all__ = ["get_example", "get_given_array"]
+
+# %% ../nbs/04_sample.ipynb 4
 np.random.seed(1)
 
 

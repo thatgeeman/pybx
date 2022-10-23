@@ -16,7 +16,7 @@ from .basics import *
 from .ops import voc_keys
 from .sample import get_example, get_given_array
 
-
+# %% ../nbs/05_vis.ipynb 3
 class VisBx:
     """VisBx is used to visualize the bounding boxes.
     The image on of which the bounding boxes are to be drawn can be instantiated with
