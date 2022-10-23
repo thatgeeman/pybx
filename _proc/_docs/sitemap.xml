@@ -2,42 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://thatgeeman.github.io/pybx/anchor.html</loc>
-    <lastmod>2022-10-23T13:36:25.824Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/01_basics.html</loc>
-    <lastmod>2022-10-09T21:35:49.568Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/excepts.html</loc>
-    <lastmod>2022-10-23T13:36:19.853Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/ops.html</loc>
-    <lastmod>2022-10-23T13:36:50.634Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/sample.html</loc>
-    <lastmod>2022-10-23T13:36:51.138Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/vis.html</loc>
-    <lastmod>2022-10-23T13:36:14.549Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/index.html</loc>
-    <lastmod>2022-10-23T13:36:15.109Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/02_utils.html</loc>
-    <lastmod>2022-10-23T13:20:14.964Z</lastmod>
+    <lastmod>2022-10-23T13:53:58.965Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/basics.html</loc>
-    <lastmod>2022-10-23T13:36:49.271Z</lastmod>
+    <lastmod>2022-10-23T13:53:59.524Z</lastmod>
   </url>
   <url>
     <loc>https://thatgeeman.github.io/pybx/utils.html</loc>
-    <lastmod>2022-10-23T13:36:14.226Z</lastmod>
+    <lastmod>2022-10-23T13:53:59.817Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/ops.html</loc>
+    <lastmod>2022-10-23T13:54:00.175Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/sample.html</loc>
+    <lastmod>2022-10-23T13:54:00.477Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/vis.html</loc>
+    <lastmod>2022-10-23T13:54:00.784Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/excepts.html</loc>
+    <lastmod>2022-10-23T13:54:01.089Z</lastmod>
+  </url>
+  <url>
+    <loc>https://thatgeeman.github.io/pybx/index.html</loc>
+    <lastmod>2022-10-23T13:54:01.620Z</lastmod>
   </url>
 </urlset>
