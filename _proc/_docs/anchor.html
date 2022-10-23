@@ -175,7 +175,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_basics.html" class="sidebar-item-text sidebar-link">01_basics.html</a>
+  <a href="./basics.html" class="sidebar-item-text sidebar-link">Basic objects</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -329,7 +329,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 </tbody>
 </table>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}" data-execution_count="18">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>coords_1, labels_1 <span class="op">=</span> bx(<span class="dv">100</span>, <span class="dv">10</span>, <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Usually multiple anchor boxes with different <code>feature_sz</code> and <code>asp_ratio</code> are needed. This requirement arises in the case of multiscale object detection.</p>
@@ -398,22 +398,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 </tbody>
 </table>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}" data-execution_count="20">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>coords, labels <span class="op">=</span> bxs(<span class="dv">100</span>, [<span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">2</span>], [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}" data-execution_count="21">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>coords.shape, <span class="bu">len</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
+<div class="cell-output cell-output-display">
 <pre><code>((579, 4), 579)</code></pre>
 </div>
 </div>
 <p>All methods work with asymetric <code>image_sz</code> (and or <code>feature_szs</code> as well):</p>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}" data-execution_count="22">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>coords, labels <span class="op">=</span> bxs((<span class="dv">100</span>, <span class="dv">200</span>), [<span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">2</span>], [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}" data-execution_count="23">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>coords.shape, <span class="bu">len</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
+<div class="cell-output cell-output-display">
 <pre><code>((654, 4), 654)</code></pre>
 </div>
 </div>
