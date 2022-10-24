@@ -122,7 +122,10 @@ def draw_boxes(
     for b in bbox:
         label = ""
         if isinstance(b, BX_TYPE):
-            x1, y1, x2, y2, label = b.values[0]
+            try:
+                x1, y1, x2, y2, label = b.values[0]
+            except ValueError:
+                x1, y1, x2, y2 = b.values[0]
         if isinstance(b, dict):
             try:
                 x1, y1, x2, y2, label = [b[k] for k in voc_keys]
@@ -131,7 +134,7 @@ def draw_boxes(
         if isinstance(b, (list, np.ndarray)):
             try:
                 x1, y1, x2, y2, label = b
-            except:
+            except ValueError:
                 x1, y1, x2, y2 = b
             
         c = get_color(color, label=label)

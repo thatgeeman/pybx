@@ -120,6 +120,7 @@ class BaseBx(Bx):
     """
 
     def __init__(self, coords, label: list = None):
+        self.index = 0  # Fixes #2, calls itself everytime
         assert isinstance(coords, (list, L, np.ndarray)), f"{__name__}: Expected type list or np.ndarray for coords, got {type(coords)}"
         assert isinstance(coords[0], COORD_TYPES+ITER_TYPES), (
             f"{__name__}: Expected float, int or single-nested list or np.ndarray at coords[0], "
@@ -151,6 +152,34 @@ def iou(self:BaseBx, other):
     return 0.0 
 
 # %% ../nbs/01_basics.ipynb 32
+@patch
+def __iter__(self:BaseBx):
+    """Iterates through the boxes in `BaseBx` where self.valid is True."""
+    return self
+
+@patch
+def __getitem__(self:BaseBx, idx):
+        """Gets the item at index idx as a BaseBx."""
+        if idx>0: 
+            # Fixes #2
+            raise IndexError(f"BaseBx has only a single coordinate at idx=0. Got idx={idx}.")
+        return self
+
+@patch
+def __next__(self:BaseBx):
+    """Iteration is allowed only for valid boxes"""
+    try:
+        b = self[self.index]
+        if not b.valid:
+            # 0 area boxes are not valid
+            self.index += 1
+            return self.__next__()
+    except IndexError:
+        raise StopIteration
+    self.index += 1
+    return b
+
+# %% ../nbs/01_basics.ipynb 37
 class MultiBx:
     """`MultiBx` represents a collection of bounding boxes as ndarrays.
     Objects of type `MultiBx` can be indexed into, which returns a
@@ -188,7 +217,7 @@ class MultiBx:
         return self.bxs[idx]
 
     def __iter__(self):
-        """Iterates through the boxes in `MultiBx` where self.valid() is True."""
+        """Iterates through the boxes in `MultiBx` where self.valid is True."""
         return self
 
     def __next__(self):
@@ -215,10 +244,10 @@ class MultiBx:
         """Returns shape of the coordinates"""
         return self.coords.shape
 
-# %% ../nbs/01_basics.ipynb 33
+# %% ../nbs/01_basics.ipynb 38
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 46
+# %% ../nbs/01_basics.ipynb 51
 class __JsonBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -258,7 +287,7 @@ def jbx(coords=None, labels=None, keys=None):
     """
     return __JsonBx.jsonbx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 53
+# %% ../nbs/01_basics.ipynb 58
 class __ListBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -290,7 +319,7 @@ def lbx(coords=None, labels=None):
     """
     return __ListBx.listbx(coords, labels)
 
-# %% ../nbs/01_basics.ipynb 58
+# %% ../nbs/01_basics.ipynb 63
 @patch(cls_method=True)
 def multibox(cls:MultiBx, coords, label: list = None, keys: list=None):
     """Classmethod for `MultiBx`. Same as mbx(coords, label).
@@ -326,7 +355,7 @@ def mbx(coords=None, label=None, keys=None):
     return MultiBx.multibox(coords, label, keys)
 
 
-# %% ../nbs/01_basics.ipynb 71
+# %% ../nbs/01_basics.ipynb 76
 @patch(cls_method=True)
 def basebx(cls:BaseBx, coords, label: list = None, keys: list = voc_keys):
     """Classmethod for `BaseBx`. Same as bbx(coords, label), made to work with
@@ -342,7 +371,7 @@ def bbx(coords=None, labels=None, keys=voc_keys):
     """Alias of the `BaseBx` class."""
     return BaseBx.basebx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 84
+# %% ../nbs/01_basics.ipynb 89
 def get_bx(coords, label=None):
     """
     Helper function to check and call the correct type of Bx instance.
@@ -397,7 +426,7 @@ def get_bx(coords, label=None):
             f"{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}."
         )
 
-# %% ../nbs/01_basics.ipynb 93
+# %% ../nbs/01_basics.ipynb 98
 @patch
 def __add__(self:BaseBx, other):
         """Pseudo-add method that stacks the provided boxes and labels. Stacking two
@@ -439,7 +468,7 @@ def __add__(self:MultiBx, other):
     label = self.label + other.label
     return mbx(coords, label)
 
-# %% ../nbs/01_basics.ipynb 94
+# %% ../nbs/01_basics.ipynb 99
 def stack_bxs(b1, b2):
     """
     Method to stack two Bx-types together. Similar to `__add__` of BxTypes

@@ -132,7 +132,7 @@ def test_all_nbs():
 
     # In[ ]:
 
-    image_sz = (300, 300, 3)  # W, H, C
+    image_sz = (300, 300)  # W, H  # from v3.0
     feature_sz = (3, 3)  # number of features along W, H
     asp_ratio = 1.0  # aspect ratio of the anchor box
 
@@ -214,7 +214,7 @@ def test_all_nbs():
 
     # In[ ]:
 
-    anchors.shape, labels
+    len(anchors), labels
 
     # We see there are 9 labels and box coordinates reported by `anchor.bx()` for our `feature_sz=3x3` and single `asp_ratio`. Once instantiated as a `MultiBx`, we can use the `mbx()` method.
 
@@ -230,7 +230,7 @@ def test_all_nbs():
 
     # In[ ]:
 
-    [(i, b_.valid()) for i, b_ in enumerate(b)]  # only valid boxes shown
+    [(i, b_.valid) for i, b_ in enumerate(b)]  # only valid boxes shown
 
     # `b_.valid()` returned `True` meaning that the box is considered valid.
     #
@@ -240,7 +240,7 @@ def test_all_nbs():
 
     # In[ ]:
 
-    [b_.area() for b_ in b]
+    [b_.area for b_ in b]
 
     # Each `BaseBx` is also pseudo-iterable (calling an iterator returns `self` itself and not the coordinates or labels).
 
@@ -272,7 +272,7 @@ def test_all_nbs():
 
     # In[ ]:
 
-    [x for x in b_.values()]
+    [x for x in b_.values]
 
     # In[ ]:
 
