@@ -8,6 +8,7 @@ format:
     toc: true
 
 website:
+  repo-branch: dev_nbdev
   twitter-card: true
   open-graph: true
   repo-actions: [issue]

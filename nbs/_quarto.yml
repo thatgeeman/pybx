@@ -8,7 +8,7 @@ format:
     toc: true
 
 website:
-  repo-branch: master
+  repo-branch: dev_nbdev
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
@@ -16,7 +16,6 @@ website:
     background: primary
     search: true
   sidebar:
-    style: docked
-    background: dark
+    style: floating
 
 metadata-files: [nbdev.yml, sidebar.yml]

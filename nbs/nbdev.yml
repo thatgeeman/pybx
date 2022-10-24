@@ -5,5 +5,5 @@ website:
   title: "pybx"
   site-url: "https://thatgeeman.github.io/pybx"
   description: "A simple python module to generate anchor boxes for object detection tasks."
-  repo-branch: master
+  repo-branch: dev_nbdev
   repo-url: "https://github.com/thatgeeman/pybx"
