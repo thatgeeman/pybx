@@ -10,7 +10,7 @@ format:
 website:
   twitter-card: true
   open-graph: true
-  repo-branch: dev_nbdev
+  repo-branch: main
   repo-actions: [issue]
   navbar:
     background: primary
