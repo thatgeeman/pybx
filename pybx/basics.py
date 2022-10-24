@@ -27,16 +27,17 @@ class Bx:
     """Interface for all future Bx's"""
     def __init__(self, coords, label: list = None):
         label = label if label else []
-        label = L(label) if not is_listy(label) else label 
-        coords = L(coords)  # make list of list
+        label = L(label) if not is_listy(label) else label
+        coords = [coords] if len(coords)>1 else coords # make list of list
         store_attr("coords, label")
         # other props 
         _coords = coords[0]  # internatl representation as a list
+        assert len(_coords)==4, f'Expected 4 items in _coords, got {_coords}'
         x_min, y_min, x_max, y_max = _coords
         store_attr("x_min, y_min, x_max, y_max, _coords")
     
     def __str__(self):
-        return f'Bx(coords={self._coords}, label={self.label})'
+        return f'Bx(coords={self.coords}, label={self.label})'
     
     def __repr__(self):
         return self.__str__()
@@ -103,7 +104,7 @@ class Bx:
             return L([[self.cx / w, self.cy / h, self.w / w, self.h / h]])
         return L([[self.cx, self.cy, self.w, self.h]])
 
-# %% ../nbs/01_basics.ipynb 23
+# %% ../nbs/01_basics.ipynb 20
 class BaseBx(Bx):
     """BaseBx is the most primitive form of representing a bounding box.
     Coordinates and label of a bounding box can be wrapped as a BaseBx using:
@@ -130,7 +131,7 @@ class BaseBx(Bx):
         return f'BaseBx(coords={self.coords}, label={self.label})'
         
 
-# %% ../nbs/01_basics.ipynb 32
+# %% ../nbs/01_basics.ipynb 29
 @patch
 def iou(self:BaseBx, other):
     """Caclulates the Intersection Over Union (IOU) of the box
@@ -149,7 +150,7 @@ def iou(self:BaseBx, other):
         return int_area / union_area
     return 0.0 
 
-# %% ../nbs/01_basics.ipynb 35
+# %% ../nbs/01_basics.ipynb 32
 class MultiBx:
     """`MultiBx` represents a collection of bounding boxes as ndarrays.
     Objects of type `MultiBx` can be indexed into, which returns a
@@ -214,10 +215,10 @@ class MultiBx:
         """Returns shape of the coordinates"""
         return self.coords.shape
 
-# %% ../nbs/01_basics.ipynb 36
+# %% ../nbs/01_basics.ipynb 33
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 49
+# %% ../nbs/01_basics.ipynb 46
 class __JsonBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -257,7 +258,7 @@ def jbx(coords=None, labels=None, keys=None):
     """
     return __JsonBx.jsonbx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 56
+# %% ../nbs/01_basics.ipynb 53
 class __ListBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -289,7 +290,7 @@ def lbx(coords=None, labels=None):
     """
     return __ListBx.listbx(coords, labels)
 
-# %% ../nbs/01_basics.ipynb 61
+# %% ../nbs/01_basics.ipynb 58
 @patch(cls_method=True)
 def multibox(cls:MultiBx, coords, label: list = None, keys: list=None):
     """Classmethod for `MultiBx`. Same as mbx(coords, label).
@@ -297,19 +298,27 @@ def multibox(cls:MultiBx, coords, label: list = None, keys: list=None):
     of coords passed.
     """
     t = explode_types(coords)
-    if t == np.ndarray: return cls(coords, label)
+    # if explode_types returns a single class, it means they are not nested
+    if t == np.ndarray: 
+        return cls(coords, label)
+    if t == dict: 
+        b = jbx([coords], label, keys)
+        return cls(b.coords, b.label)
+    if t == list: 
+        b = lbx([coords], label)
+        return cls(b.coords, b.label)
     # if list of list or dicts
     type_l0 = list(t.keys())[0]
     type_l1 = t[type_l0][0]
     # process the data
-    if type_l1 == dict: # list of dicts
+    if type_l1 == dict: 
         b = jbx(coords, label, keys)
-        return cls(b.coords, b.label) 
+        return cls(b.coords, b.label)
     # process lists of lists or ndarray
-    try:
+    try: 
         b = lbx(coords, label)
-        return cls(b.coords, b.label) 
-    except:
+        return cls(b.coords, b.label)
+    except: 
         return cls(coords, label)        
     
 def mbx(coords=None, label=None, keys=None):
@@ -317,7 +326,7 @@ def mbx(coords=None, label=None, keys=None):
     return MultiBx.multibox(coords, label, keys)
 
 
-# %% ../nbs/01_basics.ipynb 73
+# %% ../nbs/01_basics.ipynb 71
 @patch(cls_method=True)
 def basebx(cls:BaseBx, coords, label: list = None, keys: list = voc_keys):
     """Classmethod for `BaseBx`. Same as bbx(coords, label), made to work with
@@ -333,7 +342,7 @@ def bbx(coords=None, labels=None, keys=voc_keys):
     """Alias of the `BaseBx` class."""
     return BaseBx.basebx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 86
+# %% ../nbs/01_basics.ipynb 84
 def get_bx(coords, label=None):
     """
     Helper function to check and call the correct type of Bx instance.

@@ -83,10 +83,9 @@ def named_idx(ncoords: int, sfx: str = ""):
     return L([sfx + i.__str__() for i in idx])
 
 
-def intersection_box(b1: np.ndarray, b2: np.ndarray):
+def intersection_box(b1: list, b2: list):
     """Return the box that intersects two boxes in `pascal_voc` format."""
-    if not isinstance(b1, np.ndarray):
-        raise TypeError(f"{inspect.stack()[0][3]} of {__name__}: Expected ndarrays.")
+    b1, b2 = np.array(b1), np.array(b2) 
     top_edge = np.max(np.vstack([b1, b2]), axis=0)[:2]
     bot_edge = np.min(np.vstack([b1, b2]), axis=0)[2:]
     if (bot_edge > top_edge).all():

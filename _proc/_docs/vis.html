@@ -21,6 +21,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -148,13 +211,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#draw_boxes" id="toc-draw_boxes" class="nav-link active" data-scroll-target="#draw_boxes">draw_boxes</a></li>
-  <li><a href="#get_extents" id="toc-get_extents" class="nav-link" data-scroll-target="#get_extents">get_extents</a></li>
-  <li><a href="#get_color" id="toc-get_color" class="nav-link" data-scroll-target="#get_color">get_color</a></li>
+  <li><a href="#draw" id="toc-draw" class="nav-link active" data-scroll-target="#draw">draw</a></li>
+  <li><a href="#draw_boxes" id="toc-draw_boxes" class="nav-link" data-scroll-target="#draw_boxes">draw_boxes</a></li>
   <li><a href="#draw_rectangle" id="toc-draw_rectangle" class="nav-link" data-scroll-target="#draw_rectangle">draw_rectangle</a></li>
   <li><a href="#draw_text" id="toc-draw_text" class="nav-link" data-scroll-target="#draw_text">draw_text</a></li>
+  <li><a href="#get_extents" id="toc-get_extents" class="nav-link" data-scroll-target="#get_extents">get_extents</a></li>
+  <li><a href="#get_color" id="toc-get_color" class="nav-link" data-scroll-target="#get_color">get_color</a></li>
   <li><a href="#draw_outline" id="toc-draw_outline" class="nav-link" data-scroll-target="#draw_outline">draw_outline</a></li>
-  <li><a href="#draw" id="toc-draw" class="nav-link" data-scroll-target="#draw">draw</a></li>
   <li><a href="#visbx" id="toc-visbx" class="nav-link" data-scroll-target="#visbx">VisBx</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/thatgeeman/pybx/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -185,8 +248,52 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 <!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>Load a sample image from the data directory <code>../data/image.jpg</code> and resize to <code>(200, 200, 3)</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>im, ann, lgt, clr <span class="op">=</span> get_example(image_sz<span class="op">=</span>(<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">3</span>), pth<span class="op">=</span><span class="st">'../data'</span>, img_fn<span class="op">=</span><span class="st">'image.jpg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>im</code> is the image of a clock and a frame, <code>ann</code> are the annotations for the image in json format, <code>lgt</code> are logits (activations from a layer) which can be displayed on top of the image, <code>clr</code> is a dict representing the colors to use for the different annotation keys.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ann, lgt, clr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>([{'x_min': 100.0,
+   'y_min': 46.666666666666664,
+   'x_max': 180.0,
+   'y_max': 146.66666666666666,
+   'label': 'clock'},
+  {'x_min': 6.666666666666667,
+   'y_min': 120.0,
+   'x_max': 76.66666666666667,
+   'y_max': 173.33333333333334,
+   'label': 'frame'}],
+ None,
+ {'frame': 'blue', 'clock': 'green'})</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.imshow(im)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Store the annotations as a <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>get_bx(ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[100.0, 46.666666666666664, 180.0, 146.66666666666666], [6.666666666666667, 120.0, 76.66666666666667, 173.33333333333334]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L170" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L142" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="draw" class="level3">
+<h3 class="anchored" data-anchor-id="draw">draw</h3>
+<blockquote class="blockquote">
+<pre><code> draw (img:numpy.ndarray, bbox:list, logits=None, alpha=0.4, **kwargs)</code></pre>
+</blockquote>
+<p>Method to draw an image, box and logits overlayed if passed. :param img: the image array, expects a numpy array :param bbox: list of bounding boxes in json format :param logits: activations that should be overlayed from a neural network (no checks) :param kwargs: kwargs for draw_boxes() :param alpha: same as alpha for matplotlib :return: current axis</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L81" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
 <section id="draw_boxes" class="level3">
 <h3 class="anchored" data-anchor-id="draw_boxes">draw_boxes</h3>
 <blockquote class="blockquote">
@@ -196,25 +303,7 @@ ul.task-list li input[type="checkbox"] {
 </blockquote>
 <p>Method to draw bounding boxes in an image, can handle multiple bboxes :param figsize: sige of figure :param img: the image array, expects a numpy array :param bbox: list of bounding boxes in json format :param title: image title :param ax: which axis if already present :param yo: y offset for placement of text :param xo: x offset for placement of text :param color: text color or dict of colors for each label as a dict :param no_ticks: whether to set axis ticks off :param squeeze: squeeze axis :return: ax with image</p>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L160" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="get_extents" class="level3">
-<h3 class="anchored" data-anchor-id="get_extents">get_extents</h3>
-<blockquote class="blockquote">
-<pre><code> get_extents (shape)</code></pre>
-</blockquote>
-<p>Get extent parameter of the image.</p>
-<hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L146" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="get_color" class="level3">
-<h3 class="anchored" data-anchor-id="get_color">get_color</h3>
-<blockquote class="blockquote">
-<pre><code> get_color (color, label=None, default_color='white')</code></pre>
-</blockquote>
-<p>Get colors from color dict for a given label. If label=None, return <code>default_color</code>. :param color: dict of key, value pairs where key is label, value is color :param label: the label for which color is needed :param default_color: :return: str that contains color</p>
-<hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L131" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L67" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="draw_rectangle" class="level3">
 <h3 class="anchored" data-anchor-id="draw_rectangle">draw_rectangle</h3>
@@ -223,7 +312,7 @@ ul.task-list li input[type="checkbox"] {
 </blockquote>
 <p>Draw a rectangle using matplotlib patch. :param ax: axis :param coords: coordinates in coco format :param color: text color :return: ax object</p>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L113" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L51" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="draw_text" class="level3">
 <h3 class="anchored" data-anchor-id="draw_text">draw_text</h3>
@@ -232,7 +321,25 @@ ul.task-list li input[type="checkbox"] {
 </blockquote>
 <p>Write text around boxes. :param ax: axis object :param xy: relative ax coordinates x, y to draw the text :param label: label for box :param size: font size :param yo: y offset for placement of text :param xo: x offset for placement of text :param color: text color :return: ax object</p>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L99" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L44" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_extents" class="level3">
+<h3 class="anchored" data-anchor-id="get_extents">get_extents</h3>
+<blockquote class="blockquote">
+<pre><code> get_extents (shape)</code></pre>
+</blockquote>
+<p>Get extent parameter of the image.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L30" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_color" class="level3">
+<h3 class="anchored" data-anchor-id="get_color">get_color</h3>
+<blockquote class="blockquote">
+<pre><code> get_color (color, label=None, default_color='white')</code></pre>
+</blockquote>
+<p>Get colors from color dict for a given label. If label=None, return <code>default_color</code>. :param color: dict of key, value pairs where key is label, value is color :param label: the label for which color is needed :param default_color: :return: str that contains color</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L21" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="draw_outline" class="level3">
 <h3 class="anchored" data-anchor-id="draw_outline">draw_outline</h3>
@@ -240,17 +347,53 @@ ul.task-list li input[type="checkbox"] {
 <pre><code> draw_outline (obj, linewidth:int)</code></pre>
 </blockquote>
 <p>Make outlines around to object edges for visibility in light backgrounds :param obj: plt objects like text or rectangle :param linewidth: width of the stroke :return: plt object</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ann</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 100.0,
+  'y_min': 46.666666666666664,
+  'x_max': 180.0,
+  'y_max': 146.66666666666666,
+  'label': 'clock'},
+ {'x_min': 6.666666666666667,
+  'y_min': 120.0,
+  'x_max': 76.66666666666667,
+  'y_max': 173.33333333333334,
+  'label': 'frame'}]</code></pre>
+</div>
+</div>
+<p>Drawing random box by passing coordinates as a list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>draw(im, [[<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">80</span>, <span class="dv">80</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Drawing random box by passing coordinates as a list along with label.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>draw(im, [[<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">80</span>, <span class="dv">80</span>, <span class="st">'random'</span>]], color<span class="op">=</span>{<span class="st">'random'</span>: <span class="st">'blue'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>draw(im, [{<span class="st">'x_min'</span>: <span class="dv">50</span>, <span class="st">'y_min'</span>: <span class="dv">30</span>, <span class="st">'x_max'</span>:<span class="dv">100</span>, <span class="st">'y_max'</span>:<span class="dv">120</span>, <span class="st">'label'</span>:<span class="st">'random'</span>}], <span class="op">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>{<span class="st">'random'</span>: <span class="st">'green'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+</div>
+</div>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L83" target="_blank" style="float:right; font-size:smaller">source</a></p>
-</section>
-<section id="draw" class="level3">
-<h3 class="anchored" data-anchor-id="draw">draw</h3>
-<blockquote class="blockquote">
-<pre><code> draw (img:numpy.ndarray, bbox:list, logits=None, alpha=0.4, **kwargs)</code></pre>
-</blockquote>
-<p>Method to draw an image, box and logits overlayed if passed. :param img: the image array, expects a numpy array :param bbox: list of bounding boxes in json format :param logits: activations that should be overlayed from a neural network (no checks) :param kwargs: kwargs for draw_boxes() :param alpha: same as alpha for matplotlib :return: current axis</p>
-<hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L20" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/vis.py#L158" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="visbx" class="level3">
 <h3 class="anchored" data-anchor-id="visbx">VisBx</h3>
@@ -259,8 +402,43 @@ ul.task-list li input[type="checkbox"] {
 </blockquote>
 <p>VisBx is used to visualize the bounding boxes. The image on of which the bounding boxes are to be drawn can be instantiated with <code>VisBx()</code> if needed. Calling the <code>show()</code> method of the <code>VisBx()</code> instance accepts bounding box coordinates and labels that are to be shown. The boxes can be provided as any of the internal objects (<a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>, <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>, …) or as any other raw format accepted by the internal objects.</p>
 <p>Displaying image array and annotations object: This is the default approach used by VisBx(). If no arguments are passed, a tuple denoting the size for random noise <code>random_img_sz=(100, 100, 1)</code> is expected. Some arguments: :param image_arr: image array of shape <code>(H, W, C)</code>. If None, it is set to a random noise image of <code>image_sz=(100,100,3)</code> by default. :param annots: annotations is any accepted format (see above).</p>
-<p>Displaying from image and annotations file: To load and display the image, set <code>sample=True</code>. Some argmuments: :param ann_fn: annotations file name, default <code>image.jpg</code> :param img_fn: image file name, default <code>annots.json</code> :param load_ann: whether to load ann_fn or just the img_fn. If False, an empty annotations dict is returned: <code>dict(zip(voc_keys, [0, 0, 1, 1, '']))</code> :param pth: path to find <code>ann_fn</code> and <code>img_fn</code>, default <code>.</code> :param image_sz: size to resize the loaded image a different size (annotations scaled automatically)</p>
+<p>Displaying from image and annotations file: To load and display the image, set <code>sample=True</code>. Some argmuments: :param ann_fn: annotations file name, default <code>annots.json</code> :param img_fn: image file name, default <code>image.jpg</code> :param load_ann: whether to load ann_fn or just the img_fn. If False, an empty annotations dict is returned: <code>dict(zip(voc_keys, [0, 0, 1, 1, '']))</code> :param pth: path to find <code>ann_fn</code> and <code>img_fn</code>, default <code>.</code> :param image_sz: size to resize the loaded image a different size (annotations scaled automatically)</p>
 <p>Common parameters: :param color: A dict of <code>color</code> can be passed to assign specific color to a specific <code>label</code> in the image: <code>color = {'frame': 'blue', 'clock': 'green'}</code> :param logits: Logits as <code>ndarray</code> that should be overlayed on top of the image or <code>bool</code> to generate random logits. :param feature_sz: Feature size to generate random logits if <code>logits</code> is not None.</p>
+<p>Displaying calculated anchors with a random image.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>anchor_boxes, anchor_labels <span class="op">=</span> bx(<span class="dv">200</span>, <span class="dv">3</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> VisBx(image_arr<span class="op">=</span>np.random.random((<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">3</span>)))  <span class="co"># a 200x200 image is generated</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> VisBx(image_arr<span class="op">=</span>np.random.random((<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">3</span>)), image_sz<span class="op">=</span>(<span class="dv">200</span>,<span class="dv">200</span>, <span class="dv">3</span>))  <span class="co"># a 10x10 will be resized to 200x200</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Displaying calculated anchors with a sample image.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> VisBx(pth<span class="op">=</span><span class="st">'../data/'</span>, img_fn<span class="op">=</span><span class="st">'image.jpg'</span>, image_sz<span class="op">=</span>(<span class="dv">200</span>,<span class="dv">200</span>, <span class="dv">3</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
+</div>
+</div>
 
 
 </section>

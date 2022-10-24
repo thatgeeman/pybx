@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 
 from pybx import anchor
+from pybx.basics import ITER_TYPES, ITER_TYPES_EXTRA, ITER_TYPES_TUPLE
 
 np.random.seed(1)
 
@@ -11,7 +12,7 @@ params = {
     "asp_ratios": [1 / 2.0, 1.0, 2.0],
     "feature_sz": (2, 2),
     "asp_ratio": 1 / 2.0,
-    "image_sz": (10, 10, 3),
+    "image_sz": (10, 10),
     "data_dir": "./data",
 }
 
@@ -30,24 +31,24 @@ class AnchorTestCase(unittest.TestCase):
         self.assertIn(results["bx_l"], l_, "label not matching")
         self.assertEqual(len(b), len(l_))
         self.assertEqual(
-            b.sum(), results["bx_b"], "sum not matching"
+            np.sum(b), results["bx_b"], "sum not matching"
         )  # add assertion here
 
     def test_bx_dtype(self):
         b = anchor.bx(
             params["image_sz"], params["feature_sz"], params["asp_ratio"], named=False
         )
-        self.assertIsInstance(b, np.ndarray, "box type is not ndarray")
-        self.assertIsInstance(b[0], np.ndarray, "box item type is not array")
+        self.assertIsInstance(b, ITER_TYPES)
+        self.assertIsInstance(b[0], ITER_TYPES)
 
     def test_bx_dtype_named(self):
         b, l_ = anchor.bx(
             params["image_sz"], params["feature_sz"], params["asp_ratio"], named=True
         )
-        self.assertIsInstance(b, np.ndarray, "box type is not ndarray")
-        self.assertIsInstance(b[0], np.ndarray, "box item type is not array")
-        self.assertIsInstance(l_, list, "label type is not list")
-        self.assertIsInstance(l_[0], str, "label item type is not str")
+        self.assertIsInstance(b, ITER_TYPES)
+        self.assertIsInstance(b[0], ITER_TYPES)
+        self.assertIsInstance(l_, ITER_TYPES)
+        self.assertIsInstance(l_[0], str)
 
     def test_bxs(self):
         b, l_ = anchor.bxs(

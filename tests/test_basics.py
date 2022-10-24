@@ -1,9 +1,10 @@
 import json
+import pytest
 import unittest
 
 import numpy as np
 
-from pybx.basics import mbx, bbx, MultiBx, jbx, stack_bxs, get_bx, BaseBx
+from pybx.basics import mbx, bbx, MultiBx, jbx, stack_bxs, get_bx, BX_TYPE, BaseBx
 from pybx.excepts import BxViolation
 
 np.random.seed(1)
@@ -45,7 +46,7 @@ class BasicsTestCase(unittest.TestCase):
             annots = json.load(f)
         b = mbx(annots)
         r = b.coords[0][2], b.label[1]
-        self.assertIsInstance(b, MultiBx, "b is not MultiBx")
+        self.assertIsInstance(b, BX_TYPE)
         self.assertEqual(r, results["mbx_json"])
 
     def test_mbx_list(self):
@@ -58,7 +59,7 @@ class BasicsTestCase(unittest.TestCase):
     def test_mbx_array(self):
         annots = params["annots_a"]
         b = mbx(annots)
-        r = b.coords.mean()
+        r = np.mean(b.coords)
         self.assertIsInstance(b, MultiBx, "b is not MultiBx")
         self.assertEqual(r, results["mbx_arr"])
 
@@ -75,7 +76,7 @@ class BasicsTestCase(unittest.TestCase):
         b1 = bbx(annots[1])
         b_r = b0 + b1
         b_m = mbx([annots[0], annots[1]])
-        self.assertTrue((b_r.coords == b_m.coords).all())
+        self.assertTrue(np.all(b_r.coords == b_m.coords))
 
     def test_add_mbx_bbx(self):
         with open(params["annots_iou_file"]) as f:
@@ -83,14 +84,8 @@ class BasicsTestCase(unittest.TestCase):
         b_m = mbx([annots[0], annots[1]])
         b1 = bbx(annots[2])
         b_r = b_m + b1
-        self.assertTrue(
-            (b1.coords == b_r.coords).any(),
-        )
-
-    def test_bbx_warning(self):
-        with open(params["annots_iou_file"]) as f:
-            annots = json.load(f)
-        self.assertRaises(AssertionError, bbx, coords=[annots])
+        print(b1.coords, b_r.coords)
+        self.assertIn(b1._coords, b_r.coords)
 
     def test_add_warning(self):
         with open(params["annots_iou_file"]) as f:
@@ -106,7 +101,7 @@ class BasicsTestCase(unittest.TestCase):
         b1 = bbx(annots[1])
         bm = mbx(annots[:2])
         bs = stack_bxs(b0, b1)
-        self.assertTrue((bs.coords == bm.coords).all())
+        self.assertTrue(np.all(bs.coords == bm.coords))
 
     def test_iou(self):
         with open(params["annots_iou_file"]) as f:
@@ -115,7 +110,7 @@ class BasicsTestCase(unittest.TestCase):
         b1 = bbx(annots[1])
         b2 = bbx(annots[2])  # intersecting box
         iou = b0.iou(b1)  # calculated iou
-        iou_ = b2.area() / (b0.area() + b1.area() - b2.area())
+        iou_ = b2.area / (b0.area + b1.area - b2.area)
         self.assertEqual(iou, iou_)
         self.assertEqual(iou, results["iou"])
 
@@ -123,16 +118,16 @@ class BasicsTestCase(unittest.TestCase):
         with open(params["annots_rand_file"]) as f:
             annots = json.load(f)
         b = bbx(annots[0])
-        self.assertTrue((b.xywh() == results["xywh"]).all(), True)
-        self.assertGreaterEqual(b.xywh()[-1], 0)
-        self.assertGreaterEqual(b.xywh()[-2], 0)
+        self.assertTrue(np.all(b.xywh[0] == results["xywh"]))
+        self.assertGreaterEqual(b.xywh[0][-1], 0)
+        self.assertGreaterEqual(b.xywh[0][-2], 0)
 
     def test_yolo(self):
         annots = params["annots_l_single"]
         b = bbx(annots)
         w, h = params["annots_l_single_imsz"]
         b_yolo = b.yolo(normalize=True, w=w, h=h)
-        self.assertTrue((b_yolo == results["yolo"]).all())
+        self.assertTrue(np.all(b_yolo[0] == results["yolo"]))
 
     def test_get_bx(self):
         with open(params["annots_rand_file"]) as f:
@@ -141,10 +136,10 @@ class BasicsTestCase(unittest.TestCase):
         annots_l_multi = params["annots_l"]
         self.assertIsInstance(get_bx(annots_l_single), BaseBx)  # list
         self.assertIsInstance(get_bx(annots_l_multi), MultiBx)  # nested list
-        self.assertIsInstance(get_bx(annots_json), MultiBx)  # json
-        self.assertIsInstance(get_bx(annots_json[0]), BaseBx)  # dict
+        self.assertIsInstance(get_bx(annots_json), MultiBx)  # MultiBx
         self.assertIsInstance(get_bx(get_bx(annots_json)), MultiBx)  # MultiBx
-        self.assertIsInstance(get_bx(get_bx(annots_json[0])), BaseBx)  # BaseBx
+        self.assertIsInstance(get_bx(get_bx([annots_json[0]])), MultiBx)  # MultiBx
+        self.assertIsInstance(get_bx([annots_json[0]]), MultiBx)  # MultiBx
 
     def test_type_mbx(self):
         b = get_bx(params["annots_i8"])
