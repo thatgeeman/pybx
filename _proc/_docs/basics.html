@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.184">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Basic object types and methods utilized in pybx">
+
+<title>pybx - Basic objects</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="pybx - Basic objects">
+<meta property="og:description" content="Basic object types and methods utilized in `pybx`">
+<meta property="og:site-name" content="pybx">
+<meta name="twitter:title" content="pybx - Basic objects">
+<meta name="twitter:description" content="Basic object types and methods utilized in `pybx`">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">pybx</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Basic objects</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Installation</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./anchor.html" class="sidebar-item-text sidebar-link">Generate anchor boxes</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics.html" class="sidebar-item-text sidebar-link active">Basic objects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">Utilities</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ops.html" class="sidebar-item-text sidebar-link">Operations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sample.html" class="sidebar-item-text sidebar-link">Samples</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vis.html" class="sidebar-item-text sidebar-link">Visualizations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./excepts.html" class="sidebar-item-text sidebar-link">Exceptions</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#bx" id="toc-bx" class="nav-link active" data-scroll-target="#bx">Bx</a></li>
+  <li><a href="#basebx" id="toc-basebx" class="nav-link" data-scroll-target="#basebx">BaseBx</a></li>
+  <li><a href="#basebx.iou" id="toc-basebx.iou" class="nav-link" data-scroll-target="#basebx.iou">BaseBx.iou</a></li>
+  <li><a href="#multibx" id="toc-multibx" class="nav-link" data-scroll-target="#multibx">MultiBx</a></li>
+  <li><a href="#jbx" id="toc-jbx" class="nav-link" data-scroll-target="#jbx">jbx</a></li>
+  <li><a href="#lbx" id="toc-lbx" class="nav-link" data-scroll-target="#lbx">lbx</a></li>
+  <li><a href="#mbx" id="toc-mbx" class="nav-link" data-scroll-target="#mbx">mbx</a></li>
+  <li><a href="#multibx.multibox" id="toc-multibx.multibox" class="nav-link" data-scroll-target="#multibx.multibox">MultiBx.multibox</a></li>
+  <li><a href="#bbx" id="toc-bbx" class="nav-link" data-scroll-target="#bbx">bbx</a></li>
+  <li><a href="#basebx.basebx" id="toc-basebx.basebx" class="nav-link" data-scroll-target="#basebx.basebx">BaseBx.basebx</a></li>
+  <li><a href="#get_bx" id="toc-get_bx" class="nav-link" data-scroll-target="#get_bx"><code>get_bx</code></a>
+  <ul class="collapse">
+  <li><a href="#get_bx-1" id="toc-get_bx-1" class="nav-link" data-scroll-target="#get_bx-1">get_bx</a></li>
+  <li><a href="#add_bxs" id="toc-add_bxs" class="nav-link" data-scroll-target="#add_bxs">add_bxs</a></li>
+  <li><a href="#stack_bxs" id="toc-stack_bxs" class="nav-link" data-scroll-target="#stack_bxs">stack_bxs</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/thatgeeman/pybx/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Basic objects</h1>
+</div>
+
+<div>
+  <div class="description">
+    Basic object types and methods utilized in <code>pybx</code>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.test <span class="im">import</span> test_eq, test_fail, test_warns, ExceptionExpected</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Anchor box coordinates of type <code>list</code>/<code>dict</code>/<code>json</code>/<code>array</code> can be converted to a <a href="https://thatgeeman.github.io/pybx/basics.html#bx"><code>Bx</code></a> instance. Once wrapped as a <a href="https://thatgeeman.github.io/pybx/basics.html#bx"><code>Bx</code></a> instance, some interesting properties can be calculated from the coordinates.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L29" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="bx" class="level3">
+<h3 class="anchored" data-anchor-id="bx">Bx</h3>
+<blockquote class="blockquote">
+<pre><code> Bx (coords, label:list=None)</code></pre>
+</blockquote>
+<p>Interface for all future Bx’s</p>
+<p>Initializing an empty <a href="https://thatgeeman.github.io/pybx/basics.html#bx"><code>Bx</code></a> class. It does a whole lot of things!</p>
+<p>Generate random coordinates for one anchor boxes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>annots <span class="op">=</span> [<span class="bu">sorted</span>([np.random.randint(<span class="dv">100</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">4</span>)])]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[14, 51, 71, 92]]</code></pre>
+</div>
+</div>
+<p>If a single list is passed, <a href="https://thatgeeman.github.io/pybx/basics.html#bx"><code>Bx</code></a> will make it a list of list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Bx(annots[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Bx(coords=[[14, 51, 71, 92]], label=[])</code></pre>
+</div>
+</div>
+<p>So the correct way to do it would be to pass a list of list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[14, 51, 71, 92]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> Bx(annots)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Bx(coords=[[14, 51, 71, 92]], label=[])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>b.cx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>42.5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>b.yolo()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[42.5, 71.5, 57, 41]]</code></pre>
+</div>
+</div>
+<p>To get normalized coordinates wrt to the image dimensions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>b.yolo(<span class="dv">224</span>, <span class="dv">224</span>, normalize<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[0.18973214285714285, 0.31919642857142855, 0.2544642857142857, 0.18303571428571427]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>b.values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[14, 51, 71, 92]]</code></pre>
+</div>
+</div>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#bx"><code>Bx</code></a> is inherited by all other types in <code>pybx</code>: <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>, <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>, <code>ListBx</code>, <code>JsonBx</code>, exposing the same properties.</p>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> works with other types of coordinates too. It accepts the coordinates and label for one anchor box in a <code>list</code> or <code>ndarray</code> format.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L119" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="basebx" class="level3">
+<h3 class="anchored" data-anchor-id="basebx">BaseBx</h3>
+<blockquote class="blockquote">
+<pre><code> BaseBx (coords, label:list=None)</code></pre>
+</blockquote>
+<p>BaseBx is the most primitive form of representing a bounding box. Coordinates and label of a bounding box can be wrapped as a BaseBx using: <code>bbx(coords, label)</code>.</p>
+<p>:param coords: can be of type <code>list</code> or <code>array</code> representing a single box. - <code>list</code> can be formatted with <code>label</code>: <code>[x_min, y_min, x_max, y_max, label]</code> or without <code>label</code>: <code>[x_min, y_min, x_max, y_max]</code> - <code>array</code> should be a 1-dimensional array of shape <code>(4,)</code></p>
+<p>:param label: a <code>list</code> or <code>str</code> that has the class name or label for the object in the corresponding box.</p>
+<p>Works with arrays and lists:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>BaseBx(annots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=[])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> BaseBx(annots, <span class="st">'flower'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=['flower'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>b.coords</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[14, 51, 71, 92]]</code></pre>
+</div>
+</div>
+<p>Calling the <code>values</code> attribute returns the labels along with the coordinates.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>b.values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[14, 51, 71, 92, 'flower']]</code></pre>
+</div>
+</div>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> also exposes a method to calculate the Intersection Over Union (IOU):</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L147" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="basebx.iou" class="level3">
+<h3 class="anchored" data-anchor-id="basebx.iou">BaseBx.iou</h3>
+<blockquote class="blockquote">
+<pre><code> BaseBx.iou (other)</code></pre>
+</blockquote>
+<p>Caclulates the Intersection Over Union (IOU) of the box w.r.t. another <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>. Returns the IOU only if the box is considered <code>valid</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=['flower'])</code></pre>
+</div>
+</div>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> is also pseudo-iterable (calling an iterator returns <code>self</code> itself and not the coordinates or labels).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> BaseBx(annots, <span class="st">'flower'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">next</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=['flower'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> b_ <span class="kw">in</span> b:</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(b_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Working with multiple bounding boxes and annotaions is usually done with the help of <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>. <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> allows iteration.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L195" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="multibx" class="level3">
+<h3 class="anchored" data-anchor-id="multibx">MultiBx</h3>
+<blockquote class="blockquote">
+<pre><code> MultiBx (coords, label:list=None)</code></pre>
+</blockquote>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> represents a collection of bounding boxes as ndarrays. Objects of type <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> can be indexed into, which returns a <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> exposing a suite of box-bound operations. Multiple coordinates and labels of bounding boxes can be wrapped as a <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> using: <code>mbx(coords, label)</code>. :param coords: can be nested coordinates of type <code>list</code> of <code>list</code>s/<code>json</code> records (<code>list</code>s of <code>dict</code>s)/<code>ndarray</code>s representing multiple boxes. If passing a list/json each index of the object should be of the following formats: - <code>list</code> can be formatted with <code>label</code>: <code>[x_min, y_min, x_max, y_max, label]</code> or without <code>label</code>: <code>[x_min, y_min, x_max, y_max]</code> - <code>dict</code> should be in <code>pascal_voc</code> format using the keys {“x_min”: 0, “y_min”: 0, “x_max”: 1, “y_max”: 1, “label”: ‘none’} If passing an <code>ndarray</code>, it should be of shape <code>(N,4)</code>.</p>
+<p>:param label: a <code>list</code> of <code>str</code>s that has the class name or label for the object in the corresponding box.</p>
+<p>Generate random coordinates:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>annots <span class="op">=</span> [<span class="bu">sorted</span>([np.random.randint(<span class="dv">100</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">4</span>)]) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>)]</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99]]</code></pre>
+</div>
+</div>
+<p>All annotations are stored as a <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> in a container called <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>bxs <span class="op">=</span> MultiBx(annots, [<span class="st">'apple'</span>, <span class="st">'coke'</span>, <span class="st">'tree'</span>])</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>bxs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99]], label=['apple', 'coke', 'tree'])</code></pre>
+</div>
+</div>
+<p>Each index reveals the stored coordinate as a <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>bxs[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=['apple'])</code></pre>
+</div>
+</div>
+<p>They can also be iterated:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="bu">next</span>(bxs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=['apple'])</code></pre>
+</div>
+</div>
+<p>Or using list comprehension, properties of individual boxes can be extracted</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>[b.area <span class="cf">for</span> b <span class="kw">in</span> bxs]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[2337, 1612, 325]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>bxs[<span class="dv">0</span>].valid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>True</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[True, True]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>bxs[<span class="dv">1</span>].yolo()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[51.0, 73.0, 62, 26]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>bxs[<span class="dv">0</span>].area</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>2337</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>[b_.area <span class="cf">for</span> b_ <span class="kw">in</span> bxs]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[1612, 325]</code></pre>
+</div>
+</div>
+<p>Extending <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> to also accept (<code>json</code>, <code>dict</code>) formatted coordinates and labels.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L299" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="jbx" class="level3">
+<h3 class="anchored" data-anchor-id="jbx">jbx</h3>
+<blockquote class="blockquote">
+<pre><code> jbx (coords=None, labels=None, keys=None)</code></pre>
+</blockquote>
+<p>Alias of the JsonBx class to process <code>json</code> records into <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> or <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> objects exposing many validation methods</p>
+<p>Also accepts keys as a list, otherwise uses <code>voc_keys</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>annots <span class="op">=</span> json.load(<span class="bu">open</span>(<span class="st">'../data/annots.json'</span>))</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 150, 'y_min': 70, 'x_max': 270, 'y_max': 220, 'label': 'clock'},
+ {'x_min': 10, 'y_min': 180, 'x_max': 115, 'y_max': 260, 'label': 'frame'}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>jbx(annots, keys<span class="op">=</span>voc_keys)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>__JsonBx(coords=[[150, 70, 270, 220], [10, 180, 115, 260]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<p>Also accepts keys (for the dict) as a list, otherwise uses <code>voc_keys</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>voc_keys</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['x_min', 'y_min', 'x_max', 'y_max', 'label']</code></pre>
+</div>
+</div>
+<p>Making <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> work with lists with more than 4 items. It is a common practice to have the class label along with the coordinates. This classmethod is useful in such situations</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>ITER_TYPES</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(numpy.ndarray, list, fastcore.foundation.L)</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L333" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="lbx" class="level3">
+<h3 class="anchored" data-anchor-id="lbx">lbx</h3>
+<blockquote class="blockquote">
+<pre><code> lbx (coords=None, labels=None)</code></pre>
+</blockquote>
+<p>Alias of the __ListBx class to process <code>list</code> into <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> or <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> objects exposing many validation methods</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>annots <span class="op">=</span> [[<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="st">'apple'</span>], [<span class="dv">40</span>, <span class="dv">50</span>, <span class="dv">80</span>, <span class="dv">90</span>, <span class="st">'coke'</span>], ]</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[10, 20, 100, 200, 'apple'], [40, 50, 80, 90, 'coke']]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>lbx(annots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>__ListBx(coords=[[10, 20, 100, 200], [40, 50, 80, 90]], label=['apple', 'coke'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>lbx(annots)[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[10, 20, 100, 200]], label=['apple'])</code></pre>
+</div>
+</div>
+<p>Inserting classmethod to process lists and dicts in <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L370" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="mbx" class="level3">
+<h3 class="anchored" data-anchor-id="mbx">mbx</h3>
+<blockquote class="blockquote">
+<pre><code> mbx (coords=None, label=None, keys=None)</code></pre>
+</blockquote>
+<p>Alias of the <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> class.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L340" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="multibx.multibox" class="level3">
+<h3 class="anchored" data-anchor-id="multibx.multibox">MultiBx.multibox</h3>
+<blockquote class="blockquote">
+<pre><code> MultiBx.multibox (coords, label:list=None, keys:list=None)</code></pre>
+</blockquote>
+<p>Classmethod for <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>. Same as mbx(coords, label). Calls classmethods of <code>JsonBx</code> and <code>ListBx</code> based on the type of coords passed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>annots_list <span class="op">=</span> annots</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>annots_list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[10, 20, 100, 200, 'apple'], [40, 50, 80, 90, 'coke']]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>annots_json <span class="op">=</span> json.load(<span class="bu">open</span>(<span class="st">'../data/annots.json'</span>))</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>annots_json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 150, 'y_min': 70, 'x_max': 270, 'y_max': 220, 'label': 'clock'},
+ {'x_min': 10, 'y_min': 180, 'x_max': 115, 'y_max': 260, 'label': 'frame'}]</code></pre>
+</div>
+</div>
+<p>How the class method works:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> explode_types(annots_list)  <span class="co"># get all types</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>t</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{list: [{list: [int, int, int, int, str]}, {list: [int, int, int, int, str]}]}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>t[<span class="bu">list</span>][<span class="dv">0</span>]  <span class="co"># index into the nested list and call the right class</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{list: [int, int, int, int, str]}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>mbx(annots_json)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[150, 70, 270, 220], [10, 180, 115, 260]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>mbx(annots_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[10, 20, 100, 200], [40, 50, 80, 90]], label=['apple', 'coke'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>mbx(annots_json[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[150, 70, 270, 220]], label=['clock'])</code></pre>
+</div>
+</div>
+<p>Checking if it works with ndarrays</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>annots <span class="op">=</span> np.array([<span class="bu">sorted</span>([np.random.randint(<span class="dv">100</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">4</span>)]) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>)])</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[14, 51, 71, 92],
+       [20, 60, 82, 86],
+       [74, 74, 87, 99]])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>mbx(annots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99]], label=[None, None, None])</code></pre>
+</div>
+</div>
+<p>Allowing <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> to process a single <code>dict</code> and <code>list</code> directly.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L387" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="bbx" class="level3">
+<h3 class="anchored" data-anchor-id="bbx">bbx</h3>
+<blockquote class="blockquote">
+<pre><code> bbx (coords=None, labels=None, keys=['x_min', 'y_min', 'x_max', 'y_max',
+      'label'])</code></pre>
+</blockquote>
+<p>Alias of the <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> class.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L376" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="basebx.basebx" class="level3">
+<h3 class="anchored" data-anchor-id="basebx.basebx">BaseBx.basebx</h3>
+<blockquote class="blockquote">
+<pre><code> BaseBx.basebx (coords, label:list=None, keys:list=['x_min', 'y_min',
+                'x_max', 'y_max', 'label'])</code></pre>
+</blockquote>
+<p>Classmethod for <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>. Same as bbx(coords, label), made to work with other object types other than ndarray.</p>
+<p>Remember that <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> can only have one box coordinate and label at a time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>annots_list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[10, 20, 100, 200, 'apple'], [40, 50, 80, 90, 'coke']]</code></pre>
+</div>
+</div>
+<p>What does <a href="https://thatgeeman.github.io/pybx/ops.html#make_single_iterable"><code>make_single_iterable</code></a> do? It converts a single list or dict of coordinates into an iterable list that can be used by <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>annots_list[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[10, 20, 100, 200, 'apple']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>make_single_iterable(annots_list[<span class="dv">0</span>], keys<span class="op">=</span>voc_keys)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>((#1) [[10, 20, 100, 200]], ['apple'])</code></pre>
+</div>
+</div>
+<p>The class method makes it easier to directly call <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> without making the coordinates a list of list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>bbx(annots_list[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[10, 20, 100, 200]], label=['apple'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>annots_list[<span class="dv">0</span>][:<span class="op">-</span><span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[10, 20, 100, 200]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>bbx(annots_list[<span class="dv">0</span>][:<span class="op">-</span><span class="dv">1</span>])  <span class="co"># if label is not passed</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[10, 20, 100, 200]], label=[])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a>bbx(annots_json[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[150, 70, 270, 220]], label=['clock'])</code></pre>
+</div>
+</div>
+</section>
+<section id="get_bx" class="level1">
+<h1><a href="https://thatgeeman.github.io/pybx/basics.html#get_bx"><code>get_bx</code></a></h1>
+<p>When in doubt, use <a href="https://thatgeeman.github.io/pybx/basics.html#get_bx"><code>get_bx</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>ITER_TYPES</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(numpy.ndarray, list, fastcore.foundation.L)</code></pre>
+</div>
+</div>
+<pre><code>/mnt/data/projects/pybx/.venv/lib/python3.7/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Raises
+  else: warn(msg)</code></pre>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L392" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_bx-1" class="level3">
+<h3 class="anchored" data-anchor-id="get_bx-1">get_bx</h3>
+<blockquote class="blockquote">
+<pre><code> get_bx (coords, label=None)</code></pre>
+</blockquote>
+<p>Helper function to check and call the correct type of Bx instance.</p>
+<p>Checks for the type of data passed and calls the respective class to generate a Bx instance. Currently only supports ndarray, list, dict, tuple, nested list, nested tuple.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>coords</td>
+<td>ndarray, list, dict, tuple, nested list, nested tuple</td>
+<td></td>
+<td>Coordinates of anchor boxes.</td>
+</tr>
+<tr class="even">
+<td>label</td>
+<td>NoneType</td>
+<td>None</td>
+<td>Labels for anchor boxes in order, by default None</td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>Bx</strong></td>
+<td></td>
+<td><strong>An instance of MultiBx, ListBx, BaseBx or JsonBx</strong></td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#get_bx"><code>get_bx</code></a> runs a bunch of if-else statements to call the right module when in doubt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>annots_json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 150, 'y_min': 70, 'x_max': 270, 'y_max': 220, 'label': 'clock'},
+ {'x_min': 10, 'y_min': 180, 'x_max': 115, 'y_max': 260, 'label': 'frame'}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>get_bx(annots_json)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[150, 70, 270, 220], [10, 180, 115, 260]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(annots_json[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>get_bx([annots_json[<span class="dv">0</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[150, 70, 270, 220]], label=['clock'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a>get_bx(annots_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[10, 20, 100, 200], [40, 50, 80, 90]], label=['apple', 'coke'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a>get_bx([<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[0, 1, 0, 1]], label=[])</code></pre>
+</div>
+</div>
+<p>Enabling stacking of different boxes.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L531" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="add_bxs" class="level3">
+<h3 class="anchored" data-anchor-id="add_bxs">add_bxs</h3>
+<blockquote class="blockquote">
+<pre><code> add_bxs (b1, b2)</code></pre>
+</blockquote>
+<p>Alias of stack_bxs().</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/basics.py#L489" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="stack_bxs" class="level3">
+<h3 class="anchored" data-anchor-id="stack_bxs">stack_bxs</h3>
+<blockquote class="blockquote">
+<pre><code> stack_bxs (b1, b2)</code></pre>
+</blockquote>
+<p>Method to stack two Bx-types together. Similar to <code>__add__</code> of BxTypes but avoids UserWarning. :param b1: :param b2: :return:<br>
+<em>summary</em></p>
+<table class="table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 38%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>b1</td>
+<td>Bx, MultiBx</td>
+<td>Anchor box coordinates Bx</td>
+</tr>
+<tr class="even">
+<td>b2</td>
+<td>Bx, MultiBx</td>
+<td>Anchor box coordinates Bx</td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>MultiBx</strong></td>
+<td><strong>Stacked anchor box coordinates of MultiBx type.</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[14, 51, 71, 92]], label=['flower'])</code></pre>
+</div>
+</div>
+<p>Internally this is what is done to stack them:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb131"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb131-1"><a href="#cb131-1" aria-hidden="true" tabindex="-1"></a>bxs.coords <span class="op">+</span> b.coords, bxs.label <span class="op">+</span> b.label</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>([[14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99], [14, 51, 71, 92]],
+ (#4) ['apple','coke','tree','flower'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a>bxs <span class="op">+</span> b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99], [14, 51, 71, 92]], label=['apple', 'coke', 'tree', 'flower'])</code></pre>
+</div>
+</div>
+<p>Adding a <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> to a <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> makes the new set of coordinates a <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>, so a <a href="https://thatgeeman.github.io/pybx/excepts.html#bxviolation"><code>BxViolation</code></a> warning is issued if this was not intended.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">+</span> bxs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/gg/data/pybx/.venv/lib/python3.7/site-packages/ipykernel_launcher.py:19: BxViolation: Change of object type imminent if trying to add &lt;class '__main__.BaseBx'&gt;+&lt;class '__main__.MultiBx'&gt;. Use &lt;class '__main__.MultiBx'&gt;+&lt;class '__main__.BaseBx'&gt; instead or basics.stack_bxs().</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[14, 51, 71, 92], [14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99]], label=['flower', 'apple', 'coke', 'tree'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>stack_bxs(b, bxs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[14, 51, 71, 92], [14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99]], label=['flower', 'apple', 'coke', 'tree'])</code></pre>
+</div>
+</div>
+<p>To avoid the <a href="https://thatgeeman.github.io/pybx/excepts.html#bxviolation"><code>BxViolation</code></a>, use the method <a href="https://thatgeeman.github.io/pybx/basics.html#stack_bxs"><code>stack_bxs</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>stack_bxs(bxs, b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[14, 51, 71, 92], [20, 60, 82, 86], [74, 74, 87, 99], [14, 51, 71, 92]], label=['apple', 'coke', 'tree', 'flower'])</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

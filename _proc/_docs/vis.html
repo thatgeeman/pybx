@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.184">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="The vis module of pybx can be used to visualize these “stacks”">
+
+<title>pybx - Visualizations</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="pybx - Visualizations">
+<meta property="og:description" content="The `vis` module of `pybx` can be used to visualize these &quot;stacks&quot;">
+<meta property="og:site-name" content="pybx">
+<meta name="twitter:title" content="pybx - Visualizations">
+<meta name="twitter:description" content="The `vis` module of `pybx` can be used to visualize these &quot;stacks&quot;">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">pybx</span>
+    </a>
+  </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Visualizations</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Installation</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./anchor.html" class="sidebar-item-text sidebar-link">Generate anchor boxes</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics.html" class="sidebar-item-text sidebar-link">Basic objects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">Utilities</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ops.html" class="sidebar-item-text sidebar-link">Operations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sample.html" class="sidebar-item-text sidebar-link">Samples</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vis.html" class="sidebar-item-text sidebar-link active">Visualizations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./excepts.html" class="sidebar-item-text sidebar-link">Exceptions</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#loading-from-disk" id="toc-loading-from-disk" class="nav-link active" data-scroll-target="#loading-from-disk">Loading from disk</a></li>
+  <li><a href="#draw" id="toc-draw" class="nav-link" data-scroll-target="#draw">draw</a></li>
+  <li><a href="#draw_boxes" id="toc-draw_boxes" class="nav-link" data-scroll-target="#draw_boxes">draw_boxes</a></li>
+  <li><a href="#draw_rectangle" id="toc-draw_rectangle" class="nav-link" data-scroll-target="#draw_rectangle">draw_rectangle</a></li>
+  <li><a href="#draw_text" id="toc-draw_text" class="nav-link" data-scroll-target="#draw_text">draw_text</a></li>
+  <li><a href="#get_extents" id="toc-get_extents" class="nav-link" data-scroll-target="#get_extents">get_extents</a></li>
+  <li><a href="#get_color" id="toc-get_color" class="nav-link" data-scroll-target="#get_color">get_color</a></li>
+  <li><a href="#draw_outline" id="toc-draw_outline" class="nav-link" data-scroll-target="#draw_outline">draw_outline</a></li>
+  <li><a href="#visbx" id="toc-visbx" class="nav-link" data-scroll-target="#visbx">VisBx</a></li>
+  <li><a href="#display-image-array-default-behaviour" id="toc-display-image-array-default-behaviour" class="nav-link" data-scroll-target="#display-image-array-default-behaviour">Display image array (default behaviour)</a></li>
+  <li><a href="#load-image-and-show-annots" id="toc-load-image-and-show-annots" class="nav-link" data-scroll-target="#load-image-and-show-annots">Load image and show annots</a></li>
+  <li><a href="#customize-colors" id="toc-customize-colors" class="nav-link" data-scroll-target="#customize-colors">Customize colors</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/thatgeeman/pybx/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Visualizations</h1>
+</div>
+
+<div>
+  <div class="description">
+    The <code>vis</code> module of <code>pybx</code> can be used to visualize these “stacks”
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="loading-from-disk" class="level3">
+<h3 class="anchored" data-anchor-id="loading-from-disk">Loading from disk</h3>
+<p>Load a sample image from the data directory <code>../data/image.jpg</code> and resize to <code>(200, 200, 3)</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>im, ann, lgt, clr <span class="op">=</span> get_example(image_sz<span class="op">=</span>(<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">3</span>), pth<span class="op">=</span><span class="st">'../data'</span>, img_fn<span class="op">=</span><span class="st">'image.jpg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>im</code> is the image of a clock and a frame, <code>ann</code> are the annotations for the image in json format, <code>lgt</code> are logits (activations from a layer) which can be displayed on top of the image, <code>clr</code> is a dict representing the colors to use for the different annotation keys.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ann, lgt, clr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>([{'x_min': 100.0,
+   'y_min': 46.666666666666664,
+   'x_max': 180.0,
+   'y_max': 146.66666666666666,
+   'label': 'clock'},
+  {'x_min': 6.666666666666667,
+   'y_min': 120.0,
+   'x_max': 76.66666666666667,
+   'y_max': 173.33333333333334,
+   'label': 'frame'}],
+ None,
+ {'frame': 'blue', 'clock': 'green'})</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.imshow(im)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Store the annotations as a <a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a> object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>get_bx(ann)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[100.0, 46.666666666666664, 180.0, 146.66666666666666], [6.666666666666667, 120.0, 76.66666666666667, 173.33333333333334]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L162" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="draw" class="level3">
+<h3 class="anchored" data-anchor-id="draw">draw</h3>
+<blockquote class="blockquote">
+<pre><code> draw (img:numpy.ndarray, bbox:list, logits=None, alpha=0.4, **kwargs)</code></pre>
+</blockquote>
+<p>Method to draw an image, box and logits overlayed if passed. :param img: the image array, expects a numpy array :param bbox: list of bounding boxes in json format :param logits: activations that should be overlayed from a neural network (no checks) :param kwargs: kwargs for draw_boxes() :param alpha: same as alpha for matplotlib :return: current axis</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L92" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="draw_boxes" class="level3">
+<h3 class="anchored" data-anchor-id="draw_boxes">draw_boxes</h3>
+<blockquote class="blockquote">
+<pre><code> draw_boxes (img:numpy.ndarray, bbox:list, title=None, ax=None,
+             figsize=(5, 4), color='yellow', no_ticks=False, xo=0, yo=0,
+             squeeze=False, **kwargs)</code></pre>
+</blockquote>
+<p>Method to draw bounding boxes in an image, can handle multiple bboxes :param figsize: sige of figure :param img: the image array, expects a numpy array :param bbox: list of bounding boxes in json format :param title: image title :param ax: which axis if already present :param yo: y offset for placement of text :param xo: x offset for placement of text :param color: text color or dict of colors for each label as a dict :param no_ticks: whether to set axis ticks off :param squeeze: squeeze axis :return: ax with image</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L77" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="draw_rectangle" class="level3">
+<h3 class="anchored" data-anchor-id="draw_rectangle">draw_rectangle</h3>
+<blockquote class="blockquote">
+<pre><code> draw_rectangle (ax, coords, color='white')</code></pre>
+</blockquote>
+<p>Draw a rectangle using matplotlib patch. :param ax: axis :param coords: coordinates in coco format :param color: text color :return: ax object</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L59" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="draw_text" class="level3">
+<h3 class="anchored" data-anchor-id="draw_text">draw_text</h3>
+<blockquote class="blockquote">
+<pre><code> draw_text (ax, xy:tuple, label:str, size=12, color='white', xo=0, yo=0)</code></pre>
+</blockquote>
+<p>Write text around boxes. :param ax: axis object :param xy: relative ax coordinates x, y to draw the text :param label: label for box :param size: font size :param yo: y offset for placement of text :param xo: x offset for placement of text :param color: text color :return: ax object</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L49" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_extents" class="level3">
+<h3 class="anchored" data-anchor-id="get_extents">get_extents</h3>
+<blockquote class="blockquote">
+<pre><code> get_extents (shape)</code></pre>
+</blockquote>
+<p>Get extent parameter of the image.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L35" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_color" class="level3">
+<h3 class="anchored" data-anchor-id="get_color">get_color</h3>
+<blockquote class="blockquote">
+<pre><code> get_color (color, label=None, default_color='white')</code></pre>
+</blockquote>
+<p>Get colors from color dict for a given label. If label=None, return <code>default_color</code>. :param color: dict of key, value pairs where key is label, value is color :param label: the label for which color is needed :param default_color: :return: str that contains color</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L21" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="draw_outline" class="level3">
+<h3 class="anchored" data-anchor-id="draw_outline">draw_outline</h3>
+<blockquote class="blockquote">
+<pre><code> draw_outline (obj, linewidth:int)</code></pre>
+</blockquote>
+<p>Make outlines around to object edges for visibility in light backgrounds :param obj: plt objects like text or rectangle :param linewidth: width of the stroke :return: plt object</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ann</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 100.0,
+  'y_min': 46.666666666666664,
+  'x_max': 180.0,
+  'y_max': 146.66666666666666,
+  'label': 'clock'},
+ {'x_min': 6.666666666666667,
+  'y_min': 120.0,
+  'x_max': 76.66666666666667,
+  'y_max': 173.33333333333334,
+  'label': 'frame'}]</code></pre>
+</div>
+</div>
+<p>Drawing random box by passing coordinates as a list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>draw(im, [[<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">80</span>, <span class="dv">80</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Drawing random box by passing coordinates as a list along with label.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>draw(im, [[<span class="dv">20</span>, <span class="dv">20</span>, <span class="dv">80</span>, <span class="dv">80</span>, <span class="st">'random'</span>]], color<span class="op">=</span>{<span class="st">'random'</span>: <span class="st">'blue'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>draw(im, [{<span class="st">'x_min'</span>: <span class="dv">50</span>, <span class="st">'y_min'</span>: <span class="dv">30</span>, <span class="st">'x_max'</span>:<span class="dv">100</span>, <span class="st">'y_max'</span>:<span class="dv">120</span>, <span class="st">'label'</span>:<span class="st">'random'</span>}], <span class="op">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>{<span class="st">'random'</span>: <span class="st">'green'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>To display the calculated anchor boxes or any other type of bounding boxes, <code>pybx</code> offers the <code>vis.VisBx</code> class. First, <code>vis.VisBx</code> initializes all the params for the image and loads its annotations (if available). Upon calling the <code>show()</code> method on the instantiated <a href="https://thatgeeman.github.io/pybx/vis.html#visbx"><code>VisBx</code></a> object with our predicted annotations or anchor boxes, everything gets displayed.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/vis.py#L179" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="visbx" class="level3">
+<h3 class="anchored" data-anchor-id="visbx">VisBx</h3>
+<blockquote class="blockquote">
+<pre><code> VisBx (image_arr=None, image_sz=None, sample=False, **kwargs)</code></pre>
+</blockquote>
+<p>VisBx is used to visualize the bounding boxes. The image on of which the bounding boxes are to be drawn can be instantiated with <code>VisBx()</code> if needed. Calling the <code>show()</code> method of the <code>VisBx()</code> instance accepts bounding box coordinates and labels that are to be shown. The boxes can be provided as any of the internal objects (<a href="https://thatgeeman.github.io/pybx/basics.html#multibx"><code>MultiBx</code></a>, <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>, …) or as any other raw format accepted by the internal objects.</p>
+<p>Displaying image array and annotations object: This is the default approach used by VisBx(). If no arguments are passed, a tuple denoting the size for random noise <code>random_img_sz=(100, 100, 1)</code> is expected. Some arguments: :param image_arr: image array of shape <code>(H, W, C)</code>. If None, it is set to a random noise image of <code>image_sz=(100,100,3)</code> by default. :param annots: annotations is any accepted format (see above).</p>
+<p>Displaying from image and annotations file: To load and display the image, set <code>sample=True</code>. Some argmuments: :param ann_fn: annotations file name, default <code>annots.json</code> :param img_fn: image file name, default <code>image.jpg</code> :param load_ann: whether to load ann_fn or just the img_fn. If False, an empty annotations dict is returned: <code>dict(zip(voc_keys, [0, 0, 1, 1, '']))</code> :param pth: path to find <code>ann_fn</code> and <code>img_fn</code>, default <code>.</code> :param image_sz: size to resize the loaded image a different size (annotations scaled automatically)</p>
+<p>Common parameters: :param color: A dict of <code>color</code> can be passed to assign specific color to a specific <code>label</code> in the image: <code>color = {'frame': 'blue', 'clock': 'green'}</code> :param logits: Logits as <code>ndarray</code> that should be overlayed on top of the image or <code>bool</code> to generate random logits. :param feature_sz: Feature size to generate random logits if <code>logits</code> is not None.</p>
+</section>
+<section id="display-image-array-default-behaviour" class="level3">
+<h3 class="anchored" data-anchor-id="display-image-array-default-behaviour">Display image array (default behaviour)</h3>
+<p>To display an image array (shape of <code>W, H, C</code>) directly, instead of loading from disk, pass an <code>ndarray</code> to the <code>image_arr</code> argument. If available, also provide the <code>annots</code> in any supported format. Displaying calculated anchors with a random image:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>anchor_boxes, anchor_labels <span class="op">=</span> bx(<span class="dv">200</span>, <span class="dv">3</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> VisBx(image_arr<span class="op">=</span>np.random.random((<span class="dv">200</span>, <span class="dv">200</span>, <span class="dv">3</span>)))  <span class="co"># a 200x200 image is generated</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> VisBx(image_arr<span class="op">=</span>np.random.random((<span class="dv">10</span>, <span class="dv">10</span>, <span class="dv">3</span>)), image_sz<span class="op">=</span>(<span class="dv">200</span>,<span class="dv">200</span>, <span class="dv">3</span>))  <span class="co"># a 10x10 will be resized to 200x200</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="load-image-and-show-annots" class="level3">
+<h3 class="anchored" data-anchor-id="load-image-and-show-annots">Load image and show annots</h3>
+<p>Displaying calculated anchors with a sample image.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> VisBx(pth<span class="op">=</span><span class="st">'../data/'</span>, img_fn<span class="op">=</span><span class="st">'image.jpg'</span>, image_sz<span class="op">=</span>(<span class="dv">200</span>,<span class="dv">200</span>, <span class="dv">3</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="customize-colors" class="level3">
+<h3 class="anchored" data-anchor-id="customize-colors">Customize colors</h3>
+<p>To customize the box colors, pass a dict <code>color</code> with the annotation name as key and color as value. In the example below an anchor box color is changed to red using its label <code>a_3x3_1.0_3</code> along with the annotations provided read from file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>v.show(anchor_boxes, anchor_labels, color<span class="op">=</span>{<span class="st">'a_3x3_1.0_3'</span>: <span class="st">'red'</span>, <span class="st">'frame'</span>: <span class="st">'green'</span>, <span class="st">'clock'</span>: <span class="st">'green'</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="05_vis_files/figure-html/cell-22-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
