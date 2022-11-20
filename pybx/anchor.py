@@ -9,6 +9,8 @@ import inspect
 import math
 import numpy as np
 from fastcore.foundation import L
+from numpy.typing import ArrayLike 
+from typing import Union
 
 from .ops import named_idx
 from .basics import get_bx
@@ -16,15 +18,15 @@ from .utils import get_edges, validate_boxes, as_tuple
 
 # %% ../nbs/00_anchor.ipynb 4
 def bx(
-    image_sz: (int,tuple),
-    feature_sz: (int,tuple),
+    image_sz: (int, tuple),
+    feature_sz: (int, tuple),
     asp_ratio: float = None,
     clip: bool = True,
     named: bool = True,
     anchor_sfx: str = "a",
     min_visibility: float = 0.25,
-):
-    """Calculate anchor box coords given an image size and feature size 
+) -> ArrayLike:
+    """Calculate anchor box coords given an image size and feature size
     for a single aspect ratio.
 
     Parameters
@@ -32,7 +34,7 @@ def bx(
     image_sz : (int,tuple)
         image size (width, height)
     feature_sz : (int,tuple)
-        feature map size (width, height) 
+        feature map size (width, height)
     asp_ratio : float, optional
         aspect ratio (width:height), by default None
     clip : bool, optional
@@ -42,14 +44,15 @@ def bx(
     anchor_sfx : str, optional
         suffix anchor label with anchor_sfx, by default "a"
     min_visibility : float, optional
-        minimum visibility dictates the condition for a box to be considered 
+        minimum visibility dictates the condition for a box to be considered
         valid. The value corresponds to the ratio of expected area of an anchor box
         to the calculated area after clipping to image dimensions., by default 0.25
 
     Returns
     -------
-    ndarray
+    ArrayLike
         anchor box coordinates in `pascal_voc` format
+        if named=True, a list of anchor box labels are also returned.
     """
     labels = None
     image_sz = as_tuple(image_sz)
@@ -68,8 +71,10 @@ def bx(
     xy_min = coords_center - coords_asp_wh / 2
     xy_max = coords_center + coords_asp_wh / 2
     coords = np.hstack([xy_min, xy_max])
-    # check for valid boxes 
-    b = validate_boxes(coords, image_sz, feature_sz, clip=clip, min_visibility=min_visibility)
+    # check for valid boxes
+    b = validate_boxes(
+        coords, image_sz, feature_sz, clip=clip, min_visibility=min_visibility
+    )
     if named:
         anchor_sfx = f"{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_"
         labels = named_idx(len(b), anchor_sfx)
@@ -77,15 +82,16 @@ def bx(
     b = get_bx(b, labels)
     return (b.coords, b.label) if named else b.coords
 
+
 # %% ../nbs/00_anchor.ipynb 7
 def bxs(
-    image_sz: (int,tuple),
+    image_sz: (int, tuple),
     feature_szs: list = None,
     asp_ratios: list = None,
     named: bool = True,
     **kwargs,
-):
-    """Calculate anchor box coords given an image size and multiple 
+) -> ArrayLike:
+    """Calculate anchor box coords given an image size and multiple
     feature sizes for mutiple aspect ratios.
 
     Parameters
@@ -101,9 +107,10 @@ def bxs(
 
     Returns
     -------
-    ndarray
+    ArrayLike
         anchor box coordinates in pascal_voc format
-    """ 
+        if named=True, a list of anchor box labels are also returned.
+    """
     image_sz = as_tuple(image_sz)
     feature_szs = [8, 2] if feature_szs is None else feature_szs
     feature_szs = [as_tuple(fsz) for fsz in feature_szs]
@@ -118,3 +125,4 @@ def bxs(
     coords_ = np.vstack(coords_)
     labels_ = L([l_ for lab_ in labels_ for l_ in lab_])
     return (coords_, labels_) if named else np.vstack(coords_)
+

@@ -12,7 +12,7 @@ params = {
 }
 
 results = {
-    "scaled_ans": (9.0, 6.0),
+    "scaled_ans": (10.546875, 7.03125),
 }
 
 

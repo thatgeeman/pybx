@@ -1,0 +1,11 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_anchor.ipynb
+      - 01_basics.ipynb
+      - 02_utils.ipynb
+      - 03_ops.ipynb
+      - 04_sample.ipynb
+      - 05_vis.ipynb
+      - 06_excepts.ipynb

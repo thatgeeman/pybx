@@ -1,6 +1,7 @@
 import json
 import pytest
 import unittest
+import warnings
 
 import numpy as np
 
@@ -74,8 +75,9 @@ class BasicsTestCase(unittest.TestCase):
             annots = json.load(f)
         b0 = bbx(annots[0])
         b1 = bbx(annots[1])
+        b_m = stack_bxs(b0, b1)
+        warnings.filterwarnings("ignore")
         b_r = b0 + b1
-        b_m = mbx([annots[0], annots[1]])
         self.assertTrue(np.all(b_r.coords == b_m.coords))
 
     def test_add_mbx_bbx(self):

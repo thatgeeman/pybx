@@ -23,10 +23,14 @@ def get_edges(image_sz: tuple, feature_sz: tuple, op="noop"):
     :param image_sz: tuple of `(W, H)` of an image
     :param feature_sz: tuple of `(W, H)` of a channel
     :return: offsetted edges of each feature
-    """ 
-    assert (len(image_sz) == 2), f"{inspect.stack()[0][3]} of {__name__}: Expected image_sz of len 2, got {len(image_sz)}"
+    """
+    assert (
+        len(image_sz) == 2
+    ), f"{inspect.stack()[0][3]} of {__name__}: Expected image_sz of len 2, got {len(image_sz)}"
 
-    assert (op in __ops__), f"{inspect.stack()[0][3]} of {__name__}: Operator not in allowed operations: {__ops__}"
+    assert (
+        op in __ops__
+    ), f"{inspect.stack()[0][3]} of {__name__}: Operator not in allowed operations: {__ops__}"
     w, h = image_sz
     nx, ny = feature_sz
     diag_edge_ofs = w / nx, h / ny
@@ -52,9 +56,12 @@ def validate_boxes(coords, image_sz, feature_sz, clip=True, min_visibility=0.25)
     # clip the boxes to image dimensions
     bxs = get_bx(coords.clip(0, _max)) if clip else get_bx(coords)
     # check if the area of the bounding box is fitting the minimum area criterion
-    min_area = (image_sz[0] / feature_sz[0]) * (image_sz[1] / feature_sz[1]) * min_visibility
+    min_area = (
+        (image_sz[0] / feature_sz[0]) * (image_sz[1] / feature_sz[1]) * min_visibility
+    )
     bxs = L(list(b._coords) for b in bxs if b.area > min_area)
     return bxs
+
 
 # %% ../nbs/02_utils.ipynb 7
 def as_tuple(x):

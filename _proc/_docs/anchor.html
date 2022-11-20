@@ -253,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Aspect ratio of anchor boxes, <code>asp_ratio</code>: To generate anchor boxes with different <code>width</code> to <code>height</code> ratio (default <code>asp_ratio=1</code>).</li>
 </ul>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/anchor.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/anchor.py#L20" target="_blank" style="float:right; font-size:smaller">source</a></p>
 <section id="bx" class="level3">
 <h3 class="anchored" data-anchor-id="bx">bx</h3>
 <blockquote class="blockquote">
@@ -319,13 +319,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>min_visibility</td>
 <td>float</td>
 <td>0.25</td>
-<td>minimum visibility dictates the condition for a box to be considered <br>valid. The value corresponds to the ratio of expected area of an anchor box<br>to the calculated area after clipping to image dimensions., by default 0.25</td>
+<td>minimum visibility dictates the condition for a box to be considered<br>valid. The value corresponds to the ratio of expected area of an anchor box<br>to the calculated area after clipping to image dimensions., by default 0.25</td>
 </tr>
 <tr class="even">
 <td><strong>Returns</strong></td>
-<td><strong>ndarray</strong></td>
+<td><strong>typing.Union[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Any]]]]], numpy.typing._array_like._SupportsArray[numpy.dtype], typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]], typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]], typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]]], bool, int, float, complex, str, bytes, typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]], typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]]]]</strong></td>
 <td></td>
-<td><strong>anchor box coordinates in <code>pascal_voc</code> format</strong></td>
+<td><strong>anchor box coordinates in <code>pascal_voc</code> format<br>if named=True, a list of anchor box labels are also returned.</strong></td>
 </tr>
 </tbody>
 </table>
@@ -335,7 +335,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Usually multiple anchor boxes with different <code>feature_sz</code> and <code>asp_ratio</code> are needed. This requirement arises in the case of multiscale object detection.</p>
 <p>For multiscale object detection, feature maps from different convolution operations of the network are used to trace back into the input image, to generate anchor boxes. The <a href="https://thatgeeman.github.io/pybx/anchor.html#bxs"><code>bxs</code></a> method of <code>pybx</code> provides this possibility.</p>
 <hr>
-<p><a href="https://github.com/thatgeeman/pybx/blob/dev_nbdev/pybx/anchor.py#L81" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<p><a href="https://github.com/thatgeeman/pybx/blob/main/pybx/anchor.py#L87" target="_blank" style="float:right; font-size:smaller">source</a></p>
 </section>
 <section id="bxs" class="level3">
 <h3 class="anchored" data-anchor-id="bxs">bxs</h3>
@@ -392,9 +392,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="even">
 <td><strong>Returns</strong></td>
-<td><strong>ndarray</strong></td>
+<td><strong>typing.Union[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Any]]]]], numpy.typing._array_like._SupportsArray[numpy.dtype], typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]], typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]], typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]]], bool, int, float, complex, str, bytes, typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]], typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]]]]</strong></td>
 <td></td>
-<td><strong>anchor box coordinates in pascal_voc format</strong></td>
+<td><strong>anchor box coordinates in pascal_voc format<br>if named=True, a list of anchor box labels are also returned.</strong></td>
 </tr>
 </tbody>
 </table>

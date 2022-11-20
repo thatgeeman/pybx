@@ -4,7 +4,7 @@
 __all__ = ['voc_keys', 'label_keys', 'add', 'sub', 'mul', 'noop', 'get_op', 'make_single_iterable', 'named_idx',
            'intersection_box', 'update_keys']
 
-# %% ../nbs/03_ops.ipynb 3
+# %% ../nbs/03_ops.ipynb 2
 import inspect
 
 import numpy as np
@@ -12,12 +12,13 @@ from fastcore.foundation import L
 
 from .excepts import NoIntersection
 
-# %% ../nbs/03_ops.ipynb 4
+# %% ../nbs/03_ops.ipynb 3
 __ops__ = ["add", "sub", "mul", "noop"]
 voc_keys = ["x_min", "y_min", "x_max", "y_max", "label"]
 label_keys = ["label", "class_name", "class", "name", "class_id", "object", "item"]
 
-# %% ../nbs/03_ops.ipynb 5
+
+# %% ../nbs/03_ops.ipynb 4
 def add(x, y):
     """Add two objects."""
     return x + y
@@ -85,7 +86,7 @@ def named_idx(ncoords: int, sfx: str = ""):
 
 def intersection_box(b1: list, b2: list):
     """Return the box that intersects two boxes in `pascal_voc` format."""
-    b1, b2 = np.array(b1), np.array(b2) 
+    b1, b2 = np.array(b1), np.array(b2)
     top_edge = np.max(np.vstack([b1, b2]), axis=0)[:2]
     bot_edge = np.min(np.vstack([b1, b2]), axis=0)[2:]
     if (bot_edge > top_edge).all():
@@ -111,5 +112,4 @@ def update_keys(annots: dict, default_keys=None):
             label_key = k
             break
     return default_keys[:-1] + [label_key] if label_key is not None else default_keys
-
 

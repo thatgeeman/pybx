@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['get_example', 'get_given_array']
 
-# %% ../nbs/04_sample.ipynb 2
+# %% ../nbs/04_sample.ipynb 3
 import inspect
 import json
 import os
@@ -14,10 +14,10 @@ from fastcore.test import nequals
 
 from .ops import voc_keys
 
-# %% ../nbs/04_sample.ipynb 3
+# %% ../nbs/04_sample.ipynb 4
 __all__ = ["get_example", "get_given_array"]
 
-# %% ../nbs/04_sample.ipynb 4
+# %% ../nbs/04_sample.ipynb 5
 np.random.seed(1)
 
 

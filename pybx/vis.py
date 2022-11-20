@@ -24,7 +24,12 @@ def draw_outline(obj, linewidth: int):
     :param linewidth: width of the stroke
     :return: plt object
     """
-    obj.set_path_effects([patheffects.Stroke(linewidth=linewidth, foreground="black"), patheffects.Normal(),])
+    obj.set_path_effects(
+        [
+            patheffects.Stroke(linewidth=linewidth, foreground="black"),
+            patheffects.Normal(),
+        ]
+    )
 
 
 def get_color(color, label=None, default_color="white"):
@@ -43,10 +48,13 @@ def get_color(color, label=None, default_color="white"):
 
 def get_extents(shape):
     """Get extent parameter of the image."""
-    assert (len(shape) == 3), f"{inspect.stack()[0][3]} of {__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}"
+    assert (
+        len(shape) == 3
+    ), f"{inspect.stack()[0][3]} of {__name__}: Expected w, h, c = shape, got {shape} with len {len(shape)}"
     w, h, _ = shape
     extent = 0, w, h, 0
     return extent
+
 
 def draw_text(ax, xy: tuple, label: str, size=12, color="white", xo=0, yo=0):
     """Write text around boxes.
@@ -60,7 +68,9 @@ def draw_text(ax, xy: tuple, label: str, size=12, color="white", xo=0, yo=0):
     :return: ax object
     """
     x, y = xy
-    text = ax.text(x + xo, y + yo, label, verticalalignment="top", color=color, fontsize=size)
+    text = ax.text(
+        x + xo, y + yo, label, verticalalignment="top", color=color, fontsize=size
+    )
     draw_outline(text, 1)
 
 
@@ -77,6 +87,7 @@ def draw_rectangle(ax, coords, color="white"):
         patches.Rectangle((x1, y1), w, h, fill=False, edgecolor=color, linewidth=2)
     )
     draw_outline(patch, 2)
+
 
 def draw_boxes(
     img: np.ndarray,
@@ -104,8 +115,12 @@ def draw_boxes(
     :param squeeze: squeeze axis
     :return: ax with image
     """
-    assert isinstance(img, np.ndarray), f"{__name__}: Expected img as np.ndarray, got {type(img)}."
-    assert (len(img.shape) == 3), f"{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}"
+    assert isinstance(
+        img, np.ndarray
+    ), f"{__name__}: Expected img as np.ndarray, got {type(img)}."
+    assert (
+        len(img.shape) == 3
+    ), f"{__name__}: Expected w, h, c = shape, got {img.shape} with len {len(img.shape)}"
     if squeeze:
         img = img.squeeze(0)
     if ax is None:
@@ -115,9 +130,10 @@ def draw_boxes(
         ax.set_title(title)
     if no_ticks:
         ax.axis("off")
-    assert isinstance(bbox, (list, BaseBx, MultiBx, np.ndarray)), \
-        f"{inspect.stack()[0][3]} of {__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}."
-    
+    assert isinstance(
+        bbox, (list, BaseBx, MultiBx, np.ndarray)
+    ), f"{inspect.stack()[0][3]} of {__name__}: Expected annotations as arrays/list/records/BaseBx/MultiBx, got {type(bbox)}."
+
     ax.imshow(img, cmap="Greys", **kwargs)
     for b in bbox:
         label = ""
@@ -136,12 +152,13 @@ def draw_boxes(
                 x1, y1, x2, y2, label = b
             except ValueError:
                 x1, y1, x2, y2 = b
-            
+
         c = get_color(color, label=label)
         draw_rectangle(ax, coords=(x1, y1, x2, y2), color=c)
         draw_text(ax, xy=(x1, y1), label=label, color=c, xo=xo, yo=yo)
     return ax
-    
+
+
 def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
     """Method to draw an image, box and logits overlayed if passed.
     :param img: the image array, expects a numpy array
@@ -157,7 +174,8 @@ def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
         plt.imshow(logits, alpha=alpha, extent=img_extent)
     return ax
 
-# %% ../nbs/05_vis.ipynb 17
+
+# %% ../nbs/05_vis.ipynb 18
 class VisBx:
     """VisBx is used to visualize the bounding boxes.
     The image on of which the bounding boxes are to be drawn can be instantiated with
@@ -194,10 +212,14 @@ class VisBx:
 
     def __init__(self, image_arr=None, image_sz=None, sample=False, **kwargs):
         if ("ann_fn" in kwargs) or ("img_fn" in kwargs) or sample:
-            assert (image_sz is not None), f"{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample=True"
+            assert (
+                image_sz is not None
+            ), f"{inspect.stack()[0][3]} of {__name__}: Expected image_sz with sample=True"
             im, ann, lgt, clr = get_example(image_sz=image_sz, **kwargs)
         else:
-            im, ann, lgt, clr = get_given_array(image_arr=image_arr, image_sz=image_sz, **kwargs)
+            im, ann, lgt, clr = get_given_array(
+                image_arr=image_arr, image_sz=image_sz, **kwargs
+            )
         ann = get_bx(ann)
         store_attr("im, ann, lgt, clr")
 
@@ -212,4 +234,7 @@ class VisBx:
         if coords is None:
             coords = [[0, 0, 0, 0]]
         coords = get_bx(coords, labels)
-        return draw(self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs)
+        return draw(
+            self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs
+        )
+
