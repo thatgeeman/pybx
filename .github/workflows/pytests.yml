@@ -25,9 +25,12 @@ jobs:
       - name: Install pip
         run: |
           python -m pip install --upgrade pip
-      - name: Build and install requirements.txt
+      - name: Install test and build requirements
         run: |
-          pip install fastcore==1.5.27 numpy==1.21.6 matplotlib==3.5 opencv-python==4.6.0.66 pytest nbdev==2.3.7 flake8 black
+          pip install pytest flake8 black fastcore>=1.5.27 numpy>=1.21.6 matplotlib>=3.5 opencv-python>=4.0
+      - name: Install pybx as editable
+        run: |
+          pip install -e .
       - name: Lint with black
         run: |
           black .
