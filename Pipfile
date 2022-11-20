@@ -19,6 +19,7 @@ nbdev = "==2.3.7"
 pillow = ">=9.1.1" 
 pre-commit = "*"
 flake8 = "*"
+black = "*"
 pybx = {editable = true, path = "."}
 
 [requires]
