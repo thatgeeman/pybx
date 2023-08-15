@@ -1,0 +1,26 @@
+{
+  "00_anchor.ipynb": {
+    "anchor.html": "c412200b"
+  },
+  "01_basics.ipynb": {
+    "basics.html": "fb9f013e"
+  },
+  "02_utils.ipynb": {
+    "utils.html": "9a679b15"
+  },
+  "03_ops.ipynb": {
+    "ops.html": "2778602a"
+  },
+  "04_sample.ipynb": {
+    "sample.html": "443f8f37"
+  },
+  "05_vis.ipynb": {
+    "vis.html": "1890ab05"
+  },
+  "06_excepts.ipynb": {
+    "excepts.html": "ec560d60"
+  },
+  "index.ipynb": {
+    "index.html": "55fc4679"
+  }
+}
