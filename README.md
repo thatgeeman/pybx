@@ -6,7 +6,7 @@ Use ground truth boxes for model training
 [![PyPI
 version](https://badge.fury.io/py/pybx.svg)](https://badge.fury.io/py/pybx)
 [![Open In
-Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/nbs/pybx_walkthrough.ipynb)
+Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/examples/pybx_walkthrough_0.4.ipynb)
 
 A simple python package to generate anchor boxes for multi-box object
 detection models.
