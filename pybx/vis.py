@@ -175,7 +175,7 @@ def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
     return ax
 
 
-# %% ../nbs/05_vis.ipynb 18
+# %% ../nbs/05_vis.ipynb 17
 class VisBx:
     """VisBx is used to visualize the bounding boxes.
     The image on of which the bounding boxes are to be drawn can be instantiated with

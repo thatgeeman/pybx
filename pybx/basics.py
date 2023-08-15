@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['COORD_TYPES', 'ITER_TYPES', 'ITER_TYPES_TUPLE', 'ITER_TYPES_EXTRA', 'ALL_TYPES', 'BX_TYPE', 'Bx', 'BaseBx', 'MultiBx',
-           'jbx', 'lbx', 'mbx', 'bbx', 'get_bx', 'stack_bxs', 'add_bxs']
+           'jbx', 'lbx', 'mbx', 'bbx', 'get_bx', 'stack_bxs', 'add_bxs', 'stack_bxs_inplace']
 
 # %% ../nbs/01_basics.ipynb 2
 import warnings
@@ -97,7 +97,7 @@ class Bx:
     def xywh(self):
         """Converts the `pascal_voc` bounding box to `coco` format."""
         return L([[self.x_min, self.y_min, self.w, self.h]])
-
+    
     def yolo(self, w=None, h=None, normalize=False):
         """Converts the `pascal_voc` bounding box to `yolo` centroids format.
         :param normalize: Whether to normalize the bounding box with image width and height.
@@ -532,3 +532,11 @@ def add_bxs(b1, b2):
     """Alias of stack_bxs()."""
     return stack_bxs(b1, b2)
  
+
+# %% ../nbs/01_basics.ipynb 114
+def stack_bxs_inplace(b, *args):
+    """Stack the passed boxes on top of the first item."""
+    for b_ in args:
+        b = stack_bxs(b, b_)
+    return b
+
