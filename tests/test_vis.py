@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pybx.basics import *
+from pybx.basics import *  # noqa: F403
 from pybx.vis import VisBx
 
 np.random.seed(1)
@@ -23,7 +23,7 @@ params = {
     "annots_nd": np.random.randint(low=1, high=10, size=(2, 4)),
     "annots_json": [{"label": "", "x_max": 0, "x_min": 0, "y_max": 0, "y_min": 0}],
     "feature_sz": (2, 2),
-    "image_sz": (10, 10, 3),
+    "image_sz": (10, 10),
     "random_im_sz": (10, 10, 3),
     "image_arr": np.random.randint(size=(10, 10, 3), low=0, high=255),
     "image_arr_float": np.random.randn(10, 10, 3),

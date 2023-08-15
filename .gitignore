@@ -133,3 +133,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# kdev
+*.kdev4
+*.kdev4/
+changes
+

@@ -17,43 +17,36 @@ from .ops import voc_keys
 # %% ../nbs/04_sample.ipynb 4
 __all__ = ["get_example", "get_given_array"]
 
-# %% ../nbs/04_sample.ipynb 5
-np.random.seed(1)
-
-
-def get_example(image_sz: tuple, **kwargs):
-    """Get an example image from the pth given for some image size for a feature size
-    :param image_sz: required image size (will resize the original image)
-    :return: reference to protected _get_example()
-    """
-    return _get_example(image_sz, **kwargs)
-
-
-def get_given_array(image_arr, **kwargs):
-    """Get the image_array setup for visualisation.
-    :param image_arr: image nparray
-    :return: reference to protected _get_given_array()
-    """
-    return _get_given_array(image_arr, **kwargs)
-
-
-def _scale_annots_dict(annot, new_sz, ann_im_sz):
+# %% ../nbs/04_sample.ipynb 6
+def _scale_annots_dict(annot, new_sz, orig_sz):
     """Scale annotations to the new_sz, provided the original ann_im_sz.
     :param annot: bounding box in dict format
     :param new_sz: new size of image (after linear transforms like resize)
-    :param ann_im_sz: original size of image for which the bounding boxes were given.
+    :param orig_sz: original size of image for which the bounding boxes were given.
     :return:
     """
     d = {}
+    is_coord = None  # flag to check if coordinate
+    x_scale = new_sz[0] / orig_sz[0]
+    y_scale = new_sz[1] / orig_sz[1]
     for k, v in annot.items():
+        is_coord = False
         if k.startswith("x"):
-            v_ = new_sz[0] * v / ann_im_sz[0]
+            v_ = round(x_scale * v)
+            is_coord = True
         elif k.startswith("y"):
-            v_ = new_sz[1] * v / ann_im_sz[1]
+            v_ = round(y_scale * v)
+            is_coord = True
         else:
             # don't destroy other keys
             v_ = v
-        d.update({k: v_})
+        """
+        if is_coord and (v_ < 1):
+            raise UserWarning(
+                f"Found invalid value < 1 in bounding box (is_coord {is_coord}). Value={v_}"
+            )
+        """
+        d.update({k: v_})  # coordinates as int
     return d
 
 
@@ -72,11 +65,11 @@ def _scale_annots_list(annot, new_sz, ann_im_sz):
     return _scale_annots_dict(annot, new_sz, ann_im_sz)
 
 
-def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
+def _get_scaled_annots(annots: list, new_sz: tuple, orig_sz=(300, 300, 3)):
     """Scales the bounding boxes with change in the image size.
     :param annots: bounding boxes in records format
     :param new_sz: new size of image (after linear transforms like resize)
-    :param ann_im_sz: original size of image for which the bounding boxes were given.
+    :param orig_sz: original size of image for which the bounding boxes were given.
     :return:
     """
     scaled = []
@@ -88,11 +81,11 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
         # print(annot, new_sz)
         if isinstance(annot, dict):
             # print(new_sz)
-            d = _scale_annots_dict(annot, new_sz, ann_im_sz)
+            d = _scale_annots_dict(annot, new_sz, orig_sz)
         elif isinstance(annot, list):
-            d = _scale_annots_list(annot, new_sz, ann_im_sz)
+            d = _scale_annots_list(annot, new_sz, orig_sz)
         elif isinstance(annot, np.ndarray):
-            d = _scale_annots_list(annot.tolist(), new_sz, ann_im_sz)
+            d = _scale_annots_list(annot.tolist(), new_sz, orig_sz)
             # usually when ndarray is passed, label is empty
             # so add the label key
             try:
@@ -106,7 +99,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, ann_im_sz=(300, 300, 3)):
         scaled.append(d)
     return scaled
 
-
+# %% ../nbs/04_sample.ipynb 16
 def _get_example(
     image_sz: tuple = None,
     feature_sz: tuple = None,
@@ -134,13 +127,14 @@ def _get_example(
         color = {}
     assert os.path.exists(os.path.join(pth, img_fn)), f"{pth} has no {img_fn}"
     assert (
-        len(image_sz) == 3
+        len(image_sz) == 2
     ), f"{inspect.stack()[0][3]} of {__name__}: \
-    Expected w, h, c in image_sz, got {image_sz} with len {len(image_sz)}"
+    Expected w, h in image_sz, got {image_sz} with len {len(image_sz)}"
 
     image_arr = cv2.cvtColor(cv2.imread(os.path.join(pth, img_fn)), cv2.COLOR_BGR2RGB)
     image_sz = image_arr.shape if image_sz is None else image_sz  # size to reshape into
-    ann_im_sz = image_arr.shape  # original size
+    orig_sz = image_arr.shape  # original size
+    # print(image_sz, orig_sz)
 
     if image_sz is not None:
         # reshaped image size
@@ -156,9 +150,9 @@ def _get_example(
         with open(os.path.join(pth, ann_fn)) as f:
             annots = json.load(f)  # annots for 300x300 image
 
-    if nequals(ann_im_sz, image_sz):  # if not equal, returns True
+    if nequals(orig_sz, image_sz):  # if not equal, returns True
         image_arr = _get_resized(image_arr, image_sz)
-        annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
+        annots = _get_scaled_annots(annots, image_sz, orig_sz=orig_sz)
 
     assert isinstance(
         annots, list
@@ -190,6 +184,14 @@ def _get_random_im(image_sz):
     return np.random.randint(size=image_sz, low=0, high=255).astype(np.uint8)
 
 
+def _get_feature(feature_sz: tuple):
+    """Get fake features for some layer in decoder of size feature_sz
+    :param feature_sz: size of random features
+    :return:
+    """
+    return np.random.randn(*feature_sz)
+
+# %% ../nbs/04_sample.ipynb 25
 def _get_given_array(
     image_arr: np.ndarray = None,
     annots: list = None,
@@ -225,7 +227,7 @@ def _get_given_array(
         image_sz = image_arr.shape
     if annots is not None:
         # print(annots)
-        annots = _get_scaled_annots(annots, image_sz, ann_im_sz=ann_im_sz)
+        annots = _get_scaled_annots(annots, image_sz, orig_sz=ann_im_sz)
     if logits is not None:
         # if ndarray/detached-tensor, use logits values
         if not hasattr(logits, "shape"):
@@ -238,11 +240,18 @@ def _get_given_array(
         annots = [{k: 0 if k != "label" else "" for k in voc_keys}]
     return image_arr, annots, logits, color if not color else color
 
-
-def _get_feature(feature_sz: tuple):
-    """Get fake features for some layer in decoder of size feature_sz
-    :param feature_sz: size of random features
-    :return:
+# %% ../nbs/04_sample.ipynb 26
+def get_example(image_sz: tuple, **kwargs):
+    """Get an example image from the pth given for some image size for a feature size
+    :param image_sz: required image size (will resize the original image)
+    :return: reference to protected _get_example()
     """
-    return np.random.randn(*feature_sz)
+    return _get_example(image_sz, **kwargs)
 
+
+def get_given_array(image_arr, **kwargs):
+    """Get the image_array setup for visualisation.
+    :param image_arr: image nparray
+    :return: reference to protected _get_given_array()
+    """
+    return _get_given_array(image_arr, **kwargs)
