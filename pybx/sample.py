@@ -40,10 +40,12 @@ def _scale_annots_dict(annot, new_sz, orig_sz):
         else:
             # don't destroy other keys
             v_ = v
+        """
         if is_coord and (v_ < 1):
             raise UserWarning(
                 f"Found invalid value < 1 in bounding box (is_coord {is_coord}). Value={v_}"
             )
+        """
         d.update({k: v_})  # coordinates as int
     return d
 

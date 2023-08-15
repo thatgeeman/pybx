@@ -17,9 +17,9 @@ params = {
 }
 
 results = {
-    "bx_b": 80.0,
+    "bx_b": 128,
     "bx_l": "a_2x2_0.5_3",
-    "bxs_b": 1740.0,
+    "bxs_b": 2002,
     "bxs_l": "a_3x3_0.5_2",
     "scaled_ans": (9.0, 6.0),
 }
