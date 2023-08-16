@@ -64,7 +64,6 @@ def validate_boxes(coords, image_sz, feature_sz, clip=True, min_visibility=0.25)
     bxs = L(list(b._coords) for b in bxs if b.area > min_area)
     return bxs
 
-
 # %% ../nbs/02_utils.ipynb 6
 def as_tuple(x):
     """Get x as a tuple (x, x) if not already a tuple.
@@ -73,7 +72,7 @@ def as_tuple(x):
     ----------
     x : (int, tuple)
         Item that needs to be converted to a tuple.
-    """    
+    """
     return (x, x) if isinstance(x, int) else x
 
 # %% ../nbs/02_utils.ipynb 8
@@ -88,4 +87,3 @@ def reassign_label(gt_bx: BaseBx, label=None):
         _type_: _description_
     """
     return get_bx(coords=gt_bx.coords, label=label)
-    

@@ -10,10 +10,10 @@ import math
 import numpy as np
 from fastcore.foundation import L, mask2idxs
 from fastcore.utils import gt
-from numpy.typing import ArrayLike 
+from numpy.typing import ArrayLike
 from typing import Union
 import json
-from collections import defaultdict 
+from collections import defaultdict
 import warnings
 
 from .ops import named_idx
@@ -87,7 +87,6 @@ def bx(
     b = get_bx(b, labels)
     return (b.coords, b.label) if named else b.coords
 
-
 # %% ../nbs/00_anchor.ipynb 8
 def bxs(
     image_sz: (int, tuple),
@@ -130,7 +129,6 @@ def bxs(
     coords_ = np.vstack(coords_)
     labels_ = L([l_ for lab_ in labels_ for l_ in lab_])
     return (coords_, labels_) if named else np.vstack(coords_)
-
 
 # %% ../nbs/00_anchor.ipynb 45
 def get_gt_thresh_iou(
@@ -219,8 +217,8 @@ def get_gt_max_iou(
     anchor_labels=None,
     return_ious=False,
     return_masks=False,
-    positive_boxes=1, 
-    update_labels=True
+    positive_boxes=1,
+    update_labels=True,
 ):
     """Calculate positive ground truth and extra positive ground truth bounding boxes based on maximum IOU condition.
 
@@ -241,7 +239,7 @@ def get_gt_max_iou(
         dict: boolean list indicating positive ground truth anchor boxes per class
     """
     gt_anchors_per_class = defaultdict(lambda: L())
-    iou_per_class = defaultdict(lambda: L()) 
+    iou_per_class = defaultdict(lambda: L())
     mask_per_class = defaultdict(lambda: L())
     true_annots_as_bx = (
         get_bx(true_annots) if not isinstance(true_annots, BX_TYPE) else true_annots
@@ -256,7 +254,7 @@ def get_gt_max_iou(
         if not isinstance(anchor_boxes, BX_TYPE)
         else anchor_boxes
     )
-    n_boxes = len(coords_as_bx) 
+    n_boxes = len(coords_as_bx)
 
     for annots in true_annots_as_bx:
         label = annots.label[0]  # is a list of len 1
@@ -265,7 +263,7 @@ def get_gt_max_iou(
         max_iou = ious_sorted[:positive_boxes]
         ious_filter = [ious.index(m) for m in max_iou]
         mask = L([True if idx in ious_filter else False for idx in range(n_boxes)])
-        
+
         if mask.sum() < 1:
             warnings.warn(
                 NoGroundTruthBxs(

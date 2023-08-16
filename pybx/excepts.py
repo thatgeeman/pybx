@@ -18,8 +18,8 @@ class BxViolation(SyntaxWarning):
 
     pass
 
+
 class NoGroundTruthBxs(SyntaxWarning):
     """No Ground Truth boxes found."""
 
     pass
-

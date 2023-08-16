@@ -17,7 +17,6 @@ __ops__ = ["add", "sub", "mul", "noop"]
 voc_keys = ["x_min", "y_min", "x_max", "y_max", "label"]
 label_keys = ["label", "class_name", "class", "name", "class_id", "object", "item"]
 
-
 # %% ../nbs/03_ops.ipynb 4
 def add(x, y):
     """Add two objects."""
@@ -112,4 +111,3 @@ def update_keys(annots: dict, default_keys=None):
             label_key = k
             break
     return default_keys[:-1] + [label_key] if label_key is not None else default_keys
-

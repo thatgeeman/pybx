@@ -16,13 +16,20 @@ from fastcore.foundation import L
 from fastcore.basics import concat, store_attr, patch, GetAttr
 from fastcore.xtras import is_listy
 
-from .ops import mul, sub, intersection_box, make_single_iterable, voc_keys, update_keys
+from pybx.ops import (
+    mul,
+    sub,
+    intersection_box,
+    make_single_iterable,
+    voc_keys,
+    update_keys,
+)
 from .excepts import *
 
 COORD_TYPES = (np.float_, np.int_, int)
 ITER_TYPES = (np.ndarray, list, L)
-ITER_TYPES_TUPLE = (tuple, )
-ITER_TYPES_EXTRA = (dict, )
+ITER_TYPES_TUPLE = (tuple,)
+ITER_TYPES_EXTRA = (dict,)
 ALL_TYPES = COORD_TYPES + ITER_TYPES
 
 # %% ../nbs/01_basics.ipynb 5
@@ -50,6 +57,10 @@ class Bx:
 
     def get_coords(self):
         return self.coords
+
+    @property
+    def coords_as_numpy(self):
+        return np.array(self.coords, dtype=int)
 
     def get_label(self):
         return self.label
@@ -97,25 +108,21 @@ class Bx:
     def xywh(self):
         """Converts the `pascal_voc` bounding box to `coco` format."""
         return L([[self.x_min, self.y_min, self.w, self.h]])
-    
-    def yolo(self, w=None, h=None, normalize=False):
+
+    def yolo(self, w=1, h=1, normalize=False):
         """Converts the `pascal_voc` bounding box to `yolo` centroids format.
         :param normalize: Whether to normalize the bounding box with image width and height.
         :param w: Width of image. Not to be confused with `BaseBx` attribute `w`.
         :param h: Height of image. Not to be confused with `BaseBx` attribute `h`.
         """
         if normalize:
-            assert (
-                w is not None
+            assert (w > 1) and (
+                (h > 1)
             ), f"{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}."
-            assert (
-                h is not None
-            ), f"{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}."
-            return L([[self.cx / w, self.cy / h, self.w / w, self.h / h]])
-        return L([[self.cx, self.cy, self.w, self.h]])
 
+        return L([[self.cx / w, self.cy / h, self.w / w, self.h / h]])
 
-# %% ../nbs/01_basics.ipynb 21
+# %% ../nbs/01_basics.ipynb 22
 class BaseBx(Bx):
     """BaseBx is the most primitive form of representing a bounding box.
     Coordinates and label of a bounding box can be wrapped as a BaseBx using:
@@ -132,24 +139,25 @@ class BaseBx(Bx):
 
     def __init__(self, coords, label: list = None):
         self.index = 0  # Fixes #2, calls itself everytime
-        assert isinstance(coords, (list, L, np.ndarray)), f"{__name__}: Expected type list or np.ndarray for coords, got {type(coords)}"
+        assert isinstance(
+            coords, (list, L, np.ndarray)
+        ), f"{__name__}: Expected type list or np.ndarray for coords, got {type(coords)}"
         assert isinstance(coords[0], ALL_TYPES), (
             f"{__name__}: Expected float, int or single-nested list or np.ndarray at coords[0], "
             f"got {type(coords[0])} with {coords[0]}"
-        ) 
-        super().__init__(coords, label) 
-    
-    def __str__(self):
-        return f'BaseBx(coords={self.coords}, label={self.label})'
-        
+        )
+        super().__init__(coords, label)
 
-# %% ../nbs/01_basics.ipynb 30
+    def __str__(self):
+        return f"BaseBx(coords={self.coords}, label={self.label})"
+
+# %% ../nbs/01_basics.ipynb 32
 @patch
-def iou(self:BaseBx, other):
+def iou(self: BaseBx, other):
     """Caclulates the Intersection Over Union (IOU) of the box
     w.r.t. another `BaseBx`. Returns the IOU only if the box is
     considered `valid`.
-        """
+    """
     if not isinstance(other, Bx):
         other = bbx(other)
     if self.valid:
@@ -160,24 +168,48 @@ def iou(self:BaseBx, other):
         int_area = int_box.area
         union_area = other.area + self.area - int_area
         return int_area / union_area
-    return 0.0 
+    return 0.0
 
-# %% ../nbs/01_basics.ipynb 33
+# %% ../nbs/01_basics.ipynb 38
 @patch
-def __iter__(self:BaseBx):
+def get_offset(self: BaseBx, other, w=1, h=1, normalize=False):
+    """Caclulates the difference of the box
+    w.r.t. another `BaseBx`. Returns the IOU only if the box is
+    considered `valid`.
+    """
+    if not isinstance(other, Bx):
+        other = bbx(other)
+    if normalize:
+        assert (w > 1) and (
+            (h > 1)
+        ), f"{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}."
+
+    if self.valid:
+        offset = (self.coords_as_numpy - other.coords_as_numpy) / np.tile([w, h], 2)
+        return L(offset.tolist())
+    else:
+        raise ValueError(f"Cannot validate boxes")
+
+# %% ../nbs/01_basics.ipynb 43
+@patch
+def __iter__(self: BaseBx):
     """Iterates through the boxes in `BaseBx` where self.valid is True."""
     return self
 
-@patch
-def __getitem__(self:BaseBx, idx):
-        """Gets the item at index idx as a BaseBx."""
-        if idx>0: 
-            # Fixes #2
-            raise IndexError(f"BaseBx has only a single coordinate at idx=0. Got idx={idx}.")
-        return self
 
 @patch
-def __next__(self:BaseBx):
+def __getitem__(self: BaseBx, idx):
+    """Gets the item at index idx as a BaseBx."""
+    if idx > 0:
+        # Fixes #2
+        raise IndexError(
+            f"BaseBx has only a single coordinate at idx=0. Got idx={idx}."
+        )
+    return self
+
+
+@patch
+def __next__(self: BaseBx):
     """Iteration is allowed only for valid boxes"""
     try:
         b = self[self.index]
@@ -191,7 +223,7 @@ def __next__(self:BaseBx):
     self.index += 1
     return b
 
-# %% ../nbs/01_basics.ipynb 38
+# %% ../nbs/01_basics.ipynb 48
 class MultiBx:
     """`MultiBx` represents a collection of bounding boxes as ndarrays.
     Objects of type `MultiBx` can be indexed into, which returns a
@@ -242,7 +274,7 @@ class MultiBx:
             if not b.valid:
                 # 0 area boxes are not valid
                 self.index += 1
-                return self.__next__() 
+                return self.__next__()
         except IndexError:
             self.index = 0  # reset index
             raise StopIteration
@@ -260,29 +292,30 @@ class MultiBx:
         """Returns shape of the coordinates"""
         return self.coords.shape
 
-
-# %% ../nbs/01_basics.ipynb 39
+# %% ../nbs/01_basics.ipynb 49
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 56
+# %% ../nbs/01_basics.ipynb 66
 class __JsonBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
     """
 
     def __init__(self, coords, label: list = None):
-        super().__init__(coords, label) 
+        super().__init__(coords, label)
 
     @classmethod
     def jsonbx(cls, coords, label=None, keys=None):
-        """Classmethod for JsonBx. 
-        
+        """Classmethod for JsonBx.
+
         Also accepts keys as a list, otherwise uses `voc_keys`.
         """
         l = L()
         r = L()
         for i, c in enumerate(coords):
-            assert isinstance(c, ITER_TYPES+ITER_TYPES_EXTRA), f"{inspect.stack()[0][3]} of \
+            assert isinstance(
+                c, ITER_TYPES + ITER_TYPES_EXTRA
+            ), f"{inspect.stack()[0][3]} of \
                 {__name__}: Expected b of type dict, got {type(c)}"
             if keys is None:
                 # Fixes issue #3.
@@ -294,7 +327,8 @@ class __JsonBx(MultiBx):
         return cls(r, label=l)
 
     def __str__(self):
-        return f'__JsonBx(coords={self.coords}, label={self.label})'
+        return f"__JsonBx(coords={self.coords}, label={self.label})"
+
 
 def jbx(coords=None, labels=None, keys=None):
     """Alias of the JsonBx class to process `json` records into
@@ -304,77 +338,79 @@ def jbx(coords=None, labels=None, keys=None):
     """
     return __JsonBx.jsonbx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 63
+# %% ../nbs/01_basics.ipynb 73
 class __ListBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
     """
 
     def __init__(self, coords, label: list = None):
-        super().__init__(coords, label) 
+        super().__init__(coords, label)
 
     @classmethod
     def listbx(cls, coords, label=None):
-        """Classmethod for __ListBx.
-        """
+        """Classmethod for __ListBx."""
         l = L()
         r = L()
         for i, c in enumerate(coords):
-            assert isinstance(c, ITER_TYPES), f"{inspect.stack()[0][3]} of \
+            assert isinstance(
+                c, ITER_TYPES
+            ), f"{inspect.stack()[0][3]} of \
                 {__name__}: Expected b of type list, got {type(c)}"
             l_ = label[i] if label else c[-1] if len(c) > 4 else None
             l.append(l_)
-            r.append(c[:-1] if len(c) > 4 else c) 
+            r.append(c[:-1] if len(c) > 4 else c)
         return cls(r, label=l)
-    
+
     def __str__(self):
-        return f'__ListBx(coords={self.coords}, label={self.label})'
+        return f"__ListBx(coords={self.coords}, label={self.label})"
+
 
 def lbx(coords=None, labels=None):
     """Alias of the __ListBx class to process `list` into
-    `MultiBx` or `BaseBx` objects exposing many validation methods 
+    `MultiBx` or `BaseBx` objects exposing many validation methods
     """
     return __ListBx.listbx(coords, labels)
 
-# %% ../nbs/01_basics.ipynb 68
+# %% ../nbs/01_basics.ipynb 78
 @patch(cls_method=True)
-def multibox(cls:MultiBx, coords, label: list = None, keys: list=None):
+def multibox(cls: MultiBx, coords, label: list = None, keys: list = None):
     """Classmethod for `MultiBx`. Same as mbx(coords, label).
     Calls classmethods of `JsonBx` and `ListBx` based on the type
     of coords passed.
     """
     t = explode_types(coords)
     # if explode_types returns a single class, it means they are not nested
-    if t == np.ndarray: 
+    if t == np.ndarray:
         return cls(coords, label)
-    if t == dict: 
+    if t == dict:
         b = jbx([coords], label, keys)
         return cls(b.coords, b.label)
-    if t == list: 
+    if t == list:
         b = lbx([coords], label)
         return cls(b.coords, b.label)
     # if list of list or dicts
     type_l0 = list(t.keys())[0]
     type_l1 = t[type_l0][0]
     # process the data
-    if type_l1 == dict: 
+    if type_l1 == dict:
         b = jbx(coords, label, keys)
         return cls(b.coords, b.label)
     # process lists of lists or ndarray
-    try: 
+    try:
         b = lbx(coords, label)
         return cls(b.coords, b.label)
-    except: 
-        return cls(coords, label)        
-    
+    except:
+        return cls(coords, label)
+
+
 def mbx(coords=None, label=None, keys=None):
     """Alias of the `MultiBx` class."""
     return MultiBx.multibox(coords, label, keys)
 
-
-# %% ../nbs/01_basics.ipynb 81
+# %% ../nbs/01_basics.ipynb 91
 @patch(cls_method=True)
-def basebx(cls:BaseBx, coords, label: list = None, keys: list = voc_keys):
+def basebx(cls: BaseBx, coords, label: list = None, keys: list = voc_keys):
     """Classmethod for `BaseBx`. Same as bbx(coords, label), made to work with
     other object types other than ndarray."""
     try:
@@ -384,17 +420,18 @@ def basebx(cls:BaseBx, coords, label: list = None, keys: list = voc_keys):
     finally:
         return cls(coords, label)
 
+
 def bbx(coords=None, labels=None, keys=voc_keys):
     """Alias of the `BaseBx` class."""
     return BaseBx.basebx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 94
+# %% ../nbs/01_basics.ipynb 104
 def get_bx(coords, label=None):
     """
     Helper function to check and call the correct type of Bx instance.
 
-    Checks for the type of data passed and calls the respective class 
-    to generate a Bx instance. Currently only supports ndarray, list, dict, 
+    Checks for the type of data passed and calls the respective class
+    to generate a Bx instance. Currently only supports ndarray, list, dict,
     tuple, nested list, nested tuple.
 
     Parameters
@@ -419,11 +456,11 @@ def get_bx(coords, label=None):
         coords = np.atleast_2d(coords)
         return mbx(coords, label)
     # process list
-    if isinstance(coords, (list, L)): 
+    if isinstance(coords, (list, L)):
         if isinstance(coords[0], COORD_TYPES):
             """If first item is a position"""
             return bbx(coords, label)
-        elif isinstance(coords[0], ITER_TYPES+ITER_TYPES_EXTRA):
+        elif isinstance(coords[0], ITER_TYPES + ITER_TYPES_EXTRA):
             """If fist item is an iterable"""
             return mbx(coords, label)
         elif isinstance(coords[0], ITER_TYPES_TUPLE):
@@ -443,35 +480,36 @@ def get_bx(coords, label=None):
             f"{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}."
         )
 
-# %% ../nbs/01_basics.ipynb 103
+# %% ../nbs/01_basics.ipynb 113
 @patch
-def __add__(self:BaseBx, other):
-        """Pseudo-add method that stacks the provided boxes and labels. Stacking two
-        boxes imply that the resulting box is a `MultiBx`: `BaseBx` + `BaseBx`
-        = `MultiBx`. This violates the idea of `BaseBx` since the result
-        holds more than 1 coordinate/label for the box.
-        From `v.2.0`, a `UserWarning` is issued if called.
-        Recommended use is either: `BaseBx` + `BaseBx` = `MultiBx` or
-        `basics.stack_bxs()`.
-        """
-        if not isinstance(other, BX_TYPE):
-            raise TypeError(
-                f"{inspect.stack()[0][3]} of {__name__}: Expected a subclass of {BX_TYPE}"
+def __add__(self: BaseBx, other):
+    """Pseudo-add method that stacks the provided boxes and labels. Stacking two
+    boxes imply that the resulting box is a `MultiBx`: `BaseBx` + `BaseBx`
+    = `MultiBx`. This violates the idea of `BaseBx` since the result
+    holds more than 1 coordinate/label for the box.
+    From `v.2.0`, a `UserWarning` is issued if called.
+    Recommended use is either: `BaseBx` + `BaseBx` = `MultiBx` or
+    `basics.stack_bxs()`.
+    """
+    if not isinstance(other, BX_TYPE):
+        raise TypeError(
+            f"{inspect.stack()[0][3]} of {__name__}: Expected a subclass of {BX_TYPE}"
+        )
+    else:
+        warnings.warn(
+            BxViolation(
+                f"Change of object type imminent if trying to add "
+                f"{type(self)}+{type(other)}. Use {type(other)}+{type(self)} "
+                f"instead or basics.stack_bxs()."
             )
-        else:
-            warnings.warn(
-                BxViolation(
-                    f"Change of object type imminent if trying to add "
-                    f"{type(self)}+{type(other)}. Use {type(other)}+{type(self)} "
-                    f"instead or basics.stack_bxs()."
-                )
-            )
-        coords = self.coords + other.coords
-        label = self.label + other.label
-        return mbx(coords, label)
+        )
+    coords = self.coords + other.coords
+    label = self.label + other.label
+    return mbx(coords, label)
+
 
 @patch
-def __add__(self:MultiBx, other):
+def __add__(self: MultiBx, other):
     """Pseudo-add method that stacks the provided boxes and labels. Stacking two
     boxes imply that the resulting box is a `MultiBx`: `MultiBx` + `MultiBx`
     = `MultiBx`. Same as `basics.stack_bxs()`.
@@ -485,14 +523,14 @@ def __add__(self:MultiBx, other):
     label = self.label + other.label
     return mbx(coords, label)
 
-# %% ../nbs/01_basics.ipynb 104
+# %% ../nbs/01_basics.ipynb 114
 def stack_bxs(b1, b2):
     """
     Method to stack two Bx-types together. Similar to `__add__` of BxTypes
     but avoids UserWarning.
-    :param b1: 
-    :param b2: 
-    :return:  
+    :param b1:
+    :param b2:
+    :return:
     _summary_
 
     Parameters
@@ -531,12 +569,10 @@ def stack_bxs(b1, b2):
 def add_bxs(b1, b2):
     """Alias of stack_bxs()."""
     return stack_bxs(b1, b2)
- 
 
-# %% ../nbs/01_basics.ipynb 114
+# %% ../nbs/01_basics.ipynb 124
 def stack_bxs_inplace(b, *args):
     """Stack the passed boxes on top of the first item."""
     for b_ in args:
         b = stack_bxs(b, b_)
     return b
-
