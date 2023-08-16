@@ -1,26 +1,26 @@
 {
   "00_anchor.ipynb": {
-    "anchor.html": "c412200b"
+    "anchor.html": "9da0c2be"
   },
   "01_basics.ipynb": {
-    "basics.html": "fb9f013e"
+    "basics.html": "767daad4"
   },
   "02_utils.ipynb": {
-    "utils.html": "9a679b15"
+    "utils.html": "0f8afefe"
   },
   "03_ops.ipynb": {
-    "ops.html": "2778602a"
+    "ops.html": "9f365335"
   },
   "04_sample.ipynb": {
-    "sample.html": "443f8f37"
+    "sample.html": "0f7cbafd"
   },
   "05_vis.ipynb": {
-    "vis.html": "1890ab05"
+    "vis.html": "05b81c5a"
   },
   "06_excepts.ipynb": {
-    "excepts.html": "ec560d60"
+    "excepts.html": "cbccce6f"
   },
   "index.ipynb": {
-    "index.html": "55fc4679"
+    "index.html": "07568e57"
   }
 }
