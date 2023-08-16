@@ -12,7 +12,7 @@ from numpy.typing import ArrayLike
 
 import numpy as np
 from fastcore.dispatch import explode_types
-from fastcore.foundation import L
+from fastcore.foundation import L, noop
 from fastcore.basics import concat, store_attr, patch, GetAttr
 from fastcore.xtras import is_listy
 
@@ -41,7 +41,7 @@ class Bx:
         label = L(label) if not is_listy(label) else label
         coords = [coords] if len(coords) > 1 else coords  # make list of list
         # other props
-        _coords = coords[0]  # internatl representation as a list
+        _coords = coords[0]  # internat representation as a list
         assert len(_coords) == 4, f"Expected 4 items in _coords, got {_coords}"
         x_min, y_min, x_max, y_max = _coords
         store_attr("x_min, y_min, x_max, y_max, _coords, coords, label")
@@ -66,29 +66,29 @@ class Bx:
         return self.label
 
     @property
-    def w(self):
+    def bw(self):
         """Calculate width"""
         return sub(*self._coords[::2][::-1])
 
     @property
-    def h(self):
+    def bh(self):
         """Calculate height"""
         return sub(*self._coords[1::2][::-1])
 
     @property
     def cx(self):
         """Calculate centroid-x"""
-        return self.x_min + self.w / 2
+        return (self.x_min + self.x_max) / 2.0
 
     @property
     def cy(self):
         """Calculate centroid-y"""
-        return self.y_min + self.h / 2
+        return (self.y_min + self.y_max) / 2.0
 
     @property
     def area(self):
         """Calculates the absolute value of the area of the box."""
-        return abs(mul(self.w, self.h))
+        return abs(mul(self.bw, self.bh))
 
     @property
     def values(self):
@@ -107,7 +107,7 @@ class Bx:
     @property
     def xywh(self):
         """Converts the `pascal_voc` bounding box to `coco` format."""
-        return L([[self.x_min, self.y_min, self.w, self.h]])
+        return L([[self.x_min, self.y_min, self.bw, self.bh]])
 
     def yolo(self, w=1, h=1, normalize=False):
         """Converts the `pascal_voc` bounding box to `yolo` centroids format.
@@ -119,8 +119,8 @@ class Bx:
             assert (w > 1) and (
                 (h > 1)
             ), f"{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}."
-
-        return L([[self.cx / w, self.cy / h, self.w / w, self.h / h]])
+        _yolo = np.array([[self.cx, self.cy, self.bw, self.bh]]) / np.tile([w, h], 2)
+        return L(_yolo.round(4).tolist())
 
 # %% ../nbs/01_basics.ipynb 22
 class BaseBx(Bx):
@@ -170,27 +170,7 @@ def iou(self: BaseBx, other):
         return int_area / union_area
     return 0.0
 
-# %% ../nbs/01_basics.ipynb 38
-@patch
-def get_offset(self: BaseBx, other, w=1, h=1, normalize=False):
-    """Caclulates the difference of the box
-    w.r.t. another `BaseBx`. Returns the IOU only if the box is
-    considered `valid`.
-    """
-    if not isinstance(other, Bx):
-        other = bbx(other)
-    if normalize:
-        assert (w > 1) and (
-            (h > 1)
-        ), f"{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}."
-
-    if self.valid:
-        offset = (self.coords_as_numpy - other.coords_as_numpy) / np.tile([w, h], 2)
-        return L(offset.tolist())
-    else:
-        raise ValueError(f"Cannot validate boxes")
-
-# %% ../nbs/01_basics.ipynb 43
+# %% ../nbs/01_basics.ipynb 37
 @patch
 def __iter__(self: BaseBx):
     """Iterates through the boxes in `BaseBx` where self.valid is True."""
@@ -223,7 +203,7 @@ def __next__(self: BaseBx):
     self.index += 1
     return b
 
-# %% ../nbs/01_basics.ipynb 48
+# %% ../nbs/01_basics.ipynb 42
 class MultiBx:
     """`MultiBx` represents a collection of bounding boxes as ndarrays.
     Objects of type `MultiBx` can be indexed into, which returns a
@@ -292,10 +272,10 @@ class MultiBx:
         """Returns shape of the coordinates"""
         return self.coords.shape
 
-# %% ../nbs/01_basics.ipynb 49
+# %% ../nbs/01_basics.ipynb 43
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 66
+# %% ../nbs/01_basics.ipynb 60
 class __JsonBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -338,7 +318,7 @@ def jbx(coords=None, labels=None, keys=None):
     """
     return __JsonBx.jsonbx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 73
+# %% ../nbs/01_basics.ipynb 67
 class __ListBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -372,7 +352,7 @@ def lbx(coords=None, labels=None):
     """
     return __ListBx.listbx(coords, labels)
 
-# %% ../nbs/01_basics.ipynb 78
+# %% ../nbs/01_basics.ipynb 72
 @patch(cls_method=True)
 def multibox(cls: MultiBx, coords, label: list = None, keys: list = None):
     """Classmethod for `MultiBx`. Same as mbx(coords, label).
@@ -408,7 +388,7 @@ def mbx(coords=None, label=None, keys=None):
     """Alias of the `MultiBx` class."""
     return MultiBx.multibox(coords, label, keys)
 
-# %% ../nbs/01_basics.ipynb 91
+# %% ../nbs/01_basics.ipynb 85
 @patch(cls_method=True)
 def basebx(cls: BaseBx, coords, label: list = None, keys: list = voc_keys):
     """Classmethod for `BaseBx`. Same as bbx(coords, label), made to work with
@@ -425,7 +405,7 @@ def bbx(coords=None, labels=None, keys=voc_keys):
     """Alias of the `BaseBx` class."""
     return BaseBx.basebx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 104
+# %% ../nbs/01_basics.ipynb 98
 def get_bx(coords, label=None):
     """
     Helper function to check and call the correct type of Bx instance.
@@ -480,7 +460,7 @@ def get_bx(coords, label=None):
             f"{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}."
         )
 
-# %% ../nbs/01_basics.ipynb 113
+# %% ../nbs/01_basics.ipynb 107
 @patch
 def __add__(self: BaseBx, other):
     """Pseudo-add method that stacks the provided boxes and labels. Stacking two
@@ -523,7 +503,7 @@ def __add__(self: MultiBx, other):
     label = self.label + other.label
     return mbx(coords, label)
 
-# %% ../nbs/01_basics.ipynb 114
+# %% ../nbs/01_basics.ipynb 108
 def stack_bxs(b1, b2):
     """
     Method to stack two Bx-types together. Similar to `__add__` of BxTypes
@@ -570,9 +550,59 @@ def add_bxs(b1, b2):
     """Alias of stack_bxs()."""
     return stack_bxs(b1, b2)
 
-# %% ../nbs/01_basics.ipynb 124
+# %% ../nbs/01_basics.ipynb 118
 def stack_bxs_inplace(b, *args):
     """Stack the passed boxes on top of the first item."""
     for b_ in args:
         b = stack_bxs(b, b_)
     return b
+
+# %% ../nbs/01_basics.ipynb 127
+@patch
+def get_offset(
+    self: BaseBx,
+    other,
+    normalize=True,
+    log_func=np.log,
+    sigma=(0.1, 0.2),
+    self_is_anchor=False,
+):
+    """Caclulates the offset of the box
+    w.r.t. another `BaseBx`. Returns the IOU only if the box is
+    considered `valid`.
+    normalize=True because SSD reccomends it
+    sigma to make gradients slightly larger, sigma is also the estimated stdev (pixel error)
+    """
+    if not isinstance(other, Bx):
+        other = bbx(other)
+    if self_is_anchor:
+        # if self_is_anchor, ie anchor.get_offset(ground_truth) is called
+        anchor = self
+        gt = other
+    else:
+        # if not self_is_anchor, ie ground_truth.get_offset(anchor) is called (default behaviour)
+        gt = self
+        anchor = other
+    # get anchor box w and h
+    anchor_bw_norm = anchor.bw
+    anchor_bh_norm = anchor.bh
+    sigma_xy, sigma_wh = sigma
+    # if not normalize, reset params
+    if not normalize:
+        log_func = noop
+        sigma_xy, sigma_wh, anchor_bw_norm, anchor_bh_norm = [1.0] * 4
+    # center distances
+    # norm with anchor box w and h
+    cx_offset, cy_offset = (gt.cx - anchor.cx) / anchor_bw_norm, (
+        gt.cy - anchor.cy
+    ) / anchor_bh_norm
+    # scale of boxes
+    w_offset = log_func(gt.bw / anchor_bw_norm)
+    h_offset = log_func(gt.bh / anchor_bh_norm)
+
+    offset = np.asarray([cx_offset, cy_offset, w_offset, h_offset])
+    # norm with sigmaxy and sigmawh
+    # print(sigma_xy, sigma_wh)
+    offset /= np.repeat([sigma_xy, sigma_wh], 2)
+    # not np.tile as norm is cx/sigma_xy, cy/sigma_xy, w/sigma_wh, h/sigma_wh
+    return L(offset.round(4).tolist())
