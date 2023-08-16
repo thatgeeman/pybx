@@ -292,7 +292,7 @@ def get_gt_max_iou(
 
     return dict(gt_anchors_per_class), dict(iou_per_class), dict(mask_per_class)
 
-# %% ../nbs/00_anchor.ipynb 82
+# %% ../nbs/00_anchor.ipynb 83
 def get_gt_offsets(
     true_annots,
     anchor_boxes,
