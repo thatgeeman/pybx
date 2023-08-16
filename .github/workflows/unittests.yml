@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
       - name: Install test requirements
         run: |
-          pip install flake8 black
+          pip install pytest flake8 black
       - name: Install pybx as editable
         run: |
           pip install -e .
