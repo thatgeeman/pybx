@@ -561,7 +561,7 @@ def stack_bxs_inplace(b, *args):
 @patch
 def get_offset(
     self: BaseBx,
-    other,
+    other: BaseBx,
     normalize=True,
     log_func=np.log,
     sigma=(0.1, 0.2),
@@ -573,8 +573,13 @@ def get_offset(
     normalize=True because SSD reccomends it
     sigma to make gradients slightly larger, sigma is also the estimated stdev (pixel error)
     """
-    if not isinstance(other, Bx):
+    if isinstance(other, MultiBx):
+        warnings.warn(BxViolation(f"Other should be BaseBx, got MultiBx"))
+        assert len(other) == 1, f"{other} cannot be converted to single bounding box."
+        other = other[0]
+    elif not isinstance(other, Bx):
         other = bbx(other)
+
     if self_is_anchor:
         # if self_is_anchor, ie anchor.get_offset(ground_truth) is called
         anchor = self
