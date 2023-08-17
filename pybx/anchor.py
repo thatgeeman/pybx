@@ -17,7 +17,7 @@ from collections import defaultdict
 import warnings
 
 from .ops import named_idx
-from .basics import get_bx, stack_bxs_inplace, BX_TYPE, BaseBx, Bx, get_bx
+from .basics import get_bx, stack_bxs_inplace, BX_TYPE, BaseBx, Bx, bbx, get_bx
 from .utils import get_edges, validate_boxes, as_tuple, reassign_label
 from .excepts import NoGroundTruthBxs
 
