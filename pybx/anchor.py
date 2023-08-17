@@ -17,7 +17,7 @@ from collections import defaultdict
 import warnings
 
 from .ops import named_idx
-from .basics import get_bx, stack_bxs_inplace, BX_TYPE
+from .basics import get_bx, stack_bxs_inplace, BX_TYPE, BaseBx, Bx, get_bx
 from .utils import get_edges, validate_boxes, as_tuple, reassign_label
 from .excepts import NoGroundTruthBxs
 
@@ -292,27 +292,35 @@ def get_gt_max_iou(
 
     return dict(gt_anchors_per_class), dict(iou_per_class), dict(mask_per_class)
 
-# %% ../nbs/00_anchor.ipynb 83
+# %% ../nbs/00_anchor.ipynb 84
 def get_gt_offsets(
-    true_annots,
+    true_annots: BaseBx,
     anchor_boxes,
-    anchor_labels=None,
+    anchor_labels=None,  # do we need to pass this
     masks=None,
     sigma=(0.1, 0.2),
     normalize=True,
     log_func=np.log,
+    update_labels=False,
 ):
+    if not isinstance(true_annots, Bx):
+        true_annots = bbx(true_annots)
+
     Na = len(
         anchor_boxes
     )  # no of anchor boxes (includes positive and negative anchor boxes)
-    masks = masks if masks is not None else L([True] * Na)
+    masks = (
+        masks if masks is not None else L([True] * Na)
+    )  # if no masks provided, repeat for all anchors
     offsets = np.zeros((Na, 4))
-
+    labels = L(["background"] * Na)  # if update_labels else anchor_labels
+    true_label = true_annots.label[0] if len(true_annots.label) != 0 else "unknown"
     for idx, (box, mask) in enumerate(zip(anchor_boxes, masks)):
         if mask:
             offsets[idx, :] = true_annots.get_offset(
                 box, normalize=normalize, sigma=sigma, log_func=log_func
             )
-            # print(offsets[idx, :])
-    # assert N=(gt_offsets_clock[:, 0]!=0).sum()
-    return offsets
+            # labels with mask=True will be the candidates for actual ground truth class.
+            if update_labels:  # and (labels is not None):
+                labels[idx] = true_label
+    return offsets, labels
