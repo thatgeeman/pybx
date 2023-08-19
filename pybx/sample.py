@@ -17,7 +17,7 @@ from .ops import voc_keys
 # %% ../nbs/04_sample.ipynb 4
 __all__ = ["get_example", "get_given_array"]
 
-# %% ../nbs/04_sample.ipynb 6
+# %% ../nbs/04_sample.ipynb 5
 def _scale_annots_dict(annot, new_sz, orig_sz):
     """Scale annotations to the new_sz, provided the original ann_im_sz.
     :param annot: bounding box in dict format
@@ -99,7 +99,7 @@ def _get_scaled_annots(annots: list, new_sz: tuple, orig_sz=(300, 300, 3)):
         scaled.append(d)
     return scaled
 
-# %% ../nbs/04_sample.ipynb 16
+# %% ../nbs/04_sample.ipynb 15
 def _get_example(
     image_sz: tuple = None,
     feature_sz: tuple = None,
@@ -191,7 +191,7 @@ def _get_feature(feature_sz: tuple):
     """
     return np.random.randn(*feature_sz)
 
-# %% ../nbs/04_sample.ipynb 25
+# %% ../nbs/04_sample.ipynb 24
 def _get_given_array(
     image_arr: np.ndarray = None,
     annots: list = None,
@@ -240,7 +240,7 @@ def _get_given_array(
         annots = [{k: 0 if k != "label" else "" for k in voc_keys}]
     return image_arr, annots, logits, color if not color else color
 
-# %% ../nbs/04_sample.ipynb 26
+# %% ../nbs/04_sample.ipynb 25
 def get_example(image_sz: tuple, **kwargs):
     """Get an example image from the pth given for some image size for a feature size
     :param image_sz: required image size (will resize the original image)
