@@ -292,7 +292,7 @@ def get_gt_max_iou(
 
     return dict(gt_anchors_per_class), dict(iou_per_class), dict(mask_per_class)
 
-# %% ../nbs/00_anchor.ipynb 84
+# %% ../nbs/00_anchor.ipynb 83
 def get_gt_offsets(
     true_annots: BaseBx,
     anchor_boxes,
@@ -303,6 +303,23 @@ def get_gt_offsets(
     log_func=np.log,
     update_labels=False,
 ):
+    """
+    Calculates the offset of the true annotations from the anchor boxes using the `get_offset` method of `BaseBx`.
+
+    Args:
+        true_annots (Any): True annotation for a single object, typically in `pascal_voc` format
+        anchor_boxes (Any): Candidate anchor boxes, typically calculated with `pybx.bxs`
+        anchor_labels (List, optional): Anchor box labels, will be overwritten with ground truth labels if `update_labels=True`. Defaults to None.
+        masks (List, optional): Anchor box masks indicating if a box is positive/negative anchor box. If nothing is passed, offsets are calculated for all anchor boxes passed. Defaults to None.
+        sigma (tuple, optional): Estimated of standard deviation for the distances and ratios. Defaults to (0.1, 0.2).
+        normalize (bool, optional): Whether to normalize the offsets using the methods used in the SSD paper. Defaults to True.
+        log_func (func, optional): Function for normalizing the ratio of widths and heights. Defaults to np.log.
+        update_labels (bool, optional): Overwrite positive anchor boxes with object class and negative anchor boxes with `background` class. Defaults to False.
+
+    Returns:
+        list: List of all anchor box offsets.
+        list: List of corresponding anchor box labels.
+    """
     if not isinstance(true_annots, Bx):
         true_annots = bbx(true_annots)
 

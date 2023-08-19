@@ -1,5 +1,27 @@
 {
   "index.ipynb": {
-    "README.md": "cfbe3457"
+    "README.md": "cfbe3457",
+    "index.html": "9c9e9b64"
+  },
+  "00_anchor.ipynb": {
+    "anchor.html": "eff4e888"
+  },
+  "01_basics.ipynb": {
+    "basics.html": "03be9b0b"
+  },
+  "02_utils.ipynb": {
+    "utils.html": "c73e98a3"
+  },
+  "03_ops.ipynb": {
+    "ops.html": "d5a72718"
+  },
+  "04_sample.ipynb": {
+    "sample.html": "fe638fe2"
+  },
+  "05_vis.ipynb": {
+    "vis.html": "62860c95"
+  },
+  "06_excepts.ipynb": {
+    "excepts.html": "d8608615"
   }
 }

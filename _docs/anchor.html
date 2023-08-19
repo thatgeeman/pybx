@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.184">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Methods to generate anchor boxes of different aspect ratios.">
+
+<title>pybx - Generate anchor boxes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="pybx - Generate anchor boxes">
+<meta property="og:description" content="Methods to generate anchor boxes of different aspect ratios.">
+<meta property="og:site-name" content="pybx">
+<meta name="twitter:title" content="pybx - Generate anchor boxes">
+<meta name="twitter:description" content="Methods to generate anchor boxes of different aspect ratios.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">pybx</span>
+    </a>
+  </div>
+          <div class="quarto-toggle-container ms-auto">
+              <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+          </div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Generate anchor boxes</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">PyBx</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./anchor.html" class="sidebar-item-text sidebar-link active">Generate anchor boxes</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics.html" class="sidebar-item-text sidebar-link">Basic objects</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utils.html" class="sidebar-item-text sidebar-link">Utilities</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ops.html" class="sidebar-item-text sidebar-link">Operations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sample.html" class="sidebar-item-text sidebar-link">Samples</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vis.html" class="sidebar-item-text sidebar-link">Visualizations</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./excepts.html" class="sidebar-item-text sidebar-link">Exceptions</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#bx" id="toc-bx" class="nav-link active" data-scroll-target="#bx">bx</a></li>
+  <li><a href="#bxs" id="toc-bxs" class="nav-link" data-scroll-target="#bxs">bxs</a></li>
+  <li><a href="#ground-truth-anchor-boxes" id="toc-ground-truth-anchor-boxes" class="nav-link" data-scroll-target="#ground-truth-anchor-boxes">Ground truth anchor boxes</a>
+  <ul class="collapse">
+  <li><a href="#get_gt_thresh_iou" id="toc-get_gt_thresh_iou" class="nav-link" data-scroll-target="#get_gt_thresh_iou">get_gt_thresh_iou</a></li>
+  <li><a href="#get_gt_max_iou" id="toc-get_gt_max_iou" class="nav-link" data-scroll-target="#get_gt_max_iou">get_gt_max_iou</a></li>
+  </ul></li>
+  <li><a href="#calculate-offsets-for-ground-truth-anchor-boxes" id="toc-calculate-offsets-for-ground-truth-anchor-boxes" class="nav-link" data-scroll-target="#calculate-offsets-for-ground-truth-anchor-boxes">Calculate offsets for ground truth anchor boxes</a>
+  <ul class="collapse">
+  <li><a href="#get_gt_offsets" id="toc-get_gt_offsets" class="nav-link" data-scroll-target="#get_gt_offsets">get_gt_offsets</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/thatgeeman/pybx/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Generate anchor boxes</h1>
+</div>
+
+<div>
+  <div class="description">
+    Methods to generate anchor boxes of different aspect ratios.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>To generate anchor boxes, we need three basic information:</p>
+<ul>
+<li>Input image size, <code>image_sz</code>: To position our anchor boxes within the maximum coordinates (<code>width</code>, <code>height</code>) of the image.</li>
+<li>Feature map size, <code>feature_sz</code>: Feature map is the size (<code>width</code>, <code>height</code>) of the output of a convolutional operation. A <span class="math inline">\(10\times10\)</span> feature map would mean <span class="math inline">\(10\times10\)</span> local receptive field locations can be traced back into the input image. These 100 receptive field locations (<span class="math inline">\(10\times10=100\)</span>) in the input image would act as our initial anchor box candidates.</li>
+</ul>
+<p><img src="https://ars.els-cdn.com/content/image/1-s2.0-S0925231217314169-gr4.jpg" class="img-fluid"></p>
+<ul>
+<li>Aspect ratio of anchor boxes, <code>asp_ratio</code>: To generate anchor boxes with different <code>width</code> to <code>height</code> ratio (default <code>asp_ratio=1</code>).</li>
+</ul>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/master/pybx/anchor.py#L25" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="bx" class="level3">
+<h3 class="anchored" data-anchor-id="bx">bx</h3>
+<blockquote class="blockquote">
+<pre><code> bx (image_sz:(&lt;class'int'&gt;,&lt;class'tuple'&gt;),
+     feature_sz:(&lt;class'int'&gt;,&lt;class'tuple'&gt;), asp_ratio:float=None,
+     clip:bool=True, named:bool=True, anchor_sfx:str='a',
+     min_visibility:float=0.25)</code></pre>
+</blockquote>
+<p>Calculate anchor box coords given an image size and feature size for a single aspect ratio.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>image_sz</td>
+<td>(&lt;class ‘int’&gt;, &lt;class ‘tuple’&gt;)</td>
+<td></td>
+<td>image size (width, height)</td>
+</tr>
+<tr class="even">
+<td>feature_sz</td>
+<td>(&lt;class ‘int’&gt;, &lt;class ‘tuple’&gt;)</td>
+<td></td>
+<td>feature map size (width, height)</td>
+</tr>
+<tr class="odd">
+<td>asp_ratio</td>
+<td>float</td>
+<td>None</td>
+<td>aspect ratio (width:height), by default None</td>
+</tr>
+<tr class="even">
+<td>clip</td>
+<td>bool</td>
+<td>True</td>
+<td>whether to apply np.clip, by default True</td>
+</tr>
+<tr class="odd">
+<td>named</td>
+<td>bool</td>
+<td>True</td>
+<td>whether to return (coords, labels), by default True</td>
+</tr>
+<tr class="even">
+<td>anchor_sfx</td>
+<td>str</td>
+<td>a</td>
+<td>suffix anchor label with anchor_sfx, by default “a”</td>
+</tr>
+<tr class="odd">
+<td>min_visibility</td>
+<td>float</td>
+<td>0.25</td>
+<td>minimum visibility dictates the condition for a box to be considered<br>valid. The value corresponds to the ratio of expected area of an anchor box<br>to the calculated area after clipping to image dimensions., by default 0.25</td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>typing.Union[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Any]]]]], numpy.typing._array_like._SupportsArray[numpy.dtype], typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]], typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]], typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]]], bool, int, float, complex, str, bytes, typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]], typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]]]]</strong></td>
+<td></td>
+<td><strong>anchor box coordinates in <code>pascal_voc</code> format<br>if named=True, a list of anchor box labels are also returned.</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>coords_1, labels_1 <span class="op">=</span> bx(<span class="dv">100</span>, <span class="dv">10</span>, <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>coords_1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[1, 0, 8, 12],
+ [11, 0, 18, 12],
+ [21, 0, 28, 12],
+ [31, 0, 38, 12],
+ [41, 0, 48, 12],
+ [51, 0, 58, 12],
+ [61, 0, 68, 12],
+ [71, 0, 78, 12],
+ [81, 0, 88, 12],
+ [91, 0, 98, 12],
+ [1, 7, 8, 22],
+ [11, 7, 18, 22],
+ [21, 7, 28, 22],
+ [31, 7, 38, 22],
+ [41, 7, 48, 22],
+ [51, 7, 58, 22],
+ [61, 7, 68, 22],
+ [71, 7, 78, 22],
+ [81, 7, 88, 22],
+ [91, 7, 98, 22],
+ [1, 17, 8, 32],
+ [11, 17, 18, 32],
+ [21, 17, 28, 32],
+ [31, 17, 38, 32],
+ [41, 17, 48, 32],
+ [51, 17, 58, 32],
+ [61, 17, 68, 32],
+ [71, 17, 78, 32],
+ [81, 17, 88, 32],
+ [91, 17, 98, 32],
+ [1, 27, 8, 42],
+ [11, 27, 18, 42],
+ [21, 27, 28, 42],
+ [31, 27, 38, 42],
+ [41, 27, 48, 42],
+ [51, 27, 58, 42],
+ [61, 27, 68, 42],
+ [71, 27, 78, 42],
+ [81, 27, 88, 42],
+ [91, 27, 98, 42],
+ [1, 37, 8, 52],
+ [11, 37, 18, 52],
+ [21, 37, 28, 52],
+ [31, 37, 38, 52],
+ [41, 37, 48, 52],
+ [51, 37, 58, 52],
+ [61, 37, 68, 52],
+ [71, 37, 78, 52],
+ [81, 37, 88, 52],
+ [91, 37, 98, 52],
+ [1, 47, 8, 62],
+ [11, 47, 18, 62],
+ [21, 47, 28, 62],
+ [31, 47, 38, 62],
+ [41, 47, 48, 62],
+ [51, 47, 58, 62],
+ [61, 47, 68, 62],
+ [71, 47, 78, 62],
+ [81, 47, 88, 62],
+ [91, 47, 98, 62],
+ [1, 57, 8, 72],
+ [11, 57, 18, 72],
+ [21, 57, 28, 72],
+ [31, 57, 38, 72],
+ [41, 57, 48, 72],
+ [51, 57, 58, 72],
+ [61, 57, 68, 72],
+ [71, 57, 78, 72],
+ [81, 57, 88, 72],
+ [91, 57, 98, 72],
+ [1, 67, 8, 82],
+ [11, 67, 18, 82],
+ [21, 67, 28, 82],
+ [31, 67, 38, 82],
+ [41, 67, 48, 82],
+ [51, 67, 58, 82],
+ [61, 67, 68, 82],
+ [71, 67, 78, 82],
+ [81, 67, 88, 82],
+ [91, 67, 98, 82],
+ [1, 77, 8, 92],
+ [11, 77, 18, 92],
+ [21, 77, 28, 92],
+ [31, 77, 38, 92],
+ [41, 77, 48, 92],
+ [51, 77, 58, 92],
+ [61, 77, 68, 92],
+ [71, 77, 78, 92],
+ [81, 77, 88, 92],
+ [91, 77, 98, 92],
+ [1, 87, 8, 100],
+ [11, 87, 18, 100],
+ [21, 87, 28, 100],
+ [31, 87, 38, 100],
+ [41, 87, 48, 100],
+ [51, 87, 58, 100],
+ [61, 87, 68, 100],
+ [71, 87, 78, 100],
+ [81, 87, 88, 100],
+ [91, 87, 98, 100]]</code></pre>
+</div>
+</div>
+<p>Usually multiple anchor boxes with different <code>feature_sz</code> and <code>asp_ratio</code> are needed. This requirement arises in the case of multiscale object detection.</p>
+<p>For multiscale object detection, feature maps from different convolution operations of the network are used to trace back into the input image, to generate anchor boxes. The <a href="https://thatgeeman.github.io/pybx/anchor.html#bxs"><code>bxs</code></a> method of <code>pybx</code> provides this possibility.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/master/pybx/anchor.py#L91" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="bxs" class="level3">
+<h3 class="anchored" data-anchor-id="bxs">bxs</h3>
+<blockquote class="blockquote">
+<pre><code> bxs (image_sz:(&lt;class'int'&gt;,&lt;class'tuple'&gt;), feature_szs:list=None,
+      asp_ratios:list=None, named:bool=True, **kwargs)</code></pre>
+</blockquote>
+<p>Calculate anchor box coords given an image size and multiple feature sizes for mutiple aspect ratios.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>image_sz</td>
+<td>(&lt;class ‘int’&gt;, &lt;class ‘tuple’&gt;)</td>
+<td></td>
+<td>image size (width, height)</td>
+</tr>
+<tr class="even">
+<td>feature_szs</td>
+<td>list</td>
+<td>None</td>
+<td>list of feature map sizes, each feature map size being an int or tuple, by default [(8, 8), (2, 2)]</td>
+</tr>
+<tr class="odd">
+<td>asp_ratios</td>
+<td>list</td>
+<td>None</td>
+<td>list of aspect ratios for anchor boxes, each aspect ratio being a float calculated by (width:height), by default [1 / 2.0, 1.0, 2.0]</td>
+</tr>
+<tr class="even">
+<td>named</td>
+<td>bool</td>
+<td>True</td>
+<td>whether to return (coords, labels), by default True</td>
+</tr>
+<tr class="odd">
+<td>kwargs</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>Returns</strong></td>
+<td><strong>typing.Union[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Any]]]]], numpy.typing._array_like._SupportsArray[numpy.dtype], typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]], typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]], typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[numpy.typing._array_like._SupportsArray[numpy.dtype]]]]], bool, int, float, complex, str, bytes, typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]], typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]], typing.Sequence[typing.Sequence[typing.Sequence[typing.Sequence[typing.Union[bool, int, float, complex, str, bytes]]]]]]</strong></td>
+<td></td>
+<td><strong>anchor box coordinates in pascal_voc format<br>if named=True, a list of anchor box labels are also returned.</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>coords, labels <span class="op">=</span> bxs(<span class="dv">100</span>, [<span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">2</span>], [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>coords.shape, <span class="bu">len</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>((587, 4), 587)</code></pre>
+</div>
+</div>
+<p>All methods work with asymetric <code>image_sz</code> (and or <code>feature_szs</code> as well):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>coords, labels <span class="op">=</span> bxs((<span class="dv">100</span>, <span class="dv">200</span>), [<span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">2</span>], [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>coords.shape, <span class="bu">len</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>((654, 4), 654)</code></pre>
+</div>
+</div>
+</section>
+<section id="ground-truth-anchor-boxes" class="level1">
+<h1>Ground truth anchor boxes</h1>
+<p>Ground truth boxes are anchor boxes with maximum IOU with the true annotations.</p>
+<p>Load actual annotations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>true_annots <span class="op">=</span> json.load(<span class="bu">open</span>(<span class="st">'../data/annots.json'</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>true_annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 130, 'y_min': 63, 'x_max': 225, 'y_max': 180, 'label': 'clock'},
+ {'x_min': 13, 'y_min': 158, 'x_max': 90, 'y_max': 213, 'label': 'frame'}]</code></pre>
+</div>
+</div>
+<p>Convert to MultiBx for convenience:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>true_annots_as_bx <span class="op">=</span> get_bx(true_annots)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>true_annots_as_bx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[130, 63, 225, 180], [13, 158, 90, 213]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<p>Generate anchor boxes for object detection task, given that we know:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>image_sz <span class="op">=</span> (<span class="dv">256</span>, <span class="dv">256</span>)  <span class="co"># to know the upper bounds of candidate bounding boxes</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>feature_sz <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">3</span>]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>asp_ratio <span class="op">=</span> [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>coords, labels <span class="op">=</span> bxs((<span class="dv">256</span>, <span class="dv">256</span>), [<span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">3</span>], [<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>coords.shape, <span class="bu">len</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>((1741, 4), 1741)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>n_boxes <span class="op">=</span> coords.shape[<span class="dv">0</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>n_boxes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>1741</code></pre>
+</div>
+</div>
+<p>Store coords as multibx for convenience.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>coords_as_bx <span class="op">=</span> get_bx(coords<span class="op">=</span>coords, label<span class="op">=</span>labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Can use the true annotations and anchor boxes to calulate the IOU.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>true_annots_as_bx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[130, 63, 225, 180], [13, 158, 90, 213]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(true_annots_as_bx), <span class="bu">len</span>(coords_as_bx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, 1741)</code></pre>
+</div>
+</div>
+<p>The question: for each true label in the provided true annotations, what are the possible ground truth anchor boxes?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> annots <span class="kw">in</span> true_annots_as_bx:</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(annots)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>BaseBx(coords=[[130, 63, 225, 180]], label=['clock'])
+BaseBx(coords=[[13, 158, 90, 213]], label=['frame'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class <span class="op">=</span> defaultdict(<span class="kw">lambda</span>: L())</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>iou_per_box <span class="op">=</span> defaultdict(<span class="kw">lambda</span>: L())</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> annots <span class="kw">in</span> true_annots_as_bx:</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> annots.label[<span class="dv">0</span>]  <span class="co"># is a list of len 1</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    ious <span class="op">=</span> [annots.iou(coords_as_bx[i]) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_boxes)]</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    iou_per_box[label].extend(ious)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>iou_per_box.keys()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>dict_keys(['clock', 'frame'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="bu">max</span>(iou_per_box[<span class="st">'clock'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.34822804314329736</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>iou_per_box[<span class="st">'clock'</span>].argwhere(gt(<span class="fl">0.3</span>))  <span class="co"># indices of boxes with iou &gt; 0.3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#2) [1719,1728]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>iou_per_box[<span class="st">'frame'</span>].argwhere(gt(<span class="fl">0.3</span>))  <span class="co"># indices of boxes with iou &gt; 0.3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#3) [1720,1729,1738]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>(<span class="bu">max</span>(iou_per_box[<span class="st">'clock'</span>])), <span class="bu">max</span>(iou_per_box[<span class="st">'frame'</span>])  <span class="co"># add more anchor boxes to get better ground truth IOUs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(0.34822804314329736, 0.4488243430152144)</code></pre>
+</div>
+</div>
+<p>Improve the loop to return only those with good IOU:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>iou_thresh <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class <span class="op">=</span> defaultdict(<span class="kw">lambda</span>: L())</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>iou_per_box <span class="op">=</span> defaultdict(<span class="kw">lambda</span>: L())</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> annots <span class="kw">in</span> true_annots_as_bx:</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> annots.label[<span class="dv">0</span>]  <span class="co"># is a list of len 1</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    ious <span class="op">=</span> L([annots.iou(coords_as_bx[i]) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_boxes)])</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    ious_filter <span class="op">=</span> ious.argwhere(gt(iou_thresh))</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># report filtered box IOUs</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    iou_per_box[label].extend(ious[ious_filter])</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># report selected boxes</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    gt_anchors_per_class[label] <span class="op">=</span> stack_bxs_inplace(</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">*</span>[coords_as_bx[i] <span class="cf">for</span> i <span class="kw">in</span> ious_filter]</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>iou_per_box[<span class="st">'clock'</span>], iou_per_box[<span class="st">'frame'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>((#2) [0.34,0.34822804314329736],
+ (#3) [0.36643389750266303,0.4488243430152144,0.3523238380809595])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class[<span class="st">'clock'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[170, 85, 256, 170], [183, 67, 243, 188]], label=['a_3x3_1.0_5', 'a_3x3_0.5_5'])</code></pre>
+</div>
+</div>
+<p>Not very far from the original annotations. These scales and aspect ratios can also be read from the label. The finer the anchor boxes, the better the starting positions (ground truth anchor boxes).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>true_annots[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'x_min': 130, 'y_min': 63, 'x_max': 225, 'y_max': 180, 'label': 'clock'}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>tmp <span class="op">=</span> L([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>msk <span class="op">=</span> tmp.<span class="bu">map</span>(<span class="kw">lambda</span> x: x<span class="op">&gt;</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>tmp[msk]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#2) [2,3]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>mask2idxs(msk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[1, 2]</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/master/pybx/anchor.py#L134" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_gt_thresh_iou" class="level3">
+<h3 class="anchored" data-anchor-id="get_gt_thresh_iou">get_gt_thresh_iou</h3>
+<blockquote class="blockquote">
+<pre><code> get_gt_thresh_iou (true_annots, anchor_boxes, anchor_labels=None,
+                    iou_thresh=0.3, return_ious=False, return_masks=False,
+                    update_labels=True)</code></pre>
+</blockquote>
+<p>Calculate positive ground truth and extra positive ground truth bounding boxes based on iou threhsold.</p>
+<p>Can result in uneven number of positive ground truth boxes per class.</p>
+<p>Args: true_annots (Any): True annotations, typically in <code>pascal_voc</code> format anchor_boxes (Any): Candidate anchor boxes, typically calculated with <code>pybx.bxs</code> anchor_labels (List, optional): Anchor box labels, will be overwritten with true labels if <code>update_labels=True</code>. Defaults to None. iou_thresh (float, optional): IOU threshold to filter out negative ground truth anchor boxes. Defaults to 0.3. return_ious (bool, optional): Return IOU values for selected positive ground truth anchor boxes. Defaults to False. return_masks (bool, optional): Return boolean masks for all anchor boxes indicating if a box is positive (<code>True</code>) or negative (<code>False</code>) ground truth box. Defaults to False. update_labels (bool, optional): Overwrite with true annotations. Defaults to True.</p>
+<p>Returns: dict: positive ground truth anchor boxes per class dict: IOU of positive ground truth anchor boxes per class dict: boolean list indicating positive ground truth anchor boxes per class</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>coords</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[  0,   0,  12,  12],
+       [ 12,   0,  25,  12],
+       [ 25,   0,  38,  12],
+       ...,
+       [ 19, 135,  66, 256],
+       [104, 135, 151, 256],
+       [189, 135, 236, 256]])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class, ious_per_class, mask_per_class <span class="op">=</span> get_gt_thresh_iou(true_annots, coords, iou_thresh<span class="op">=</span><span class="fl">0.3</span>, return_ious<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'clock': MultiBx(coords=[[170, 85, 256, 170], [183, 67, 243, 188]], label=['clock', 'clock']),
+ 'frame': MultiBx(coords=[[0, 170, 85, 256], [12, 152, 72, 256], [19, 135, 66, 256]], label=['frame', 'frame', 'frame'])}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>mask_per_class</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>true_annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 130, 'y_min': 63, 'x_max': 225, 'y_max': 180, 'label': 'clock'},
+ {'x_min': 13, 'y_min': 158, 'x_max': 90, 'y_max': 213, 'label': 'frame'}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>ious_per_class[<span class="st">'clock'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#2) [0.34,0.3482]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class[<span class="st">'clock'</span>].coords</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[[170, 85, 256, 170], [183, 67, 243, 188]]</code></pre>
+</div>
+</div>
+<p>If anchor box labels are passed, they can be preserved instead of overwriting with ground truth labels.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>get_gt_thresh_iou([<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">180</span>, <span class="dv">300</span>, <span class="st">'hat'</span>], coords, iou_thresh<span class="op">=</span><span class="fl">0.3</span>, anchor_labels<span class="op">=</span>labels, update_labels<span class="op">=</span><span class="va">False</span>, return_ious<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>({'hat': MultiBx(coords=[[85, 170, 170, 256], [97, 152, 158, 256], [104, 135, 151, 256]], label=['a_3x3_1.0_7', 'a_3x3_0.5_7', 'a_3x3_0.3_7'])},
+ {'hat': (#3) [0.453,0.4899,0.3921]},
+ {})</code></pre>
+</div>
+</div>
+<p>True annots can also be a list containing the label as the last item.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>get_gt_thresh_iou([<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">180</span>, <span class="dv">300</span>, <span class="st">'hat'</span>], coords, iou_thresh<span class="op">=</span><span class="fl">0.3</span>, return_ious<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>({'hat': MultiBx(coords=[[85, 170, 170, 256], [97, 152, 158, 256], [104, 135, 151, 256]], label=['hat', 'hat', 'hat'])},
+ {'hat': (#3) [0.453,0.4899,0.3921]},
+ {})</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>get_gt_thresh_iou([[<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">180</span>, <span class="dv">300</span>, <span class="st">'hat'</span>], [<span class="dv">100</span>, <span class="dv">120</span>, <span class="dv">280</span>, <span class="dv">200</span>, <span class="st">'shirt'</span>]], coords, iou_thresh<span class="op">=</span><span class="fl">0.3</span>, return_ious<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/mnt/data/projects/pybx/.venv/lib/python3.7/site-packages/ipykernel_launcher.py:59: NoGroundTruthBxs: No good ground truth anchors found for label=shirt, try lowering threshold (iou_thresh=0.3 or increasing candidates.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>({'hat': MultiBx(coords=[[85, 170, 170, 256], [97, 152, 158, 256], [104, 135, 151, 256]], label=['hat', 'hat', 'hat']),
+  'shirt': None},
+ {'hat': (#3) [0.453,0.4899,0.3921], 'shirt': (#0) []},
+ {})</code></pre>
+</div>
+</div>
+<p>Method to also return just the max IOU ground truth boxes.</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/master/pybx/anchor.py#L214" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_gt_max_iou" class="level3">
+<h3 class="anchored" data-anchor-id="get_gt_max_iou">get_gt_max_iou</h3>
+<blockquote class="blockquote">
+<pre><code> get_gt_max_iou (true_annots, anchor_boxes, anchor_labels=None,
+                 return_ious=False, return_masks=False, positive_boxes=1,
+                 update_labels=True)</code></pre>
+</blockquote>
+<p>Calculate positive ground truth and extra positive ground truth bounding boxes based on maximum IOU condition.</p>
+<p>Will always provide a box, therfore constant number <code>positive_boxes</code> of positive ground truth boxes per class.</p>
+<p>Args: true_annots (Any): True annotations, typically in <code>pascal_voc</code> format anchor_boxes (Any): Candidate anchor boxes, typically calculated with <code>pybx.bxs</code> anchor_labels (List, optional): Anchor box labels, will be overwritten with true labels if <code>update_labels=True</code>. Defaults to None. return_ious (bool, optional): Return IOU values for selected positive ground truth anchor boxes. Defaults to False. return_masks (bool, optional): Return boolean masks for all anchor boxes indicating if a box is positive (<code>True</code>) or negative (<code>False</code>) ground truth box. Defaults to False. update_labels (bool, optional): Overwrite with true annotations. Defaults to True. positive_boxes (int, optional): Number of extra/positive ground truth boxes to return. Defaults to 1.</p>
+<p>Returns: dict: positive ground truth anchor boxes per class dict: IOU of positive ground truth anchor boxes per class dict: boolean list indicating positive ground truth anchor boxes per class</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>get_gt_max_iou(true_annots, coords)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>({'clock': MultiBx(coords=[[183, 67, 243, 188]], label=['clock']),
+  'frame': MultiBx(coords=[[12, 152, 72, 256]], label=['frame'])},
+ {},
+ {})</code></pre>
+</div>
+</div>
+<p>Can also use methods for the box to calculate properties or convert to different box formats.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>tmp_bx <span class="op">=</span> get_gt_max_iou(true_annots, coords)[<span class="dv">0</span>][<span class="st">'clock'</span>]</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>tmp_bx[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[183, 67, 243, 188]], label=['clock'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>tmp_bx[<span class="dv">0</span>].xywh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[183, 67, 60, 121]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>tmp_bx[<span class="dv">0</span>].yolo(w<span class="op">=</span><span class="dv">300</span>, h<span class="op">=</span><span class="dv">300</span>, normalize<span class="op">=</span><span class="va">False</span>)  <span class="co"># cx, cy, bw, bh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[0.71, 0.425, 0.2, 0.4033]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># here w h is the image w and h</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>tmp_bx[<span class="dv">0</span>].yolo(w<span class="op">=</span><span class="dv">300</span>, h<span class="op">=</span><span class="dv">300</span>, normalize<span class="op">=</span><span class="va">True</span>)  <span class="co"># cx/w, cy/h, bw/w, bh/h</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) [[0.71, 0.425, 0.2, 0.4033]]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">round</span>([<span class="fl">0.4046875</span>, <span class="fl">0.840625</span>, <span class="fl">0.503125</span>, <span class="fl">0.24375</span>], <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0.4047, 0.8406, 0.5031, 0.2438])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>true_annots</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>[{'x_min': 130, 'y_min': 63, 'x_max': 225, 'y_max': 180, 'label': 'clock'},
+ {'x_min': 13, 'y_min': 158, 'x_max': 90, 'y_max': 213, 'label': 'frame'}]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class, ious_per_class, mask_per_class <span class="op">=</span> get_gt_max_iou(</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>    true_annots,</span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>    coords,</span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>    return_ious<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>    return_masks<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>    positive_boxes<span class="op">=</span><span class="dv">1</span>,  <span class="co"># number of positive bounding boxes to allow</span></span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb87-8"><a href="#cb87-8" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class, ious_per_class, mask_per_class</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>({'clock': MultiBx(coords=[[183, 67, 243, 188]], label=['clock']),
+  'frame': MultiBx(coords=[[12, 152, 72, 256]], label=['frame'])},
+ {'clock': (#1) [0.3482], 'frame': (#1) [0.4488]},
+ {'clock': (#1741) [False,False,False,False,False,False,False,False,False,False...],
+  'frame': (#1741) [False,False,False,False,False,False,False,False,False,False...]})</code></pre>
+</div>
+</div>
+<p>Vocabulary: - Ground truth bounding box - Ground truth anchor box or positive anchor box - Negative anchor box - Offset is calculated as ground truth bounding box minus positive anchor box coordinates (not for all anchor boxes, use mask) - Normalized offsets</p>
+</section>
+</section>
+<section id="calculate-offsets-for-ground-truth-anchor-boxes" class="level1">
+<h1>Calculate offsets for ground truth anchor boxes</h1>
+<p><a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a> also supports calculation of bounding box offset by calling the <code>get_offset()</code> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>mask_per_class</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'clock': (#1741) [False,False,False,False,False,False,False,False,False,False...],
+ 'frame': (#1741) [False,False,False,False,False,False,False,False,False,False...]}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'clock': MultiBx(coords=[[183, 67, 243, 188]], label=['clock']),
+ 'frame': MultiBx(coords=[[12, 152, 72, 256]], label=['frame'])}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>true_annots_bx <span class="op">=</span> get_bx(true_annots)</span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>true_annots_bx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[130, 63, 225, 180], [13, 158, 90, 213]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class[<span class="st">'clock'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[183, 67, 243, 188]], label=['clock'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class[<span class="st">'clock'</span>]  <span class="co"># this is still a MultiBx</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[183, 67, 243, 188]], label=['clock'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(gt_anchors_per_class[<span class="st">'clock'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>1</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>gt_anchors_per_class[<span class="st">'clock'</span>][<span class="dv">0</span>]  <span class="co"># this is a BaseBx, which wont raise a warning</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[183, 67, 243, 188]], label=['clock'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>true_annots_bx[<span class="dv">0</span>].get_offset(gt_anchors_per_class[<span class="st">'clock'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/mnt/data/projects/pybx/pybx/basics.py:577: BxViolation: Other should be BaseBx, got MultiBx
+  warnings.warn(BxViolation(f"Other should be BaseBx, got MultiBx"))</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>(#4) [-5.9167,-0.4959,2.2977,-0.1681]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>true_annots_bx[<span class="dv">0</span>].get_offset(gt_anchors_per_class[<span class="st">'clock'</span>][<span class="dv">0</span>])  <span class="co"># by default normalize=True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#4) [-5.9167,-0.4959,2.2977,-0.1681]</code></pre>
+</div>
+</div>
+<p>With <code>normalize=False</code>, it calculates simple difference between centers <code>(dcx, dcy)</code> and ratio of width and heights <code>log(w'/w), log(h'/h)</code> the two boxes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a>true_annots_bx[<span class="dv">0</span>].get_offset(gt_anchors_per_class[<span class="st">'clock'</span>][<span class="dv">0</span>], normalize<span class="op">=</span><span class="va">False</span>)  <span class="co">#</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#4) [-35.5,-6.0,95.0,117.0]</code></pre>
+</div>
+</div>
+<p>The following helper function repeats the same operation for multiple boxes, provided the masks (so that only ground truch anchor box offsets are calculated)</p>
+<hr>
+<p><a href="https://github.com/thatgeeman/pybx/blob/master/pybx/anchor.py#L296" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_gt_offsets" class="level3">
+<h3 class="anchored" data-anchor-id="get_gt_offsets">get_gt_offsets</h3>
+<blockquote class="blockquote">
+<pre><code> get_gt_offsets (true_annots:pybx.basics.BaseBx, anchor_boxes,
+                 anchor_labels=None, masks=None, sigma=(0.1, 0.2),
+                 normalize=True, log_func=&lt;ufunc 'log'&gt;,
+                 update_labels=False)</code></pre>
+</blockquote>
+<p>Calculates the offset of the true annotations from the anchor boxes using the <code>get_offset</code> method of <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>.</p>
+<p>Args: true_annots (Any): True annotation for a single object, typically in <code>pascal_voc</code> format anchor_boxes (Any): Candidate anchor boxes, typically calculated with <code>pybx.bxs</code> anchor_labels (List, optional): Anchor box labels, will be overwritten with ground truth labels if <code>update_labels=True</code>. Defaults to None. masks (List, optional): Anchor box masks indicating if a box is positive/negative anchor box. If nothing is passed, offsets are calculated for all anchor boxes passed. Defaults to None. sigma (tuple, optional): Estimated of standard deviation for the distances and ratios. Defaults to (0.1, 0.2). normalize (bool, optional): Whether to normalize the offsets using the methods used in the SSD paper. Defaults to True. log_func (func, optional): Function for normalizing the ratio of widths and heights. Defaults to np.log. update_labels (bool, optional): Overwrite positive anchor boxes with object class and negative anchor boxes with <code>background</code> class. Defaults to False.</p>
+<p>Returns: list: List of all anchor box offsets. list: List of corresponding anchor box labels.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>true_annots</td>
+<td>BaseBx</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>anchor_boxes</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>anchor_labels</td>
+<td>NoneType</td>
+<td>None</td>
+<td>do we need to pass this</td>
+</tr>
+<tr class="even">
+<td>masks</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>sigma</td>
+<td>tuple</td>
+<td>(0.1, 0.2)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>normalize</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>log_func</td>
+<td>ufunc</td>
+<td>log</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>update_labels</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The Ground truth bounding boxes should ideally be passed in as a <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>, or will attempt a conversion to <a href="https://thatgeeman.github.io/pybx/basics.html#basebx"><code>BaseBx</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>true_annots_bx[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>BaseBx(coords=[[130, 63, 225, 180]], label=['clock'])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>true_annots[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'x_min': 130, 'y_min': 63, 'x_max': 225, 'y_max': 180, 'label': 'clock'}</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="co"># passing dict</span></span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock, labels <span class="op">=</span> get_gt_offsets(true_annots[<span class="dv">0</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>])</span>
+<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock[mask_per_class[<span class="st">'clock'</span>]]  <span class="co"># using the mask to look at only the valid offset</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[-5.9167, -0.4959,  2.2977, -0.1681]])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="co"># passing list</span></span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock, labels <span class="op">=</span> get_gt_offsets([<span class="dv">130</span>, <span class="dv">63</span>, <span class="dv">225</span>, <span class="dv">180</span>, <span class="st">'clock'</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>])</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock[mask_per_class[<span class="st">'clock'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[-5.9167, -0.4959,  2.2977, -0.1681]])</code></pre>
+</div>
+</div>
+<p>Updating the labels of the candidates to actual ground truth class labels might be a nice addition as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock, labels <span class="op">=</span> get_gt_offsets(true_annots[<span class="dv">0</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>], update_labels<span class="op">=</span><span class="va">False</span>) </span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>labels.unique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#1) ['background']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock, labels <span class="op">=</span> get_gt_offsets(true_annots[<span class="dv">0</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>], update_labels<span class="op">=</span><span class="va">True</span>) </span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>labels.unique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#2) ['background','clock']</code></pre>
+</div>
+</div>
+<p>If no ground truth label is passed with <code>update_labels=True</code>, then <code>unknown</code> is assigned. Doesn’t work with <code>dict</code>s.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock, labels <span class="op">=</span> get_gt_offsets([<span class="dv">130</span>, <span class="dv">63</span>, <span class="dv">225</span>, <span class="dv">180</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>], update_labels<span class="op">=</span><span class="va">True</span>) </span>
+<span id="cb123-2"><a href="#cb123-2" aria-hidden="true" tabindex="-1"></a>labels.unique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(#2) ['background','unknown']</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock[:, <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([0., 0., 0., ..., 0., 0., 0.])</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb127"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock[mask_per_class[<span class="st">'clock'</span>]]  <span class="co"># czan use the mask to index the only valid offset</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[-5.9167, -0.4959,  2.2977, -0.1681]])</code></pre>
+</div>
+</div>
+<p>The log of widths and heights can be skipped or modified if a different <code>log_func</code> is passed <code>log(w'/w), log(h'/h)</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.foundation <span class="im">import</span> noop  <span class="co"># do no operation, basically an identity function f(x) = x</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock_nolog, _ <span class="op">=</span> get_gt_offsets(true_annots_bx[<span class="dv">0</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>], log_func<span class="op">=</span>noop) </span>
+<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock_nolog[mask_per_class[<span class="st">'clock'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[-5.9167, -0.4959,  7.9167,  4.8347]])</code></pre>
+</div>
+</div>
+<p>Or a custom funciton.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock_nolog, _ <span class="op">=</span> get_gt_offsets(true_annots_bx[<span class="dv">0</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>], log_func<span class="op">=</span><span class="kw">lambda</span> x: x <span class="op">*</span> np.log2(x)) </span>
+<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a>gt_offsets_clock_nolog[mask_per_class[<span class="st">'clock'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[-5.9167, -0.4959,  5.2485, -0.2345]])</code></pre>
+</div>
+</div>
+<p>Repeating the same operations for all classes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, true_bx <span class="kw">in</span> <span class="bu">enumerate</span>(true_annots_bx):</span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>    get_gt_offsets(true_bx, coords, masks<span class="op">=</span>mask_per_class[true_bx.label[<span class="dv">0</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb135"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb135-1"><a href="#cb135-1" aria-hidden="true" tabindex="-1"></a>true_annots_bx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>MultiBx(coords=[[130, 63, 225, 180], [13, 158, 90, 213]], label=['clock', 'frame'])</code></pre>
+</div>
+</div>
+<p>If a mask is not provided, offsets are calculated for all anchors, which makes the process slow.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a>get_gt_offsets(true_annots_bx[<span class="dv">0</span>], coords) <span class="co"># without mask</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>138 ms ± 309 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a>get_gt_offsets(true_annots_bx[<span class="dv">0</span>], coords, masks<span class="op">=</span>mask_per_class[<span class="st">'clock'</span>]) <span class="co"># with mask</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>340 µs ± 11.9 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'alternate';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

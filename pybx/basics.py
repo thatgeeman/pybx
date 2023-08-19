@@ -567,11 +567,25 @@ def get_offset(
     sigma=(0.1, 0.2),
     self_is_anchor=False,
 ):
-    """Caclulates the offset of the box
-    w.r.t. another `BaseBx`. Returns the IOU only if the box is
-    considered `valid`.
-    normalize=True because SSD reccomends it
-    sigma to make gradients slightly larger, sigma is also the estimated stdev (pixel error)
+    """
+    Caclulates the offset of the box I with another box O.
+    The most basic calculation of offset involves a) taking the distance between the centers: `I_cx - O_cx`, `I_cy - O_cy`.
+    b) taking the ratio of the two boxes: `I_w/Ow, I_h/O_h`.
+
+    If `normalize=True`, the center distances and ratios are normalized as per https://arxiv.org/pdf/1512.02325.pdf
+    `(I_cx - O_cx)/O_w`, `(I_cy - O_cy)/O_h`, `log(I_w/Ow), log(I_h/O_h)`
+    These are further scaled with an appoximation of standard deviation for the distances and ratios
+    `((I_cx - O_cx)/O_w)/sigma_c`, `((I_cy - O_cy)/O_h)/sigma_c`, `log(I_w/Ow)/sigma_r, log(I_h/O_h)/sigma_r`
+
+    Args:
+        other (BaseBx): Any supported type of bounding box format, even takes a list of coordinates. Typically the anchor box.
+        normalize (bool, optional): Whether to normalize the offsets. Defaults to True.
+        log_func (func, optional): Function for normalizing the ratio of widths and heights. Defaults to np.log.
+        sigma (tuple, optional): Estimated of standard deviation for the distances and ratios. Defaults to (0.1, 0.2).
+        self_is_anchor (bool, optional): Typically `other` is assumed to be the anchor box, this flag tells that this assumption is False. Defaults to False.
+
+    Returns:
+        list: Offsets of the two bounding boxes
     """
     if isinstance(other, MultiBx):
         warnings.warn(BxViolation(f"Other should be BaseBx, got MultiBx"))
@@ -591,11 +605,11 @@ def get_offset(
     # get anchor box w and h
     anchor_bw_norm = anchor.bw
     anchor_bh_norm = anchor.bh
-    sigma_xy, sigma_wh = sigma
+    sigma_c, sigma_r = sigma
     # if not normalize, reset params
     if not normalize:
         log_func = noop
-        sigma_xy, sigma_wh, anchor_bw_norm, anchor_bh_norm = [1.0] * 4
+        sigma_c, sigma_r, anchor_bw_norm, anchor_bh_norm = [1.0] * 4
     # center distances
     # norm with anchor box w and h
     cx_offset, cy_offset = (gt.cx - anchor.cx) / anchor_bw_norm, (
@@ -607,7 +621,7 @@ def get_offset(
 
     offset = np.asarray([cx_offset, cy_offset, w_offset, h_offset])
     # norm with sigmaxy and sigmawh
-    # print(sigma_xy, sigma_wh)
-    offset /= np.repeat([sigma_xy, sigma_wh], 2)
-    # not np.tile as norm is cx/sigma_xy, cy/sigma_xy, w/sigma_wh, h/sigma_wh
+    # print(sigma_c, sigma_r)
+    offset /= np.repeat([sigma_c, sigma_r], 2)
+    # not np.tile as norm is cx/sigma_c, cy/sigma_c, w/sigma_r, h/sigma_r
     return L(offset.round(4).tolist())
