@@ -9,6 +9,3 @@ website:
       - 04_sample.ipynb
       - 05_vis.ipynb
       - 06_excepts.ipynb
-      - nbdev.yml
-      - sidebar.yml
-      - styles.css

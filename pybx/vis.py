@@ -174,7 +174,6 @@ def draw(img: np.ndarray, bbox: list, logits=None, alpha=0.4, **kwargs):
         plt.imshow(logits, alpha=alpha, extent=img_extent)
     return ax
 
-
 # %% ../nbs/05_vis.ipynb 17
 class VisBx:
     """VisBx is used to visualize the bounding boxes.
@@ -237,4 +236,3 @@ class VisBx:
         return draw(
             self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs
         )
-

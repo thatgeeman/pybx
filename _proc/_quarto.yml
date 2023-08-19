@@ -3,7 +3,10 @@ project:
 
 format:
   html:
-    theme: cosmo
+    theme:
+      dark: darkly
+      light: flatly
+      
     css: styles.css
     toc: true
 

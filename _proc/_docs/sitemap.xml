@@ -1,35 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/anchor.html</loc>
-    <lastmod>2023-08-15T20:37:08.691Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/basics.html</loc>
-    <lastmod>2023-08-15T20:37:09.283Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/utils.html</loc>
-    <lastmod>2023-08-15T20:37:09.627Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/ops.html</loc>
-    <lastmod>2023-08-15T20:37:09.952Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/sample.html</loc>
-    <lastmod>2023-08-15T20:37:10.316Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/vis.html</loc>
-    <lastmod>2023-08-15T20:37:10.750Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/excepts.html</loc>
-    <lastmod>2023-08-15T20:37:11.038Z</lastmod>
-  </url>
-  <url>
-    <loc>https://thatgeeman.github.io/pybx/index.html</loc>
-    <lastmod>2023-08-15T20:52:08.089Z</lastmod>
-  </url>
 </urlset>
