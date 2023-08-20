@@ -231,4 +231,6 @@ v.show(all_gt_anchors, color={'a_2x2_0.3_1':'red', 'a_3x3_0.5_6': 'red'})
 ![](index_files/figure-commonmark/cell-26-output-2.png)
 
 More exploratory stuff in the [walkthrough
-notebook](../examples/pybx_walkthrough_0.4.ipynb)!
+notebook](https://github.com/thatgeeman/pybx/blob/master/examples/pybx_walkthrough_0.4.ipynb)
+or [![Open In
+Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/thatgeeman/pybx/blob/master/examples/pybx_walkthrough_0.4.ipynb)
