@@ -3,7 +3,8 @@
 # %% auto 0
 __all__ = ['COORD_TYPES', 'ITER_TYPES', 'ITER_TYPES_TUPLE', 'ITER_TYPES_EXTRA', 'ALL_TYPES', 'BX_TYPE', 'check_format_types',
            'check_length_types', 'check_max_voc', 'perform_box_checks', 'parse_list', 'parse_dict', 'parse_json', 'Bx',
-           'BaseBx', 'bbx', 'MultiBx', 'jbx', 'lbx', 'mbx', 'get_bx', 'stack_bxs', 'add_bxs', 'stack_bxs_inplace']
+           'BaseBx', 'bbx', 'jbx', 'dbx', 'MultiBx', 'lbx', 'mbx', 'get_bx', 'stack_bxs', 'add_bxs',
+           'stack_bxs_inplace']
 
 # %% ../nbs/01_basics.ipynb 2
 import warnings
@@ -182,10 +183,12 @@ def parse_json(b: str, **kwargs):
 class Bx:
     """Interface for all future Bx's"""
 
-    def __init__(self, coords, label: list = None, verbose=False):
-        coords, parsed_label = parse_list(
-            coords
-        )  # checks for box validity and parses coordinates
+    def __init__(self, coords, label: list = None, verbose=False, no_check=False):
+        if no_check:
+            coords, parsed_label = coords, label
+        else:
+            # checks for box validity and parses coordinates
+            coords, parsed_label = parse_list(coords)
         # make label a list of single item
         label = label if label else parsed_label
         label = label if is_listy(label) else [label]
@@ -285,20 +288,20 @@ class BaseBx(Bx):
     in the corresponding box.
     """
 
-    def __init__(self, coords, label: list = None):
+    def __init__(self, coords, label: list = None, no_check=False):
         self.index = 0  # Fixes #2, calls itself everytime
         assert isinstance(
             coords, (list, L, np.ndarray)
         ), f"{__name__}: Expected type list or np.ndarray for coords, got {type(coords)}"
-        super().__init__(coords, label)
+        super().__init__(coords, label, no_check=no_check)
 
     def __str__(self):
         return f"BaseBx(coords={self.coords}, label={self.label})"
 
 # %% ../nbs/01_basics.ipynb 74
-def bbx(coords=None, labels=None):
+def bbx(coords=None, label=None):
     """Alias of the `BaseBx` class using lists."""
-    return BaseBx(coords, labels)
+    return BaseBx(coords, label)
 
 # %% ../nbs/01_basics.ipynb 84
 @patch
@@ -352,15 +355,35 @@ def __next__(self: BaseBx):
     self.index += 1
     return b
 
-# %% ../nbs/01_basics.ipynb 97
+# %% ../nbs/01_basics.ipynb 96
+def jbx(coords=None, label=None):
+    """Alias of the `BaseBx` class using json strings."""
+    coords, parsed_label = parse_json(coords)
+    # make label a list of single item
+    label = label if label else parsed_label
+    label = label if is_listy(label) else [label]
+    # no_check since parse_json already checks
+    return BaseBx(coords, label, no_check=True)
+
+# %% ../nbs/01_basics.ipynb 100
+def dbx(coords=None, label=None):
+    """Alias of the `BaseBx` class using dict."""
+    coords, parsed_label = parse_dict(coords)
+    # make label a list of single item
+    label = label if label else parsed_label
+    label = label if is_listy(label) else [label]
+    # no_check since parse_dict already checks
+    return BaseBx(coords, label, no_check=True)
+
+# %% ../nbs/01_basics.ipynb 109
 class MultiBx:
-    """`MultiBx` represents a collection of bounding boxes as ndarrays.
+    """`MultiBx` represents a collection of bounding boxes as lists.
     Objects of type `MultiBx` can be indexed into, which returns a
     `BaseBx` exposing a suite of box-bound operations.
     Multiple coordinates and labels of bounding boxes can be wrapped
     as a `MultiBx` using:
         `mbx(coords, label)`.
-    :param coords: can be nested coordinates of type `list` of `list`s/`json` records
+    :param coords: can be nested coordinates of type `list` of `list`s/`json` strings
         (`list`s of `dict`s)/`ndarray`s representing multiple boxes.
         If passing a list/json each index of the object should be of the following formats:
         - `list` can be formatted with `label`: `[x_min, y_min, x_max, y_max, label]`
@@ -421,10 +444,10 @@ class MultiBx:
         """Returns shape of the coordinates"""
         return self.coords.shape
 
-# %% ../nbs/01_basics.ipynb 98
+# %% ../nbs/01_basics.ipynb 110
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 115
+# %% ../nbs/01_basics.ipynb 127
 class __JsonBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -460,14 +483,14 @@ class __JsonBx(MultiBx):
 
 
 def jbx(coords=None, labels=None, keys=None):
-    """Alias of the JsonBx class to process `json` records into
+    """Alias of the JsonBx class to process `json` strings into
     `MultiBx` or `BaseBx` objects exposing many validation methods
 
     Also accepts keys as a list, otherwise uses `voc_keys`.
     """
     return __JsonBx.jsonbx(coords, labels, keys)
 
-# %% ../nbs/01_basics.ipynb 122
+# %% ../nbs/01_basics.ipynb 134
 class __ListBx(MultiBx):
     """
     If five items per coordinate are passed, the last index is taken as the label.
@@ -501,7 +524,7 @@ def lbx(coords=None, labels=None):
     """
     return __ListBx.listbx(coords, labels)
 
-# %% ../nbs/01_basics.ipynb 127
+# %% ../nbs/01_basics.ipynb 139
 @patch(cls_method=True)
 def multibox(cls: MultiBx, coords, label: list = None, keys: list = None):
     """Classmethod for `MultiBx`. Same as mbx(coords, label).
@@ -537,7 +560,7 @@ def mbx(coords=None, label=None, keys=None):
     """Alias of the `MultiBx` class."""
     return MultiBx.multibox(coords, label, keys)
 
-# %% ../nbs/01_basics.ipynb 141
+# %% ../nbs/01_basics.ipynb 153
 def get_bx(coords, label=None):
     """
     Helper function to check and call the correct type of Bx instance.
@@ -592,7 +615,7 @@ def get_bx(coords, label=None):
             f"{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}."
         )
 
-# %% ../nbs/01_basics.ipynb 150
+# %% ../nbs/01_basics.ipynb 162
 @patch
 def __add__(self: BaseBx, other):
     """Pseudo-add method that stacks the provided boxes and labels. Stacking two
@@ -635,7 +658,7 @@ def __add__(self: MultiBx, other):
     label = self.label + other.label
     return mbx(coords, label)
 
-# %% ../nbs/01_basics.ipynb 151
+# %% ../nbs/01_basics.ipynb 163
 def stack_bxs(b1, b2):
     """
     Method to stack two Bx-types together. Similar to `__add__` of BxTypes
@@ -682,14 +705,14 @@ def add_bxs(b1, b2):
     """Alias of stack_bxs()."""
     return stack_bxs(b1, b2)
 
-# %% ../nbs/01_basics.ipynb 161
+# %% ../nbs/01_basics.ipynb 173
 def stack_bxs_inplace(b, *args):
     """Stack the passed boxes on top of the first item."""
     for b_ in args:
         b = stack_bxs(b, b_)
     return b
 
-# %% ../nbs/01_basics.ipynb 170
+# %% ../nbs/01_basics.ipynb 182
 @patch
 def get_offset(
     self: BaseBx,
