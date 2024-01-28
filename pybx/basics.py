@@ -28,7 +28,7 @@ from pybx.ops import (
 )
 from .excepts import *
 
-COORD_TYPES = (np.int_, int)
+COORD_TYPES = (np.int_, int, np.float_)
 ITER_TYPE_JSON = Dict[str, str]
 ITER_TYPES = (np.ndarray, list, L)
 ITER_TYPES_TUPLE = (tuple,)
