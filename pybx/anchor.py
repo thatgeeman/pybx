@@ -9,7 +9,7 @@ import inspect
 import math
 import numpy as np
 from fastcore.foundation import L, mask2idxs
-from fastcore.utils import gt
+from fastcore.utils import gt, is_listy
 from numpy.typing import ArrayLike
 from typing import Union
 import json
@@ -84,7 +84,10 @@ def bx(
         anchor_sfx = f"{anchor_sfx}_{feature_sz[0]}x{feature_sz[1]}_{asp_ratio:.1f}_"
         labels = named_idx(len(b), anchor_sfx)
     # init multibx
-    b = get_bx(b, labels)
+    b = get_bx(
+        b,
+        labels,
+    )
     return (b.coords, b.label) if named else b.coords
 
 # %% ../nbs/00_anchor.ipynb 8
@@ -201,9 +204,11 @@ def get_gt_thresh_iou(
         if mask.sum() > 0:
             gt_anchors_per_class[label] = stack_bxs_inplace(
                 *[
-                    reassign_label(coords_as_bx[i], label=[label])
-                    if update_labels
-                    else coords_as_bx[i]
+                    (
+                        reassign_label(coords_as_bx[i], label=[label])
+                        if update_labels
+                        else coords_as_bx[i]
+                    )
                     for i in ious_filter
                 ]
             )
@@ -283,9 +288,11 @@ def get_gt_max_iou(
         if mask.sum() > 0:
             gt_anchors_per_class[label] = stack_bxs_inplace(
                 *[
-                    reassign_label(coords_as_bx[i], label=[label])
-                    if update_labels
-                    else coords_as_bx[i]
+                    (
+                        reassign_label(coords_as_bx[i], label=[label])
+                        if update_labels
+                        else coords_as_bx[i]
+                    )
                     for i in ious_filter
                 ]
             )
@@ -321,16 +328,17 @@ def get_gt_offsets(
         list: List of corresponding anchor box labels.
     """
     if not isinstance(true_annots, Bx):
-        true_annots = bbx(true_annots)
+        # the annotation for a single object, make listy if not
+        true_annots = true_annots if is_listy(true_annots) else [true_annots]
+        true_annots = get_bx(true_annots)[0]  # get back the BaseBx
 
-    Na = len(
-        anchor_boxes
-    )  # no of anchor boxes (includes positive and negative anchor boxes)
+    n_anchors = len(anchor_boxes)
+    # no of anchor boxes (includes positive and negative anchor boxes)
     masks = (
-        masks if masks is not None else L([True] * Na)
+        masks if masks is not None else L([True] * n_anchors)
     )  # if no masks provided, repeat for all anchors
-    offsets = np.zeros((Na, 4))
-    labels = L(["background"] * Na)  # if update_labels else anchor_labels
+    offsets = np.zeros((n_anchors, 4))
+    labels = L(["background"] * n_anchors)  # if update_labels else anchor_labels
     true_label = true_annots.label[0] if len(true_annots.label) != 0 else "unknown"
     for idx, (box, mask) in enumerate(zip(anchor_boxes, masks)):
         if mask:

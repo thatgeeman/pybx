@@ -52,16 +52,30 @@ def validate_boxes(coords, image_sz, feature_sz, clip=True, min_visibility=0.25)
     ratio of expected area to the calculated area after clipping to image dimensions.
     :return: anchor box coordinates in [pascal_voc] format
     """
-    _max = max(image_sz[0], image_sz[1])
+    feature_width, feature_height = feature_sz
+    image_width, image_height = image_sz
+    _max, _min = max(image_width, image_height), min(image_width, image_height)
+    if clip:
+        if _max == _min:
+            # is a square image
+            coords = coords.clip(0, _max)
+        # clip the boxes to image dimensions when width is large
+        elif _max == image_width:
+            coords[:, -1] = coords[:, -1].clip(0, _max)  # x_max
+            coords[:, -2] = coords[:, -2].clip(0, _min)  # y_max
+        # clip the boxes to image dimensions when height is large
+        elif _max == image_height:
+            coords[:, -1] = coords[:, -1].clip(0, _min)  # x_max
+            coords[:, -2] = coords[:, -2].clip(0, _max)  # y_max
     # make the boxes int
     coords = np.floor(coords).astype(int)
-    # clip the boxes to image dimensions
-    bxs = get_bx(coords.clip(0, _max)) if clip else get_bx(coords)
+    # skip checks now as this will be validated later
+    bxs = get_bx(coords, no_check=True)
     # check if the area of the bounding box is fitting the minimum area criterion
     min_area = (
-        (image_sz[0] / feature_sz[0]) * (image_sz[1] / feature_sz[1]) * min_visibility
+        (image_width / feature_width) * (image_height / feature_height) * min_visibility
     )
-    bxs = L(list(b._coords) for b in bxs if b.area > min_area)
+    bxs = L(list(b._coords) for b in bxs if (b.valid) and (b.area > min_area))
     return bxs
 
 # %% ../nbs/02_utils.ipynb 6
