@@ -4,7 +4,7 @@
 __all__ = ['COORD_TYPES', 'ITER_TYPE_JSON', 'ITER_TYPES', 'ITER_TYPES_TUPLE', 'ITER_TYPES_EXTRA', 'ITER_TYPE_HASHED',
            'ALL_ITER_TYPES', 'ALL_TYPES', 'BX_TYPE', 'check_format_types', 'check_length_types', 'check_max_voc',
            'perform_box_checks', 'parse_list', 'parse_dict', 'parse_json', 'Bx', 'BaseBx', 'bbx', 'jbx', 'dbx',
-           'parse_basebx', 'infer_box_dtype', 'coord_parser', 'MultiBx', 'mbx', 'get_bx', 'stack_bxs', 'add_bxs',
+           'parse_basebx', 'infer_box_dtype', 'parse_to_bbx', 'MultiBx', 'mbx', 'get_bx', 'stack_bxs', 'add_bxs',
            'stack_bxs_inplace']
 
 # %% ../nbs/01_basics.ipynb 2
@@ -427,7 +427,7 @@ def infer_box_dtype(b: ALL_ITER_TYPES, **kwargs):
         )
 
 # %% ../nbs/01_basics.ipynb 121
-def coord_parser(b, label="unknown", no_check=False):
+def parse_to_bbx(b, label="unknown", no_check=False):
     """Takes the box and converts it to a BaseBx after inferring the type."""
     if not is_listy(label):
         label = [label]
@@ -481,7 +481,7 @@ class MultiBx:
         return len(self.label)
 
     def __getitem__(self, idx):
-        return coord_parser(self.coords[idx], self.label[idx], no_check=self.no_check)
+        return parse_to_bbx(self.coords[idx], self.label[idx], no_check=self.no_check)
 
     def __iter__(self):
         """Iterates through the boxes in `MultiBx` where self.valid is True."""
@@ -513,15 +513,19 @@ class MultiBx:
         # TODO: check for number of points coordinates
         return len(self.coords), 4
 
+    @property
+    def coords_as_numpy(self):
+        return np.array([b._coords for b in self], dtype=int)
+
 # %% ../nbs/01_basics.ipynb 133
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 172
+# %% ../nbs/01_basics.ipynb 173
 def mbx(coords=None, label=None, no_check=False):
     """Alias of the `MultiBx` class."""
     return MultiBx(coords, label, no_check=no_check)
 
-# %% ../nbs/01_basics.ipynb 185
+# %% ../nbs/01_basics.ipynb 186
 def get_bx(coords, label=None, no_check=False):
     """
     Helper function to check and call the correct type of Bx instance.
@@ -576,7 +580,7 @@ def get_bx(coords, label=None, no_check=False):
             f"{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}."
         )
 
-# %% ../nbs/01_basics.ipynb 200
+# %% ../nbs/01_basics.ipynb 201
 @patch
 def __add__(self: BaseBx, other):
     """Pseudo-add method that stacks the provided boxes and labels. Stacking two
@@ -619,7 +623,7 @@ def __add__(self: MultiBx, other):
     label = self.label + other.label
     return mbx(coords, label)
 
-# %% ../nbs/01_basics.ipynb 201
+# %% ../nbs/01_basics.ipynb 202
 def stack_bxs(b1, b2):
     """
     Method to stack two Bx-types together. Similar to `__add__` of BxTypes
@@ -666,14 +670,14 @@ def add_bxs(b1, b2):
     """Alias of stack_bxs()."""
     return stack_bxs(b1, b2)
 
-# %% ../nbs/01_basics.ipynb 211
+# %% ../nbs/01_basics.ipynb 212
 def stack_bxs_inplace(b, *args):
     """Stack the passed boxes on top of the first item."""
     for b_ in args:
         b = stack_bxs(b, b_)
     return b
 
-# %% ../nbs/01_basics.ipynb 221
+# %% ../nbs/01_basics.ipynb 222
 @patch
 def get_offset(
     self: BaseBx,
