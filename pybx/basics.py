@@ -25,6 +25,7 @@ from pybx.ops import (
     intersection_box,
     make_single_iterable,
     voc_keys,
+    label_keys,
     update_keys,
 )
 from .excepts import *
@@ -152,7 +153,7 @@ def parse_list(b: Union[list, ArrayLike], verbose=False, no_check=False):
         label = b[-1]
     return [coords], [label]
 
-# %% ../nbs/01_basics.ipynb 36
+# %% ../nbs/01_basics.ipynb 37
 def parse_dict(b: dict, **kwargs):
     """
     Takes a dict and splits into bounding box coordinates and label
@@ -165,11 +166,16 @@ def parse_dict(b: dict, **kwargs):
         str: Bounding box label
     """
     b_ = []
-    for k, v in b.items():
-        b_.append(v)
+    keys = update_keys(b)
+    for k in keys:
+        try:
+            b_.append(b[k])
+        except KeyError:
+            warnings.warn(f"No {k} key in {b}")
+            pass
     return parse_list(b_, **kwargs)
 
-# %% ../nbs/01_basics.ipynb 40
+# %% ../nbs/01_basics.ipynb 42
 def parse_json(b: Union[str, Dict], **kwargs):
     """
     Takes a json string or dict and splits into bounding box coordinates and label
@@ -189,7 +195,7 @@ def parse_json(b: Union[str, Dict], **kwargs):
         raise NotImplementedError(f"Unknown type passed to `parse_json` {b}")
     return parse_dict(b, **kwargs)
 
-# %% ../nbs/01_basics.ipynb 46
+# %% ../nbs/01_basics.ipynb 49
 class Bx:
     """Interface for all future Bx's"""
 
@@ -291,7 +297,7 @@ class Bx:
         _yolo.append(*self.label)
         return [_yolo]
 
-# %% ../nbs/01_basics.ipynb 69
+# %% ../nbs/01_basics.ipynb 72
 class BaseBx(Bx):
     """BaseBx is the most primitive form of representing a bounding box.
     Coordinates and label of a bounding box can be wrapped as a BaseBx using:
@@ -316,12 +322,12 @@ class BaseBx(Bx):
     def __str__(self):
         return f"BaseBx(coords={self.coords}, label={self.label})"
 
-# %% ../nbs/01_basics.ipynb 79
+# %% ../nbs/01_basics.ipynb 82
 def bbx(coords=None, label=None, no_check=False):
     """Alias of the `BaseBx` class using lists."""
     return BaseBx(coords, label, no_check=no_check)
 
-# %% ../nbs/01_basics.ipynb 89
+# %% ../nbs/01_basics.ipynb 92
 @patch
 def iou(self: BaseBx, other):
     """Caclulates the Intersection Over Union (IOU) of the box
@@ -340,7 +346,7 @@ def iou(self: BaseBx, other):
         return round(int_area / union_area, 4)
     return 0.0
 
-# %% ../nbs/01_basics.ipynb 95
+# %% ../nbs/01_basics.ipynb 98
 @patch
 def __iter__(self: BaseBx):
     """Iterates through the boxes in `BaseBx` where self.valid is True."""
@@ -373,7 +379,7 @@ def __next__(self: BaseBx):
     self.index += 1
     return b
 
-# %% ../nbs/01_basics.ipynb 101
+# %% ../nbs/01_basics.ipynb 104
 def jbx(coords=None, label=None):
     """Alias of the `BaseBx` class using json strings."""
     coords, parsed_label = parse_json(coords)
@@ -383,7 +389,7 @@ def jbx(coords=None, label=None):
     # no_check since parse_json already checks
     return BaseBx(coords, label, no_check=True)
 
-# %% ../nbs/01_basics.ipynb 106
+# %% ../nbs/01_basics.ipynb 109
 def dbx(coords=None, label=None):
     """Alias of the `BaseBx` class using dict."""
     coords, parsed_label = parse_dict(coords)
@@ -393,7 +399,7 @@ def dbx(coords=None, label=None):
     # no_check since parse_dict already checks
     return BaseBx(coords, label, no_check=True)
 
-# %% ../nbs/01_basics.ipynb 112
+# %% ../nbs/01_basics.ipynb 115
 def parse_basebx(b: BaseBx, no_check=None):
     """Reads the attribute of a BaseBx"""
     if no_check is not None:
@@ -403,7 +409,7 @@ def parse_basebx(b: BaseBx, no_check=None):
         )
     return b.coords, b.label
 
-# %% ../nbs/01_basics.ipynb 115
+# %% ../nbs/01_basics.ipynb 118
 def infer_box_dtype(b: ALL_ITER_TYPES, **kwargs):
     if isinstance(b, str):
         return "json"
@@ -420,7 +426,7 @@ def infer_box_dtype(b: ALL_ITER_TYPES, **kwargs):
             f"Unknown type {type(b)} passed to `infer_box_dtype` {b}"
         )
 
-# %% ../nbs/01_basics.ipynb 118
+# %% ../nbs/01_basics.ipynb 121
 def coord_parser(b, label="unknown", no_check=False):
     """Takes the box and converts it to a BaseBx after inferring the type."""
     if not is_listy(label):
@@ -432,7 +438,7 @@ def coord_parser(b, label="unknown", no_check=False):
         parsed_label = label
     return bbx(coords=coords[0], label=parsed_label, no_check=no_check)
 
-# %% ../nbs/01_basics.ipynb 129
+# %% ../nbs/01_basics.ipynb 132
 class MultiBx:
     """`MultiBx` represents a collection of bounding boxes as lists.
     Objects of type `MultiBx` can be indexed into, which returns a
@@ -507,15 +513,15 @@ class MultiBx:
         # TODO: check for number of points coordinates
         return len(self.coords), 4
 
-# %% ../nbs/01_basics.ipynb 130
+# %% ../nbs/01_basics.ipynb 133
 BX_TYPE = (Bx, MultiBx)
 
-# %% ../nbs/01_basics.ipynb 169
+# %% ../nbs/01_basics.ipynb 172
 def mbx(coords=None, label=None, no_check=False):
     """Alias of the `MultiBx` class."""
     return MultiBx(coords, label, no_check=no_check)
 
-# %% ../nbs/01_basics.ipynb 182
+# %% ../nbs/01_basics.ipynb 185
 def get_bx(coords, label=None, no_check=False):
     """
     Helper function to check and call the correct type of Bx instance.
@@ -570,7 +576,7 @@ def get_bx(coords, label=None, no_check=False):
             f"{inspect.stack()[0][3]} of {__name__}: Got coords={coords} of type {type(coords)}."
         )
 
-# %% ../nbs/01_basics.ipynb 197
+# %% ../nbs/01_basics.ipynb 200
 @patch
 def __add__(self: BaseBx, other):
     """Pseudo-add method that stacks the provided boxes and labels. Stacking two
@@ -613,7 +619,7 @@ def __add__(self: MultiBx, other):
     label = self.label + other.label
     return mbx(coords, label)
 
-# %% ../nbs/01_basics.ipynb 198
+# %% ../nbs/01_basics.ipynb 201
 def stack_bxs(b1, b2):
     """
     Method to stack two Bx-types together. Similar to `__add__` of BxTypes
@@ -660,14 +666,14 @@ def add_bxs(b1, b2):
     """Alias of stack_bxs()."""
     return stack_bxs(b1, b2)
 
-# %% ../nbs/01_basics.ipynb 208
+# %% ../nbs/01_basics.ipynb 211
 def stack_bxs_inplace(b, *args):
     """Stack the passed boxes on top of the first item."""
     for b_ in args:
         b = stack_bxs(b, b_)
     return b
 
-# %% ../nbs/01_basics.ipynb 218
+# %% ../nbs/01_basics.ipynb 221
 @patch
 def get_offset(
     self: BaseBx,
