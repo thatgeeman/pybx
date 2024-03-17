@@ -100,6 +100,7 @@ def draw_boxes(
     xo=0,
     yo=0,
     squeeze=False,
+    verbose=False,
     **kwargs,
 ):
     """Method to draw bounding boxes in an image, can handle multiple bboxes
@@ -136,23 +137,18 @@ def draw_boxes(
 
     ax.imshow(img, cmap="Greys", **kwargs)
     for b in bbox:
-        label = ""
-        if isinstance(b, BX_TYPE):
-            try:
-                x1, y1, x2, y2, label = b.values[0]
-            except ValueError:
-                x1, y1, x2, y2 = b.values[0]
-        if isinstance(b, dict):
-            try:
-                x1, y1, x2, y2, label = [b[k] for k in voc_keys]
-            except KeyError:
-                x1, y1, x2, y2 = [b[k] for k in voc_keys[:-1]]
-        if isinstance(b, (list, np.ndarray)):
-            try:
-                x1, y1, x2, y2, label = b
-            except ValueError:
-                x1, y1, x2, y2 = b
-
+        if verbose:
+            print(b)
+        box_dtype = infer_box_dtype(b)  # unknown types handled here
+        if box_dtype == "basebx":  # isinstance(b, BX_TYPE):
+            coords, label = b.coords, b.label
+        elif box_dtype == "dict":
+            coords, label = parse_dict(b)
+        elif box_dtype == "json":
+            coords, label = parse_json(b)
+        elif box_dtype in ["list", "array"]:
+            coords, label = parse_list(b)
+        [[x1, y1, x2, y2]], [label] = coords, label
         c = get_color(color, label=label)
         draw_rectangle(ax, coords=(x1, y1, x2, y2), color=c)
         draw_text(ax, xy=(x1, y1), label=label, color=c, xo=xo, yo=yo)
@@ -219,11 +215,11 @@ class VisBx:
             im, ann, lgt, clr = get_given_array(
                 image_arr=image_arr, image_sz=image_sz, **kwargs
             )
-        ann = get_bx(ann)
+        ann = get_bx(ann, no_check=True)
         store_attr("im, ann, lgt, clr")
 
     def show(self, coords=None, labels=None, color=None, ax=None, **kwargs):
-        """Calling the `show()`Ananya method of the `VisBx()` instance accepts
+        """Calling the `show()` method of the `VisBx()` instance accepts
         bounding box coordinates and labels that are to be shown.
         The boxes can be provided as any of the internal objects (`MultiBx`, `BaseBx`, ...)
         or as any other raw format accepted by the internal objects.
@@ -231,8 +227,10 @@ class VisBx:
         if color is not None:
             self.clr.update(color)
         if coords is None:
-            coords = [[0, 0, 0, 0]]
+            coords = [[0, 0, 1, 1]]
         coords = get_bx(coords, labels)
+        all_coords = self.ann + coords
+        all_coords.no_check = True  # to prevent restrictions due to validating boxes
         return draw(
-            self.im, self.ann + coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs
+            self.im, all_coords, color=self.clr, logits=self.lgt, ax=ax, **kwargs
         )

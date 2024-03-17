@@ -16,12 +16,12 @@ params = {
     "annots_iou_file": "./data/annots_iou.json",
     "annots_rand_file": "./data/annots_rand.json",
     "annots_l": [
-        [50.0, 70.0, 120.0, 100.0, "rand1"],
-        [150.0, 200.0, 250.0, 240.0, "rand2"],
+        [50, 70, 120, 100, "rand1"],
+        [150, 200, 250, 240, "rand2"],
     ],
     "annots_1d": np.random.randint(low=1, high=10, size=4),
     "annots_nd": np.random.randint(low=1, high=10, size=(2, 4)),
-    "annots_json": [{"label": "", "x_max": 0, "x_min": 0, "y_max": 0, "y_min": 0}],
+    "annots_json": [{"label": "", "x_max": 1, "x_min": 0, "y_max": 1, "y_min": 0}],
     "feature_sz": (2, 2),
     "image_sz": (10, 10),
     "random_im_sz": (10, 10, 3),
@@ -114,6 +114,7 @@ class VisTestCase(unittest.TestCase):
     def test_vis_bx(self):
         with open(params["annots_rand_file"]) as f:
             annots = json.load(f)
+        print(annots)
         for v in self.vs:
             self.assertTrue(v.show(annots))
             plt.close()
@@ -151,10 +152,10 @@ class VisTestCase(unittest.TestCase):
             self.assertTrue(v.show(b))
             plt.close()
 
-    def test_vis_bbx_json(self):
+    def test_vis_dbx_json(self):
         with open(params["annots_rand_file"]) as f:
             annots = json.load(f)
-        b = bbx(annots[0])
+        b = dbx(annots[0])
         self.assertIsInstance(b, BaseBx)
         for v in self.vs:
             self.assertTrue(v.show(b))
@@ -171,6 +172,5 @@ class VisTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    with warnings.catch_warnings:
-        warnings.filterwarnings("ignore")
-        unittest.main()
+    warnings.filterwarnings("ignore")
+    unittest.main()
