@@ -293,7 +293,7 @@ class Bx:
         return [[self.x_min, self.y_min, self.bw, self.bh, *self.label]]
 
     def yolo(self, w=1, h=1, normalize=False):
-        """Converts the `pascal_voc` bounding box to `yolo` centroids format.
+        """Convert the `pascal_voc` box to full-precision YOLO centroid format.
         :param normalize: Whether to normalize the bounding box with image width and height.
         :param w: Width of image. Not to be confused with `BaseBx` attribute `w`.
         :param h: Height of image. Not to be confused with `BaseBx` attribute `h`.
@@ -302,8 +302,10 @@ class Bx:
             assert (w > 1) and (
                 h > 1
             ), f"{inspect.stack()[0][3]} of {__name__}: Expected width and height of image with normalize={normalize}."
-        _yolo = np.array([self.cx, self.cy, self.bw, self.bh]) / np.tile([w, h], 2)
-        _yolo = _yolo.round(4).tolist()
+        _yolo = np.array([self.cx, self.cy, self.bw, self.bh], dtype=float)
+        if normalize:
+            _yolo /= np.tile([w, h], 2)
+        _yolo = _yolo.tolist()
         _yolo.append(*self.label)
         return [_yolo]
 
@@ -463,7 +465,8 @@ class MultiBx:
             or without `label`: `[x_min, y_min, x_max, y_max]`
         - `dict` should be in `pascal_voc` format using the keys
             {"x_min": 0, "y_min": 0, "x_max": 1, "y_max": 1, "label": 'none'}
-        If passing an `ndarray`, it should be of shape `(N,4)`.
+        If passing an `ndarray`, it should be of shape `(N,4)`. Coordinates are
+        stored uniformly as numeric `(N, 4)` rows; embedded labels are separated.
 
     :param label: a `list` of `str`s that has the class name or label for the object in the
     corresponding box.
@@ -476,23 +479,22 @@ class MultiBx:
         assert isinstance(coords, ALL_ITER_TYPES)
         if len(coords) == 0:
             raise ValueError("MultiBx requires at least one bounding box.")
-        if label is None:
-            label = []
-            for box in coords:
-                if isinstance(box, dict):
-                    _, parsed_label = parse_dict(box, no_check=no_check)
-                    label.append(parsed_label[0])
-                else:
-                    label.append("unknown")
-        elif isinstance(label, LABEL_TYPES):
-            label = [label]
+        if isinstance(coords, np.ndarray):
+            coords = np.atleast_2d(coords)
+        elif isinstance(coords, dict) or isinstance(coords[0], COORD_TYPES):
+            coords = [coords]
+        raw_coords = list(coords)
+        parsed_boxes = [parse_to_bbx(box, no_check=True) for box in raw_coords]
+        parsed_labels = [box.label[0] for box in parsed_boxes]
+        if label is not None:
+            label = [label] if isinstance(label, LABEL_TYPES) else list(label)
         else:
-            label = list(label)
-        if len(label) != len(coords):
+            label = parsed_labels
+        if len(label) != len(parsed_boxes):
             raise ValueError(
-                f"Expected one label per box, got {len(label)} labels for {len(coords)} boxes."
+                f"Expected one label per box, got {len(label)} labels for {len(parsed_boxes)} boxes."
             )
-        self.coords = coords
+        self.coords = [box._coords for box in parsed_boxes]
         self.label = label
         self.__setup__()
 
@@ -533,13 +535,18 @@ class MultiBx:
         return self.__str__()
 
     @property
+    def labels(self):
+        """Labels aligned positionally with `coords`."""
+        return self.label
+
+    @property
     def shape(self):
         """Returns the shape of coordinates"""
         return len(self.coords), 4
 
     @property
     def coords_as_numpy(self):
-        return np.asarray([b._coords for b in self])
+        return np.asarray(self.coords)
 
 # %% ../nbs/01_basics.ipynb #7bafbacc
 BX_TYPE = (Bx, MultiBx)

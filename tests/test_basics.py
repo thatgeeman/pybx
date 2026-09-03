@@ -37,7 +37,7 @@ results = {
     "iou": 0.0425531914893617,
     "xywh": np.array([50.0, 70.0, 70.0, 30.0]),
     "jbx_label": ["person", 4],
-    "yolo": [0.4047, 0.8406, 0.5031, 0.2438],
+    "yolo": [0.4046875, 0.840625, 0.503125, 0.24375],
 }
 
 
@@ -122,7 +122,17 @@ class BasicsTestCase(unittest.TestCase):
         b = bbx(annots)
         w, h = params["annots_l_single_imsz"]
         b_yolo = b.yolo(normalize=True, w=w, h=h)
-        self.assertTrue(np.all(b_yolo[0][:-1] == results["yolo"]))
+        np.testing.assert_allclose(b_yolo[0][:-1], results["yolo"])
+        self.assertNotEqual(b_yolo[0][0], round(b_yolo[0][0], 4))
+
+    def test_yolo_only_normalizes_when_requested(self):
+        box = bbx([0, 0, 3, 2, "cat"])
+
+        self.assertEqual(box.yolo(w=10, h=10), [[1.5, 1.0, 3.0, 2.0, "cat"]])
+        self.assertEqual(
+            box.yolo(w=10, h=10, normalize=True),
+            [[0.15, 0.1, 0.3, 0.2, "cat"]],
+        )
 
     def test_get_bx(self):
         with open(params["annots_rand_file"]) as f:
@@ -170,6 +180,31 @@ class BasicsTestCase(unittest.TestCase):
     def test_multibx_requires_one_label_per_box(self):
         with self.assertRaisesRegex(ValueError, "one label per box"):
             mbx([[0, 0, 2, 2], [1, 1, 3, 3]], ["cat"])
+
+    def test_multibx_normalizes_coordinates_and_embedded_labels(self):
+        boxes = mbx([[0, 0, 2, 2, "cat"], [1, 1, 3, 3, "dog"]])
+
+        self.assertEqual(boxes.coords, [[0, 0, 2, 2], [1, 1, 3, 3]])
+        self.assertEqual(boxes.label, ["cat", "dog"])
+        self.assertEqual(boxes.labels, ["cat", "dog"])
+        self.assertEqual(
+            list(zip(boxes.coords, boxes.labels)),
+            [([0, 0, 2, 2], "cat"), ([1, 1, 3, 3], "dog")],
+        )
+        np.testing.assert_array_equal(
+            boxes.coords_as_numpy, [[0, 0, 2, 2], [1, 1, 3, 3]]
+        )
+
+        single = mbx([0, 0, 2, 2, "cat"])
+        self.assertEqual(single.coords, [[0, 0, 2, 2]])
+        self.assertEqual(single.label, ["cat"])
+
+    def test_multibx_explicit_labels_override_embedded_labels(self):
+        boxes = mbx([[0, 0, 2, 2, "cat"]], label=["pet"])
+
+        self.assertEqual(boxes.coords, [[0, 0, 2, 2]])
+        self.assertEqual(boxes.label, ["pet"])
+        self.assertEqual(boxes[0].label, ["pet"])
 
     def test_stack_mixed_coordinate_containers(self):
         from_list = mbx([[0, 0, 2, 2]], ["list"])

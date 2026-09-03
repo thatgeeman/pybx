@@ -1,9 +1,11 @@
 import unittest
+import uuid
+from unittest.mock import patch
 
 import numpy as np
 
 from pybx import anchor
-from pybx.basics import ITER_TYPES, ITER_TYPES_EXTRA, ITER_TYPES_TUPLE
+from pybx.basics import BaseBx, ITER_TYPES, ITER_TYPES_EXTRA, ITER_TYPES_TUPLE
 
 np.random.seed(1)
 
@@ -29,7 +31,7 @@ class AnchorTestCase(unittest.TestCase):
     def test_bx(self):
         b, l_ = anchor.bx(params["image_sz"], params["feature_sz"], params["asp_ratio"])
         self.assertIn(results["bx_l"], l_, "label not matching")
-        self.assertEqual(len(b), len(l_)) 
+        self.assertEqual(len(b), len(l_))
         self.assertEqual(
             np.sum(list(b)), results["bx_b"], "sum not matching"
         )  # add assertion here
@@ -73,6 +75,111 @@ class AnchorTestCase(unittest.TestCase):
         )
         np.testing.assert_array_equal(offsets, np.zeros((1, 4)))
         self.assertEqual(labels, ["cat"])
+
+    def test_matching_keeps_objects_with_the_same_label_separate(self):
+        matches, ious, masks = anchor.get_gt_max_iou(
+            [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "cat"]],
+            [[0, 0, 10, 10], [20, 20, 30, 30]],
+            box_ids=["cat-left", "cat-right"],
+            return_ious=True,
+            return_masks=True,
+        )
+
+        self.assertEqual(set(matches), {"cat-left", "cat-right"})
+        self.assertEqual(matches["cat-left"].coords, [[0, 0, 10, 10]])
+        self.assertEqual(matches["cat-right"].coords, [[20, 20, 30, 30]])
+        self.assertEqual(matches["cat-left"].label, ["cat"])
+        self.assertEqual(ious, {"cat-left": [1.0], "cat-right": [1.0]})
+        self.assertEqual(masks, {"cat-left": [True, False], "cat-right": [False, True]})
+
+    def test_matching_uses_input_positions_as_default_box_ids(self):
+        result = anchor.get_gt_thresh_iou(
+            [[0, 0, 10, 10, "cat"], [0, 0, 10, 10, "cat"]],
+            [[0, 0, 10, 10]],
+            iou_thresh=0.5,
+            return_masks=True,
+        )
+        matches, _, masks = result
+
+        self.assertIsInstance(result, anchor.MatchResult)
+        self.assertEqual(result.box_ids, (0, 1))
+        self.assertEqual(result.anchor_indices, {0: [0], 1: [0]})
+        self.assertEqual(set(matches), {0, 1})
+        self.assertEqual(matches[0].coords, matches[1].coords)
+        self.assertEqual(masks, {0: [True], 1: [True]})
+
+    def test_match_result_preserves_caller_uuid(self):
+        box_id = uuid.UUID("12345678-1234-5678-1234-567812345678")
+        result = anchor.get_gt_max_iou(
+            [0, 0, 10, 10, "cat"],
+            [[0, 0, 10, 10]],
+            box_ids=[box_id],
+            return_ious=True,
+            return_masks=True,
+        )
+
+        self.assertEqual(result.box_ids, (box_id,))
+        self.assertEqual(result.anchor_indices, {box_id: [0]})
+        self.assertEqual(result.ious, {box_id: [1.0]})
+        self.assertEqual(result.masks, {box_id: [True]})
+        self.assertEqual(result.matched_boxes[box_id].label, ["cat"])
+
+    def test_equal_ious_select_distinct_anchors(self):
+        matches, ious, masks = anchor.get_gt_max_iou(
+            [0, 0, 10, 10, "cat"],
+            [[0, 0, 10, 10], [0, 0, 10, 10]],
+            anchor_labels=["anchor-a", "anchor-b"],
+            positive_boxes=2,
+            update_labels=False,
+            return_ious=True,
+            return_masks=True,
+        )
+
+        self.assertEqual(matches[0].label, ["anchor-a", "anchor-b"])
+        self.assertEqual(ious[0], [1.0, 1.0])
+        self.assertEqual(masks[0], [True, True])
+
+    def test_matching_returns_full_precision_iou(self):
+        _, ious, _ = anchor.get_gt_max_iou(
+            [0, 0, 2, 2, "cat"],
+            [[0, 0, 3, 3]],
+            return_ious=True,
+        )
+
+        self.assertAlmostEqual(ious[0][0], 4 / 9)
+        self.assertNotEqual(ious[0][0], round(4 / 9, 4))
+
+        matches, threshold_ious, _ = anchor.get_gt_thresh_iou(
+            [0, 0, 2, 2, "cat"],
+            [[0, 0, 3, 3]],
+            iou_thresh=0.44442,
+            return_ious=True,
+        )
+        self.assertIn(0, matches)
+        self.assertAlmostEqual(threshold_ious[0][0], 4 / 9)
+
+    def test_matching_vectorizes_pairwise_iou(self):
+        with patch.object(BaseBx, "iou", side_effect=AssertionError("scalar IoU used")):
+            matches, _, _ = anchor.get_gt_max_iou(
+                [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "dog"]],
+                [[0, 0, 10, 10], [20, 20, 30, 30]],
+            )
+
+        self.assertEqual(set(matches), {0, 1})
+
+    def test_matching_rejects_invalid_box_ids(self):
+        with self.assertRaisesRegex(ValueError, "one box_id"):
+            anchor.get_gt_max_iou(
+                [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "cat"]],
+                [[0, 0, 10, 10]],
+                box_ids=["only-one"],
+            )
+        with self.assertRaisesRegex(ValueError, "unique"):
+            anchor.get_gt_max_iou(
+                [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "cat"]],
+                [[0, 0, 10, 10]],
+                box_ids=["duplicate", "duplicate"],
+            )
 
 
 if __name__ == "__main__":
