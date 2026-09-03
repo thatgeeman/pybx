@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 permissions:
   contents: write
   pages: write
+  id-token: write
 
 on:
   push:
@@ -10,6 +11,9 @@ on:
   workflow_dispatch:
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: thatgeeman/workflows/quarto-ghp@master
@@ -20,3 +24,12 @@ jobs:
           test -f _docs/index.html
           grep -q 'id="quarto-sidebar"' _docs/index.html
           grep -q 'href="./basics.html"' _docs/index.html
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload generated site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _docs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
