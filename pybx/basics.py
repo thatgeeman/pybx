@@ -535,6 +535,11 @@ class MultiBx:
         return self.__str__()
 
     @property
+    def labels(self):
+        """Labels aligned positionally with `coords`."""
+        return self.label
+
+    @property
     def shape(self):
         """Returns the shape of coordinates"""
         return len(self.coords), 4

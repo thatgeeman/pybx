@@ -186,6 +186,11 @@ class BasicsTestCase(unittest.TestCase):
 
         self.assertEqual(boxes.coords, [[0, 0, 2, 2], [1, 1, 3, 3]])
         self.assertEqual(boxes.label, ["cat", "dog"])
+        self.assertEqual(boxes.labels, ["cat", "dog"])
+        self.assertEqual(
+            list(zip(boxes.coords, boxes.labels)),
+            [([0, 0, 2, 2], "cat"), ([1, 1, 3, 3], "dog")],
+        )
         np.testing.assert_array_equal(
             boxes.coords_as_numpy, [[0, 0, 2, 2], [1, 1, 3, 3]]
         )
