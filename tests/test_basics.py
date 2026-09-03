@@ -34,7 +34,7 @@ results = {
     "mbx_json": (120.0, "rand1"),
     "mbx_list": (50.0, "rand1"),
     "mbx_arr": -0.08959797456887511,
-    "iou": 0.0426,
+    "iou": 0.0425531914893617,
     "xywh": np.array([50.0, 70.0, 70.0, 30.0]),
     "jbx_label": ["person", 4],
     "yolo": [0.4047, 0.8406, 0.5031, 0.2438],
@@ -61,9 +61,8 @@ class BasicsTestCase(unittest.TestCase):
     def test_label_key_jbx(self):
         with open(params["annots_key_file"]) as f:
             annots = json.load(f)
-        # ! fix test or method, labels not parsed correctly
-        b_m = get_bx(annots)[0]
-        self.assertEqual(b_m.label[0], results["jbx_label"][0])
+        b_m = get_bx(annots)
+        self.assertEqual(b_m.label, results["jbx_label"])
 
     def test_add_bbx(self):
         with open(params["annots_iou_file"]) as f:
@@ -108,7 +107,7 @@ class BasicsTestCase(unittest.TestCase):
         b1 = jbx(annots[1])
         b2 = jbx(annots[2])  # intersecting box
         iou = b0.iou(b1)  # calculated iou
-        iou_ = round(b2.area / (b0.area + b1.area - b2.area), 4)
+        iou_ = b2.area / (b0.area + b1.area - b2.area)
         self.assertEqual(iou, iou_)
         self.assertEqual(iou, results["iou"])
 
@@ -116,7 +115,7 @@ class BasicsTestCase(unittest.TestCase):
         with open(params["annots_rand_file"]) as f:
             annots = json.load(f)
         b = jbx(annots[0])
-        self.assertTrue(np.all(b.xywh[0][:-1] == results["xywh"]))
+        self.assertTrue(np.all(b.xywh()[0][:-1] == results["xywh"]))
 
     def test_yolo(self):
         annots = params["annots_l_single"]
@@ -136,6 +135,52 @@ class BasicsTestCase(unittest.TestCase):
         self.assertIsInstance(get_bx(get_bx(annots_json)), MultiBx)  # MultiBx
         self.assertIsInstance(get_bx(get_bx([annots_json[0]])), MultiBx)  # MultiBx
         self.assertIsInstance(get_bx([annots_json[0]]), MultiBx)  # MultiBx
+
+    def test_get_bx_dict_without_label(self):
+        annotation = {"x_min": 130, "y_min": 63, "x_max": 225, "y_max": 180}
+        box = get_bx(annotation)
+        self.assertIsInstance(box, BaseBx)
+        self.assertEqual(box.coords, [[130, 63, 225, 180]])
+        self.assertEqual(box.label, ["unknown"])
+
+    def test_explicit_zero_label_is_preserved(self):
+        box = get_bx({"x_min": 0, "y_min": 0, "x_max": 2, "y_max": 2}, label=0)
+        self.assertEqual(box.label, [0])
+
+    def test_get_bx_json_string(self):
+        annotation = json.dumps(
+            {"x_min": 130, "y_min": 63, "x_max": 225, "y_max": 180}
+        )
+        box = get_bx(annotation)
+        self.assertIsInstance(box, BaseBx)
+        self.assertEqual(box.label, ["unknown"])
+
+    def test_get_bx_accepts_python_and_numpy_numeric_scalars(self):
+        self.assertIsInstance(get_bx([0.0, 0.0, 2.0, 2.0]), BaseBx)
+        for dtype in (np.int8, np.int16, np.int32, np.float16, np.float32):
+            box = get_bx(np.array([0, 0, 2, 2], dtype=dtype))[0]
+            self.assertEqual(box.coords, [[dtype(0), dtype(0), dtype(2), dtype(2)]])
+
+    def test_get_bx_rejects_empty_and_overspecified_boxes(self):
+        with self.assertRaisesRegex(ValueError, "coords cannot be empty"):
+            get_bx([])
+        with self.assertRaises(AssertionError):
+            get_bx([0, 0, 2, 2, "cat", "dog"])
+
+    def test_multibx_requires_one_label_per_box(self):
+        with self.assertRaisesRegex(ValueError, "one label per box"):
+            mbx([[0, 0, 2, 2], [1, 1, 3, 3]], ["cat"])
+
+    def test_stack_mixed_coordinate_containers(self):
+        from_list = mbx([[0, 0, 2, 2]], ["list"])
+        from_array = mbx(np.array([[1, 1, 3, 3]]), ["array"])
+        result = from_list + from_array
+        self.assertEqual(result.coords, [[0, 0, 2, 2], [1, 1, 3, 3]])
+        self.assertEqual(result.label, ["list", "array"])
+
+    def test_coords_as_numpy_preserves_float_dtype(self):
+        box = get_bx(np.array([[0.5, 0.5, 2.5, 2.5]], dtype=np.float32))
+        self.assertEqual(box.coords_as_numpy.dtype, np.float32)
 
     def test_type_mbx(self):
         b = get_bx(params["annots_i8"])

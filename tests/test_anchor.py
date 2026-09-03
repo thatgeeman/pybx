@@ -60,6 +60,20 @@ class AnchorTestCase(unittest.TestCase):
             b.sum(), results["bxs_b"], "sum not matching"
         )  # add assertion here
 
+    def test_get_gt_offsets_accepts_dict_annotation(self):
+        annotation = {
+            "x_min": 0,
+            "y_min": 0,
+            "x_max": 2,
+            "y_max": 2,
+            "label": "cat",
+        }
+        offsets, labels = anchor.get_gt_offsets(
+            annotation, [[0, 0, 2, 2]], update_labels=True
+        )
+        np.testing.assert_array_equal(offsets, np.zeros((1, 4)))
+        self.assertEqual(labels, ["cat"])
+
 
 if __name__ == "__main__":
     unittest.main()
