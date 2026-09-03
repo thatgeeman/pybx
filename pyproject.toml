@@ -1,6 +1,81 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel",
-]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pybx"
+dynamic = ["version"]
+description = "A simple python module to generate anchor boxes for object detection tasks."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Geevarghese George", email = "4496097+thatgeeman@users.noreply.github.com"},
+]
+keywords = [
+    "anchor-box",
+    "anchor-boxes",
+    "bounding-boxes",
+    "computer-vision",
+    "deep-learning",
+    "multi-box",
+    "multibox",
+    "multibox-detector",
+    "object-detection",
+    "python",
+    "rcnn",
+    "rcnn-model",
+    "single-shot-detection",
+    "single-shot-detector",
+    "single-shot-multibox-detector",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "fastcore>=1.5.27",
+    "numpy>=1.21.6",
+    "matplotlib>=3.5",
+    "opencv-python>=4.7.0.72",
+]
+
+[project.urls]
+Repository = "https://github.com/thatgeeman/pybx"
+Documentation = "https://thatgeeman.github.io/pybx"
+
+[project.entry-points.nbdev]
+pybx = "pybx._modidx:d"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "build",
+    "flake8",
+    "ipykernel",
+    "nbdev>=3.3.15,<4",
+    "pre-commit",
+    "pytest",
+    "twine",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "pybx.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["pybx", "pybx.*"]
+
+[tool.nbdev]
+branch = "master"
+recursive = false
+custom_sidebar = true

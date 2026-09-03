@@ -1,16 +1,16 @@
 ## Setup development environment
-*WIP*
 
-Make python3.7 environment:
+PyBx supports Python 3.8 through 3.14. The nbdev 3 documentation tools
+require Python 3.10 or newer, so use a recent interpreter for development:
+
 ```shell
-pipenv --py 3.7
+python3.14 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
 ```
-Start environment and update packages accoring to `Pipfile`.
-```shell
-pipenv shell 
-pipenv update --dev
-pipenv check
-```
+
+Run the test suite with `python -m pytest -q` and the nbdev checks with
+`nbdev-prepare`.
 
 ## Build
 
@@ -20,5 +20,5 @@ python -m build
 
 ## Editable install
 ```bash
-pipenv run pip install -e . 
+python -m pip install -e .
 ```
