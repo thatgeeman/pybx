@@ -7,3 +7,8 @@ website:
   description: "A simple python module to generate anchor boxes for object detection tasks."
   repo-branch: master
   repo-url: "https://github.com/thatgeeman/pybx"
+
+format-links:
+  - html
+  - format: commonmark
+    text: Markdown
