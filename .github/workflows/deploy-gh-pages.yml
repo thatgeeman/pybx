@@ -11,4 +11,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps: [uses: thatgeeman/workflows/quarto-ghp@master]
+    steps:
+      - uses: thatgeeman/workflows/quarto-ghp@master
+        with:
+          version: "3.8"
+      - name: Verify generated sidebar
+        run: |
+          test -f _docs/index.html
+          grep -q 'id="quarto-sidebar"' _docs/index.html
+          grep -q 'href="./basics.html"' _docs/index.html
