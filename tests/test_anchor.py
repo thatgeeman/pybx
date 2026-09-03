@@ -1,9 +1,10 @@
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 from pybx import anchor
-from pybx.basics import ITER_TYPES, ITER_TYPES_EXTRA, ITER_TYPES_TUPLE
+from pybx.basics import BaseBx, ITER_TYPES, ITER_TYPES_EXTRA, ITER_TYPES_TUPLE
 
 np.random.seed(1)
 
@@ -116,6 +117,34 @@ class AnchorTestCase(unittest.TestCase):
         self.assertEqual(matches[0].label, ["anchor-a", "anchor-b"])
         self.assertEqual(ious[0], [1.0, 1.0])
         self.assertEqual(masks[0], [True, True])
+
+    def test_matching_returns_full_precision_iou(self):
+        _, ious, _ = anchor.get_gt_max_iou(
+            [0, 0, 2, 2, "cat"],
+            [[0, 0, 3, 3]],
+            return_ious=True,
+        )
+
+        self.assertAlmostEqual(ious[0][0], 4 / 9)
+        self.assertNotEqual(ious[0][0], round(4 / 9, 4))
+
+        matches, threshold_ious, _ = anchor.get_gt_thresh_iou(
+            [0, 0, 2, 2, "cat"],
+            [[0, 0, 3, 3]],
+            iou_thresh=0.44442,
+            return_ious=True,
+        )
+        self.assertIn(0, matches)
+        self.assertAlmostEqual(threshold_ious[0][0], 4 / 9)
+
+    def test_matching_vectorizes_pairwise_iou(self):
+        with patch.object(BaseBx, "iou", side_effect=AssertionError("scalar IoU used")):
+            matches, _, _ = anchor.get_gt_max_iou(
+                [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "dog"]],
+                [[0, 0, 10, 10], [20, 20, 30, 30]],
+            )
+
+        self.assertEqual(set(matches), {0, 1})
 
     def test_matching_rejects_invalid_box_ids(self):
         with self.assertRaisesRegex(ValueError, "one box_id"):

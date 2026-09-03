@@ -17,6 +17,16 @@ Calculated anchor boxes are in `pascal_voc` format by default.
 pip install pybx
 ```
 
+The core package only installs the dependencies needed for bounding-box and anchor operations. Install optional features when needed:
+
+``` shell
+pip install "pybx[viz]"     # Matplotlib visualization
+pip install "pybx[opencv]"  # image loading and resizing
+pip install "pybx[all]"     # both optional features
+```
+
+If an optional feature is used without its dependency, PyBx raises an error containing the appropriate installation command. Loading an image from disk and displaying it requires `pybx[all]`.
+
 ### Usage
 
 To calculate the anchor boxes for a single feature size and

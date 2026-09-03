@@ -46,8 +46,6 @@ classifiers = [
 dependencies = [
     "fastcore>=1.5.27",
     "numpy>=1.21.6",
-    "matplotlib>=3.5",
-    "opencv-python>=4.7.0.72",
 ]
 
 [project.urls]
@@ -58,12 +56,24 @@ Documentation = "https://thatgeeman.github.io/pybx"
 pybx = "pybx._modidx:d"
 
 [project.optional-dependencies]
+viz = [
+    "matplotlib>=3.5",
+]
+opencv = [
+    "opencv-python>=4.7.0.72",
+]
+all = [
+    "matplotlib>=3.5",
+    "opencv-python>=4.7.0.72",
+]
 dev = [
     "black",
     "build",
     "flake8",
     "ipykernel",
+    "matplotlib>=3.5",
     "nbdev>=3.3.15,<4",
+    "opencv-python>=4.7.0.72",
     "pre-commit",
     "pytest",
     "twine",

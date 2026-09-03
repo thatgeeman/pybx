@@ -48,6 +48,27 @@ def _resolve_box_ids(n_boxes, box_ids=None):
     return box_ids
 
 
+def _pairwise_iou(boxes, anchors):
+    """Calculate the complete box-by-anchor IoU matrix with NumPy."""
+    boxes = np.asarray(boxes, dtype=float).reshape(-1, 4)
+    anchors = np.asarray(anchors, dtype=float).reshape(-1, 4)
+    top_left = np.maximum(boxes[:, None, :2], anchors[None, :, :2])
+    bottom_right = np.minimum(boxes[:, None, 2:], anchors[None, :, 2:])
+    intersection_sides = np.clip(bottom_right - top_left, 0, None)
+    intersection = intersection_sides[..., 0] * intersection_sides[..., 1]
+    box_sides = boxes[:, 2:] - boxes[:, :2]
+    anchor_sides = anchors[:, 2:] - anchors[:, :2]
+    box_areas = box_sides[:, 0] * box_sides[:, 1]
+    anchor_areas = anchor_sides[:, 0] * anchor_sides[:, 1]
+    union = box_areas[:, None] + anchor_areas[None, :] - intersection
+    return np.divide(
+        intersection,
+        union,
+        out=np.zeros_like(intersection, dtype=float),
+        where=union > 0,
+    )
+
+
 # %% ../nbs/00_anchor.ipynb #c881e876
 def bx(
     image_sz: (int, tuple),
@@ -177,7 +198,8 @@ def get_gt_thresh_iou(
 
     Can result in an uneven number of positive anchors per ground-truth box.
     Matching is independent for each ground-truth box, so an anchor may match
-    more than one object.
+    more than one object. IoUs are calculated as one vectorized matrix and
+    returned at full floating-point precision.
 
     Args:
         true_annots (Any): True annotations, typically in `pascal_voc` format
@@ -211,14 +233,16 @@ def get_gt_thresh_iou(
         if not isinstance(anchor_boxes, BX_TYPE)
         else anchor_boxes
     )
-    n_boxes = len(coords_as_bx)
+    iou_matrix = _pairwise_iou(
+        true_annots_as_bx.coords_as_numpy, coords_as_bx.coords_as_numpy
+    )
+    mask_matrix = iou_matrix >= iou_thresh
 
-    for box_id, annots in zip(box_ids, true_annots_as_bx):
+    for row_idx, (box_id, annots) in enumerate(zip(box_ids, true_annots_as_bx)):
         label = annots.label[0]  # is a list of len 1
-        ious = L([annots.iou(coords_as_bx[i]) for i in range(n_boxes)])
-        # ious_filter = ious.argwhere(gt(iou_thresh))
-        mask = ious.map(lambda x: x >= iou_thresh)
-        ious_filter = mask2idxs(mask=mask)
+        ious = iou_matrix[row_idx]
+        mask = L(mask_matrix[row_idx].tolist())
+        ious_filter = np.flatnonzero(mask_matrix[row_idx]).tolist()
 
         if mask.sum() < 1:
             warnings.warn(
@@ -230,7 +254,7 @@ def get_gt_thresh_iou(
 
         if return_ious:
             # report filtered box IOUs
-            iou_per_box[box_id] = L([round(ious[i], 4) for i in ious_filter])
+            iou_per_box[box_id] = L(ious[ious_filter].tolist())
         if return_masks:
             mask_per_box[box_id] = mask
         # report selected boxes
@@ -265,7 +289,8 @@ def get_gt_max_iou(
 
     Selects up to `positive_boxes` distinct anchors for each ground-truth box.
     Matching is independent for each ground-truth box, so an anchor may match
-    more than one object.
+    more than one object. IoUs and rankings are calculated as vectorized NumPy
+    operations, and IoUs are returned at full floating-point precision.
 
     Args:
         true_annots (Any): True annotations, typically in `pascal_voc` format
@@ -306,14 +331,21 @@ def get_gt_max_iou(
         else anchor_boxes
     )
     n_boxes = len(coords_as_bx)
+    iou_matrix = _pairwise_iou(
+        true_annots_as_bx.coords_as_numpy, coords_as_bx.coords_as_numpy
+    )
+    n_positive = min(int(positive_boxes), n_boxes)
+    ranked_anchor_indices = np.argsort(-iou_matrix, axis=1, kind="stable")[
+        :, :n_positive
+    ]
 
-    for box_id, annots in zip(box_ids, true_annots_as_bx):
+    for row_idx, (box_id, annots) in enumerate(zip(box_ids, true_annots_as_bx)):
         label = annots.label[0]  # is a list of len 1
-        ious = L([annots.iou(coords_as_bx[i]) for i in range(n_boxes)])
-        n_positive = min(int(positive_boxes), n_boxes)
-        ious_filter = np.argsort(-np.asarray(ious), kind="stable")[:n_positive].tolist()
-        selected = set(ious_filter)
-        mask = L([idx in selected for idx in range(n_boxes)])
+        ious = iou_matrix[row_idx]
+        ious_filter = ranked_anchor_indices[row_idx].tolist()
+        mask_array = np.zeros(n_boxes, dtype=bool)
+        mask_array[ious_filter] = True
+        mask = L(mask_array.tolist())
 
         if mask.sum() < 1:
             warnings.warn(
@@ -325,7 +357,7 @@ def get_gt_max_iou(
 
         if return_ious:
             # report filtered box IOUs
-            iou_per_box[box_id] = L([round(ious[i], 4) for i in ious_filter])
+            iou_per_box[box_id] = L(ious[ious_filter].tolist())
         if return_masks:
             mask_per_box[box_id] = mask
         # report selected boxes
