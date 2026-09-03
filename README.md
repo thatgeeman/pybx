@@ -216,16 +216,17 @@ len(boxes_anchor)
 
     341
 
-The following function returns the positive anchor with the largest IoU for each ground-truth object. Results are keyed by stable box IDs rather than class labels, so multiple objects can share the same class.
+The following function returns a [`MatchResult`](https://thatgeeman.github.io/pybx/anchor.html#matchresult) containing the matched boxes, anchor indices, IoUs, masks, and box IDs. Every mapping is keyed by stable box IDs rather than class labels, so multiple objects can share the same class. Supply application IDs (including UUIDs) when identity must survive reordering; otherwise deterministic zero-based input positions are used.
 
 ``` python
-gt_anchors, gt_ious, gt_masks = get_gt_max_iou(
+match_result = get_gt_max_iou(
     true_annots=boxes_true,
     anchor_boxes=boxes_anchor,  # if plain numpy, pass anchor_boxes and anchor_labels
     box_ids=["clock-1", "frame-1"],  # optional; defaults to 0..N-1
     update_labels=False,  # whether to replace ground truth labels with true labels
     positive_boxes=1,  # can request extra boxes
 )
+gt_anchors = match_result.matched_boxes
 ```
 
 ``` python

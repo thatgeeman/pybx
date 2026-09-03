@@ -1,4 +1,5 @@
 import unittest
+import uuid
 from unittest.mock import patch
 
 import numpy as np
@@ -92,16 +93,36 @@ class AnchorTestCase(unittest.TestCase):
         self.assertEqual(masks, {"cat-left": [True, False], "cat-right": [False, True]})
 
     def test_matching_uses_input_positions_as_default_box_ids(self):
-        matches, _, masks = anchor.get_gt_thresh_iou(
+        result = anchor.get_gt_thresh_iou(
             [[0, 0, 10, 10, "cat"], [0, 0, 10, 10, "cat"]],
             [[0, 0, 10, 10]],
             iou_thresh=0.5,
             return_masks=True,
         )
+        matches, _, masks = result
 
+        self.assertIsInstance(result, anchor.MatchResult)
+        self.assertEqual(result.box_ids, (0, 1))
+        self.assertEqual(result.anchor_indices, {0: [0], 1: [0]})
         self.assertEqual(set(matches), {0, 1})
         self.assertEqual(matches[0].coords, matches[1].coords)
         self.assertEqual(masks, {0: [True], 1: [True]})
+
+    def test_match_result_preserves_caller_uuid(self):
+        box_id = uuid.UUID("12345678-1234-5678-1234-567812345678")
+        result = anchor.get_gt_max_iou(
+            [0, 0, 10, 10, "cat"],
+            [[0, 0, 10, 10]],
+            box_ids=[box_id],
+            return_ious=True,
+            return_masks=True,
+        )
+
+        self.assertEqual(result.box_ids, (box_id,))
+        self.assertEqual(result.anchor_indices, {box_id: [0]})
+        self.assertEqual(result.ious, {box_id: [1.0]})
+        self.assertEqual(result.masks, {box_id: [True]})
+        self.assertEqual(result.matched_boxes[box_id].label, ["cat"])
 
     def test_equal_ious_select_distinct_anchors(self):
         matches, ious, masks = anchor.get_gt_max_iou(
