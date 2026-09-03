@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# Test the supported Python versions and run lint checks once.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: PyBx tests
@@ -14,25 +14,51 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: settings.ini
+      - name: Install package and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+          python -m pip install .
+      - name: Test with pytest
+        run: |
+          python -m pytest -q
+
+  lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.8"
-      - name: Install pip
+          python-version: "3.14"
+      - name: Install lint dependencies
         run: |
           python -m pip install --upgrade pip
-      - name: Install test requirements
-        run: |
-          pip install pytest flake8 black
-      - name: Install pybx as editable
-        run: |
-          pip install -e .
-      - name: Lint with black
+          python -m pip install black flake8
+      - name: Format with black
         run: |
           black .
       - name: Lint with flake8
@@ -41,6 +67,14 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with unittests
+
+  # Preserve the existing required check name while the tests run as a matrix.
+  build:
+    if: ${{ always() }}
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm test and lint jobs passed
         run: |
-          python -m pytest -q
+          test "${{ needs.test.result }}" = "success"
+          test "${{ needs.lint.result }}" = "success"
