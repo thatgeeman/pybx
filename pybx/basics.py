@@ -557,29 +557,20 @@ def mbx(coords=None, label=None, no_check=False):
 
 # %% ../nbs/01_basics.ipynb 186
 def get_bx(coords, label=None, no_check=False):
-    """
-    Helper function to check and call the correct type of Bx instance.
+    """Create a `BaseBx` or `MultiBx` from supported coordinates.
 
-    Checks for the type of data passed and calls the respective class
-    to generate a Bx instance. Currently only supports ndarray, list, dict,
-    tuple, nested list, nested tuple.
+    Args:
+        coords: A box or collection of boxes represented by lists, tuples,
+            dictionaries, JSON strings, NumPy arrays, or existing Bx objects.
+        label: An optional label or list of labels corresponding to the boxes.
+        no_check: Skip coordinate validation for trusted internal data.
 
-    Parameters
-    ----------
-    coords : ndarray, list, dict, tuple, nested list, nested tuple
-        Coordinates of anchor boxes.
-    label : list, optional
-        Labels for anchor boxes in order, by default None
+    Returns:
+        A `BaseBx` for one box or `MultiBx` for a collection of boxes.
 
-    Returns
-    -------
-    Bx
-        An instance of MultiBx, ListBx, BaseBx or JsonBx
-
-    Raises
-    ------
-    NotImplementedError
-        If unknown type of coordinates are passed.
+    Raises:
+        ValueError: If coordinates are empty or malformed.
+        NotImplementedError: If the coordinate representation is unsupported.
     """
     # process ndarray
     if isinstance(coords, np.ndarray):

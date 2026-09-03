@@ -1,0 +1,9 @@
+# Runtime dependencies used by the documentation build. Keep this file
+# intentionally minimal; the Pages workflow installs nbdev separately.
+nbdev==2.3.12
+fastcore==1.5.27
+execnb==0.1.5
+ghapi==1.0.4
+numpy==1.21.6
+matplotlib>=3.5
+opencv-python==4.7.0.72
