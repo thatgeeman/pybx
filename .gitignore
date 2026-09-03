@@ -5,6 +5,7 @@
 index_files/
 _proc/
 _docs/
+.test_logs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
