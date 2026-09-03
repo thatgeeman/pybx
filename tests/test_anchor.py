@@ -29,7 +29,7 @@ class AnchorTestCase(unittest.TestCase):
     def test_bx(self):
         b, l_ = anchor.bx(params["image_sz"], params["feature_sz"], params["asp_ratio"])
         self.assertIn(results["bx_l"], l_, "label not matching")
-        self.assertEqual(len(b), len(l_)) 
+        self.assertEqual(len(b), len(l_))
         self.assertEqual(
             np.sum(list(b)), results["bx_b"], "sum not matching"
         )  # add assertion here
@@ -73,6 +73,63 @@ class AnchorTestCase(unittest.TestCase):
         )
         np.testing.assert_array_equal(offsets, np.zeros((1, 4)))
         self.assertEqual(labels, ["cat"])
+
+    def test_matching_keeps_objects_with_the_same_label_separate(self):
+        matches, ious, masks = anchor.get_gt_max_iou(
+            [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "cat"]],
+            [[0, 0, 10, 10], [20, 20, 30, 30]],
+            box_ids=["cat-left", "cat-right"],
+            return_ious=True,
+            return_masks=True,
+        )
+
+        self.assertEqual(set(matches), {"cat-left", "cat-right"})
+        self.assertEqual(matches["cat-left"].coords, [[0, 0, 10, 10]])
+        self.assertEqual(matches["cat-right"].coords, [[20, 20, 30, 30]])
+        self.assertEqual(matches["cat-left"].label, ["cat"])
+        self.assertEqual(ious, {"cat-left": [1.0], "cat-right": [1.0]})
+        self.assertEqual(masks, {"cat-left": [True, False], "cat-right": [False, True]})
+
+    def test_matching_uses_input_positions_as_default_box_ids(self):
+        matches, _, masks = anchor.get_gt_thresh_iou(
+            [[0, 0, 10, 10, "cat"], [0, 0, 10, 10, "cat"]],
+            [[0, 0, 10, 10]],
+            iou_thresh=0.5,
+            return_masks=True,
+        )
+
+        self.assertEqual(set(matches), {0, 1})
+        self.assertEqual(matches[0].coords, matches[1].coords)
+        self.assertEqual(masks, {0: [True], 1: [True]})
+
+    def test_equal_ious_select_distinct_anchors(self):
+        matches, ious, masks = anchor.get_gt_max_iou(
+            [0, 0, 10, 10, "cat"],
+            [[0, 0, 10, 10], [0, 0, 10, 10]],
+            anchor_labels=["anchor-a", "anchor-b"],
+            positive_boxes=2,
+            update_labels=False,
+            return_ious=True,
+            return_masks=True,
+        )
+
+        self.assertEqual(matches[0].label, ["anchor-a", "anchor-b"])
+        self.assertEqual(ious[0], [1.0, 1.0])
+        self.assertEqual(masks[0], [True, True])
+
+    def test_matching_rejects_invalid_box_ids(self):
+        with self.assertRaisesRegex(ValueError, "one box_id"):
+            anchor.get_gt_max_iou(
+                [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "cat"]],
+                [[0, 0, 10, 10]],
+                box_ids=["only-one"],
+            )
+        with self.assertRaisesRegex(ValueError, "unique"):
+            anchor.get_gt_max_iou(
+                [[0, 0, 10, 10, "cat"], [20, 20, 30, 30, "cat"]],
+                [[0, 0, 10, 10]],
+                box_ids=["duplicate", "duplicate"],
+            )
 
 
 if __name__ == "__main__":

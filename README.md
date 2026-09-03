@@ -206,12 +206,13 @@ len(boxes_anchor)
 
     341
 
-The following function returns two positive ground truth anchors with largest IOU for each class in the label bounding boxes passed.
+The following function returns the positive anchor with the largest IoU for each ground-truth object. Results are keyed by stable box IDs rather than class labels, so multiple objects can share the same class.
 
 ``` python
 gt_anchors, gt_ious, gt_masks = get_gt_max_iou(
     true_annots=boxes_true,
     anchor_boxes=boxes_anchor,  # if plain numpy, pass anchor_boxes and anchor_labels
+    box_ids=["clock-1", "frame-1"],  # optional; defaults to 0..N-1
     update_labels=False,  # whether to replace ground truth labels with true labels
     positive_boxes=1,  # can request extra boxes
 )
@@ -221,11 +222,11 @@ gt_anchors, gt_ious, gt_masks = get_gt_max_iou(
 gt_anchors
 ```
 
-    {'clock': BaseBx(coords=[[156, 0, 227, 180]], label=['a_2x2_0.3_1']),
-     'frame': BaseBx(coords=[[12, 152, 72, 256]], label=['a_3x3_0.5_6'])}
+    {'clock-1': BaseBx(coords=[[156, 0, 227, 180]], label=['a_2x2_0.3_1']),
+     'frame-1': BaseBx(coords=[[12, 152, 72, 256]], label=['a_3x3_0.5_6'])}
 
 ``` python
-all_gt_anchors = gt_anchors["clock"] + gt_anchors["frame"]
+all_gt_anchors = gt_anchors["clock-1"] + gt_anchors["frame-1"]
 all_gt_anchors
 ```
 
